@@ -46,13 +46,12 @@
 .oj-app *{box-sizing:border-box;}
 
 /* header */
-.oj-eyebrow{
+.oj-brandmark-name{
   font-family:var(--font-cond);
-  font-size:11px;
-  font-weight:600;
-  letter-spacing:.14em;
-  text-transform:uppercase;
-  color:var(--ink-faint);
+  font-size:13px;
+  font-weight:700;
+  letter-spacing:.06em;
+  color:var(--ink-soft);
   margin-bottom:6px;
 }
 .oj-titlerow{
@@ -406,6 +405,107 @@
   text-transform:uppercase;
   color:var(--ink-faint);
   margin-top:6px;
+}
+
+.oj-schedule-section{
+  border-top:1px solid var(--line);
+  margin-top:18px;
+  padding-top:16px;
+}
+.oj-schedule-addrow{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-bottom:16px;
+}
+.oj-schedule-addrow input[type=text]{flex:1;min-width:180px;}
+.oj-schedule-addrow input[type=date]{width:150px;}
+.oj-gantt-wrap{
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  overflow-x:auto;
+  background:var(--surface);
+}
+.oj-gantt-row{
+  display:grid;
+  grid-template-columns:170px 1fr 140px 88px;
+  gap:10px;
+  align-items:center;
+  padding:8px 12px;
+  border-bottom:1px solid var(--line);
+  min-width:660px;
+}
+.oj-gantt-row:last-child{border-bottom:none;}
+.oj-gantt-rowactions{display:flex;gap:4px;justify-content:flex-end;}
+.oj-gantt-rowactions .oj-staff-icon-btn:disabled{opacity:.3;cursor:default;}
+.oj-gantt-scale-row{
+  background:var(--surface-2);
+  padding-top:4px;
+  padding-bottom:4px;
+}
+.oj-gantt-label{
+  font-size:12.5px;
+  font-weight:600;
+  color:var(--ink);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.oj-gantt-track{
+  position:relative;
+  height:22px;
+  background:var(--surface-2);
+  border-radius:4px;
+}
+.oj-gantt-scale-row .oj-gantt-track{background:transparent;height:28px;}
+.oj-gantt-tick{
+  position:absolute;
+  top:13px;
+  font-family:var(--font-mono);
+  font-size:10px;
+  color:var(--ink-faint);
+  white-space:nowrap;
+  transform:translateX(-2px);
+  border-left:1px solid var(--line);
+  padding-left:4px;
+  height:15px;
+}
+.oj-gantt-weeknum{
+  position:absolute;
+  top:0;
+  font-family:var(--font-mono);
+  font-size:9px;
+  color:var(--ink-faint);
+  opacity:.75;
+  transform:translateX(2px);
+}
+.oj-gantt-weekline{
+  position:absolute;
+  top:0;
+  bottom:0;
+  width:0;
+  border-left:1px dotted var(--line);
+}
+.oj-gantt-bar{
+  position:absolute;
+  top:3px;
+  height:16px;
+  background:var(--accent);
+  border-radius:3px;
+  min-width:4px;
+}
+.oj-gantt-today{
+  position:absolute;
+  top:0;
+  bottom:0;
+  width:0;
+  border-left:1.5px dashed var(--alert);
+}
+.oj-gantt-dates{
+  font-family:var(--font-mono);
+  font-size:11px;
+  color:var(--ink-soft);
+  white-space:nowrap;
 }
 .oj-linkrow{display:flex;gap:8px;align-items:center;}
 .oj-linkrow input{
@@ -804,6 +904,34 @@
 }
 .oj-staff-icon-btn:hover{color:var(--accent);background:var(--accent-soft);border-color:var(--accent);}
 .oj-staff-icon-btn.danger:hover{color:var(--alert);background:var(--alert-soft);border-color:var(--alert);}
+.oj-staff-mono.late{color:var(--alert);font-weight:600;}
+.oj-staff-mono.today{color:var(--active);font-weight:600;}
+.oj-veh-alerts{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:14px 16px;
+  margin-bottom:18px;
+}
+.oj-veh-alert-row{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  padding:7px 0;
+  border-bottom:1px solid var(--line);
+  font-size:13px;
+}
+.oj-veh-alert-row:last-child{border-bottom:none;}
+.oj-veh-log-row{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:10px;
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:12px 14px;
+  margin-bottom:8px;
+}
 
 .oj-toast{
   position:fixed;
@@ -979,11 +1107,12 @@
 
 <div class="oj-app">
   <div class="oj-debugbar" id="ojDebug">JS: инициализация…</div>
-  <div class="oj-eyebrow">Геодезические изыскания</div>
+  <div class="oj-brandmark-name">ГЕОАСПЕКТ</div>
 
   <div class="oj-maintabs" id="ojMainTabs">
     <button class="oj-maintab active" data-view="objects">Объекты</button>
     <button class="oj-maintab" data-view="staff">Сотрудники</button>
+    <button class="oj-maintab" data-view="vehicles">Автомобили</button>
   </div>
 
   <div id="objectsView">
@@ -1013,12 +1142,8 @@
     <button class="oj-btn oj-btn-ghost" id="ojArchiveToggleBtn">В архиве (0)</button>
     <button class="oj-btn oj-btn-ghost" id="ojExpandAllBtn">Развернуть все</button>
     <button class="oj-btn oj-btn-primary" id="ojSummaryBtn">Сводка</button>
-    <button class="oj-btn oj-btn-ghost" id="ojExportBtn">Экспорт CSV</button>
-    <button class="oj-btn oj-btn-ghost" id="ojExportYgCsvBtn">Экспорт CSV для YouGile</button>
-    <button class="oj-btn oj-btn-ghost" id="ojImportBtn">Импорт списка (8)</button>
     <button class="oj-btn oj-btn-ghost" id="ojExportDbBtn">Экспорт базы (JSON)</button>
     <button class="oj-btn oj-btn-ghost" id="ojImportDbBtn">Импорт базы (JSON)</button>
-    <button class="oj-btn oj-btn-primary" id="ojYouGileBtn">YouGile ⇄</button>
     <input type="file" id="ojImportDbFile" accept="application/json,.json" style="display:none;">
   </div>
 
@@ -1077,6 +1202,43 @@
       </table>
     </div>
     <div class="oj-empty" id="empEmpty" hidden>Никого не найдено.</div>
+  </div>
+
+  <div id="vehiclesView" hidden>
+    <div class="oj-titlerow">
+      <h1 class="oj-title">Автомобили</h1>
+      <button class="oj-btn oj-btn-primary" id="vehAddBtn">+ Машина</button>
+    </div>
+
+    <div class="oj-staff-stats" id="vehStats"></div>
+
+    <div class="oj-veh-alerts" id="vehAlerts" hidden></div>
+
+    <div class="oj-toolbar">
+      <input class="oj-input" id="vehSearch" type="text" placeholder="Поиск: марка, номер, водитель, город…">
+      <select class="oj-select" id="vehFilterOwner"><option value="">Любой собственник</option></select>
+    </div>
+
+    <div class="oj-staff-table-wrap">
+      <table class="oj-staff-table" id="vehTable">
+        <thead>
+          <tr>
+            <th data-sort="brandModel">Марка / модель<span class="vehSortArrow"></span></th>
+            <th data-sort="year">Год<span class="vehSortArrow"></span></th>
+            <th data-sort="plate">Гос.номер<span class="vehSortArrow"></span></th>
+            <th data-sort="location">Город/объект<span class="vehSortArrow"></span></th>
+            <th data-sort="owner">Собственник<span class="vehSortArrow"></span></th>
+            <th data-sort="driver">Водитель<span class="vehSortArrow"></span></th>
+            <th data-sort="mileage">Пробег<span class="vehSortArrow"></span></th>
+            <th data-sort="osagoUntil">ОСАГО до<span class="vehSortArrow"></span></th>
+            <th data-sort="inspectionUntil">ТО до<span class="vehSortArrow"></span></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="vehTableBody"></tbody>
+      </table>
+    </div>
+    <div class="oj-empty" id="vehEmpty" hidden>Список техники пуст.</div>
   </div>
 
   <div class="oj-footer">
@@ -1157,41 +1319,6 @@
   </div>
 </aside>
 
-<div class="oj-overlay" id="ojYgOverlay" hidden></div>
-<aside class="oj-panel" id="ojYgPanel" hidden>
-  <h2 class="oj-panel-title">Интеграция с YouGile</h2>
-  <div style="font-size:12.5px;color:var(--ink-soft);line-height:1.5;margin-bottom:16px;">
-    Ключ создаётся вами напрямую в YouGile (по вашим логину и паролю от YouGile — сюда их вводить не нужно) через встроенную консоль на странице
-    <a href="https://ru.yougile.com/api-v2#/" target="_blank" rel="noopener" style="color:var(--ink-soft);text-decoration:underline;">ru.yougile.com/api-v2</a>.
-    Браузер может заблокировать запросы к YouGile (CORS) — тогда используйте способ через CSV-экспорт.
-    <br><br>
-    У каждого объекта будет <b>свой проект</b> в YouGile (с тем же названием) и своя доска с готовыми колонками: Договор, Полевые работы, Камеральная обработка, На проверке, Сдан заказчику. Всё это создаётся автоматически при первой отправке объекта — вручную ничего настраивать не нужно.
-  </div>
-
-  <div class="oj-field">
-    <label>API-ключ YouGile</label>
-    <input type="password" id="ygApiKey" placeholder="Вставьте ключ, полученный в YouGile">
-  </div>
-  <div class="oj-field">
-    <label>Название доски внутри каждого проекта</label>
-    <input type="text" id="ygBoardTitleInput" placeholder="Работы">
-  </div>
-  <div class="oj-panel-actions" style="margin-top:0;margin-bottom:14px;">
-    <button type="button" class="oj-btn oj-btn-primary" id="ygConnectBtn" style="flex:1;">Сохранить и подключиться</button>
-  </div>
-  <div id="ygStatus" style="font-size:12px;margin-bottom:16px;color:var(--ink-soft);"></div>
-
-  <div id="ygSendWrap" hidden style="margin-top:6px;padding-top:18px;border-top:1px solid var(--line);">
-    <div style="font-family:var(--font-cond);font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:10px;">Отправка объектов</div>
-    <button type="button" class="oj-btn oj-btn-primary" id="ygSendAllBtn" style="width:100%;">Отправить все объекты в YouGile</button>
-    <div id="ygProgress" style="font-size:12px;margin-top:10px;color:var(--ink-soft);"></div>
-  </div>
-
-  <div class="oj-panel-actions">
-    <button type="button" class="oj-btn oj-btn-ghost" id="ygCloseBtn" style="flex:1;">Закрыть</button>
-  </div>
-</aside>
-
 <div class="oj-overlay" id="ojEmpOverlay" hidden></div>
 <aside class="oj-panel" id="ojEmpPanel" hidden>
   <h2 class="oj-panel-title" id="ojEmpPanelTitle">Новый сотрудник</h2>
@@ -1241,6 +1368,79 @@
   </div>
 </aside>
 
+<div class="oj-overlay" id="ojVehOverlay" hidden></div>
+<aside class="oj-panel" id="ojVehPanel" hidden>
+  <h2 class="oj-panel-title" id="ojVehPanelTitle">Новая машина</h2>
+  <div class="oj-detail-grid" style="grid-template-columns:2fr 1fr;">
+    <div class="oj-field"><label>Марка</label><input type="text" id="vehFBrand" placeholder="Renault"></div>
+    <div class="oj-field"><label>Год</label><input type="text" id="vehFYear" placeholder="2021"></div>
+  </div>
+  <div class="oj-field"><label>Модель</label><input type="text" id="vehFModel" placeholder="Duster"></div>
+  <div class="oj-detail-grid">
+    <div class="oj-field"><label>Гос.номер</label><input type="text" id="vehFPlate" placeholder="А 123 ВС 77"></div>
+    <div class="oj-field"><label>VIN</label><input type="text" id="vehFVin"></div>
+  </div>
+  <div class="oj-detail-grid">
+    <div class="oj-field"><label>СТС (серия и номер)</label><input type="text" id="vehFSts"></div>
+    <div class="oj-field"><label>Полис ОСАГО №</label><input type="text" id="vehFOsagoPolicy"></div>
+  </div>
+  <div class="oj-detail-grid">
+    <div class="oj-field"><label>ОСАГО действует до</label><input type="date" id="vehFOsagoUntil"></div>
+    <div class="oj-field"><label>Техосмотр до</label><input type="date" id="vehFInspectionUntil"></div>
+  </div>
+  <div class="oj-field"><label>Город / объект</label><input type="text" id="vehFLocation" placeholder="Москва"></div>
+  <div class="oj-detail-grid">
+    <div class="oj-field"><label>Собственник</label><input type="text" id="vehFOwner" placeholder="Геоаспект"></div>
+    <div class="oj-field"><label>Водитель</label><input type="text" id="vehFDriver"></div>
+  </div>
+  <div class="oj-field"><label>Пробег, км</label><input type="number" id="vehFMileage"></div>
+  <div class="oj-field"><label>Заметки</label><textarea id="vehFNotes"></textarea></div>
+  <div class="oj-panel-actions">
+    <button type="button" class="oj-btn oj-btn-ghost" id="vehCancelBtn">Отмена</button>
+    <button type="button" class="oj-btn oj-btn-primary" id="vehSaveBtn">Сохранить</button>
+  </div>
+</aside>
+
+<div class="oj-overlay" id="ojVehLogOverlay" hidden></div>
+<aside class="oj-panel" id="ojVehLogPanel" hidden style="max-width:600px;">
+  <h2 class="oj-panel-title" id="ojVehLogTitle">Журнал ТО и расходов</h2>
+  <div class="oj-staff-stats" id="vehLogStats" style="grid-template-columns:1fr 1fr;margin-bottom:16px;"></div>
+
+  <button type="button" class="oj-btn oj-btn-primary" id="vehLogAddBtn" style="width:100%;margin-bottom:14px;">+ Добавить запись</button>
+
+  <div id="vehLogNewEntry" hidden style="border:1px solid var(--line);border-radius:var(--radius);padding:14px;background:var(--surface-2);margin-bottom:16px;">
+    <div class="oj-detail-grid">
+      <div class="oj-field"><label>Дата</label><input type="date" id="vehLogEDate"></div>
+      <div class="oj-field"><label>Тип</label>
+        <select id="vehLogEType">
+          <option>ТО</option><option>Ремонт</option><option>Страховка</option><option>Шины</option><option>Мойка</option><option>Штраф</option><option>Прочее</option>
+        </select>
+      </div>
+    </div>
+    <div class="oj-field"><label>Описание</label><input type="text" id="vehLogEDesc" placeholder="Замена масла и фильтров"></div>
+    <div class="oj-detail-grid">
+      <div class="oj-field"><label>Стоимость, ₽</label><input type="number" id="vehLogECost" placeholder="0"></div>
+      <div class="oj-field"><label>Пробег на момент, км</label><input type="number" id="vehLogEMileage"></div>
+    </div>
+    <div class="oj-field">
+      <label>Акт / документ (PDF)</label>
+      <input type="file" accept="application/pdf" id="vehLogEFile">
+      <div id="vehLogEFileName" style="font-size:12px;color:var(--ink-soft);margin-top:5px;"></div>
+      <div id="vehLogEFileErr" style="font-size:11.5px;color:var(--alert);margin-top:4px;"></div>
+    </div>
+    <div class="oj-panel-actions">
+      <button type="button" class="oj-btn oj-btn-ghost" id="vehLogECancelBtn">Отмена</button>
+      <button type="button" class="oj-btn oj-btn-primary" id="vehLogESaveBtn">Сохранить запись</button>
+    </div>
+  </div>
+
+  <div id="vehLogEntries"></div>
+
+  <div class="oj-panel-actions">
+    <button type="button" class="oj-btn oj-btn-ghost" id="vehLogCloseBtn" style="flex:1;">Закрыть</button>
+  </div>
+</aside>
+
 <script>
 (function(){
   try{
@@ -1253,9 +1453,35 @@
   const SUPABASE_ANON_KEY = 'sb_publishable_57UHMQeM0ahOxdnRn-JTZQ_5FUmB4Vh';
   const sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+  // Внутри превью Claude сетевые запросы к внешним сервисам (в т.ч. к Supabase)
+  // блокируются песочницей — вход и синхронизация там принципиально не могут
+  // сработать. Вместо того чтобы угадывать это по адресу страницы (ненадёжно —
+  // разные способы открыть превью дают разные адреса), проверяем НАПРЯМУЮ:
+  // пробуем достучаться до Supabase, и если браузер физически не может
+  // выполнить запрос (а не просто база отвечает отказом доступа) — включаем
+  // локальный режим предпросмотра: без входа, данные живут только в памяти
+  // вкладки и пропадают при закрытии — только чтобы можно было проверить
+  // интерфейс и функции, не более того.
+  let PREVIEW_MODE = false;
+  const __previewStore = {};
+  const previewStorageImpl = {
+    async get(key){
+      if(!(key in __previewStore)) return null;
+      return { key, value: __previewStore[key], shared: false };
+    },
+    async set(key, value){
+      __previewStore[key] = value;
+      return { key, value, shared: false };
+    },
+    async delete(key){
+      const existed = key in __previewStore;
+      delete __previewStore[key];
+      return { key, deleted: existed, shared: false };
+    },
+  };
   // Тот же интерфейс, что был у window.storage внутри Claude — только теперь
   // поверх настоящей общей базы Supabase, а не локального/Claude-хранилища.
-  window.storage = {
+  const realStorageImpl = {
     async get(key){
       const { data, error } = await sbClient.from('kv_store').select('value').eq('key', key).maybeSingle();
       if(error) throw error;
@@ -1273,6 +1499,21 @@
       return { key, deleted: true, shared: false };
     },
   };
+  async function isNetworkReachable(){
+    try{
+      // Supabase не всегда выбрасывает исключение при сетевом сбое (CORS/блокировка) —
+      // иногда он молча возвращает это как обычное поле error в ответе. Проверяем оба варианта.
+      const { error } = await sbClient.from('kv_store').select('key').limit(1);
+      if(error && /fetch|network|failed/i.test(error.message || '')){
+        console.error('Сетевая ошибка при проверке связи с Supabase — включаю режим предпросмотра', error);
+        return false;
+      }
+      return true;
+    }catch(e){
+      console.error('Проверка сети не прошла (исключение) — включаю режим предпросмотра', e);
+      return false;
+    }
+  }
 
   function setAuthStatus(msg, isErr){
     const el = document.getElementById('authStatus');
@@ -1287,8 +1528,19 @@
     const password = document.getElementById('authPassword').value;
     if(!email || !password){ setAuthStatus('Введите почту и пароль.', true); return; }
     setAuthStatus('Входим…');
-    const { error } = await sbClient.auth.signInWithPassword({ email, password });
+    let result;
+    try{
+      result = await sbClient.auth.signInWithPassword({ email, password });
+    }catch(e){
+      enterPreviewMode();
+      return;
+    }
+    const { error } = result;
     if(error){
+      if(/fetch|network|failed/i.test(error.message || '')){
+        enterPreviewMode();
+        return;
+      }
       setAuthStatus(error.message === 'Invalid login credentials' ? 'Неверная почта или пароль.' : error.message, true);
       return;
     }
@@ -1298,7 +1550,61 @@
   document.getElementById('authLoginBtn').addEventListener('click', doLogin);
   document.getElementById('authPassword').addEventListener('keydown', (ev) => { if(ev.key === 'Enter') doLogin(); });
 
+  function seedDemoObjectForPreview(){
+    const addDays = (n) => {
+      const d = new Date();
+      d.setDate(d.getDate() + n);
+      return d.toISOString().slice(0,10);
+    };
+    const demo = {
+      id: 'demo-obj-1',
+      name: 'Демо-объект (пример графика работ)',
+      address: 'Москва',
+      customer: 'ООО Пример',
+      contract: 'Д-2026/001',
+      responsible: 'Иванов',
+      customerResponsible: '',
+      status: 'field',
+      priority: '',
+      workTypes: ['Топосъёмка'],
+      workTypeNotes: {},
+      deadline: addDays(35),
+      docs: {}, docDates: {}, docNotes: {},
+      commsLink: '', commsDeadline: '',
+      employees: [],
+      log: [],
+      archived: false,
+      createdAt: addDays(-30),
+      updatedAt: todayISO(),
+      schedule: [
+        {id: uid(), name: 'Подготовительные работы', start: addDays(-30), end: addDays(-18)},
+        {id: uid(), name: 'Полевые изыскания', start: addDays(-15), end: addDays(5)},
+        {id: uid(), name: 'Камеральная обработка', start: addDays(8), end: addDays(24)},
+        {id: uid(), name: 'Сдача отчёта заказчику', start: addDays(28), end: addDays(33)},
+      ],
+    };
+    __previewStore[STORAGE_KEY] = JSON.stringify([demo]);
+  }
+  function enterPreviewMode(){
+    PREVIEW_MODE = true;
+    window.storage = previewStorageImpl;
+    seedDemoObjectForPreview();
+    showAuthGate(false);
+    const emailEl = document.getElementById('authUserEmail');
+    if(emailEl) emailEl.textContent = 'режим предпросмотра';
+    const banner = document.createElement('div');
+    banner.textContent = '⚠ Режим предпросмотра — сеть недоступна в этой среде, вход и синхронизация с общей базой отключены, данные не сохранятся. Откройте настоящий адрес на GitHub Pages для полноценной работы.';
+    banner.style.cssText = 'background:#F7E9E4;color:#B23A22;font-size:12.5px;padding:8px 16px;text-align:center;';
+    document.body.insertBefore(banner, document.body.firstChild);
+    boot();
+  }
   async function checkAuthAndStart(){
+    const reachable = await isNetworkReachable();
+    if(!reachable){
+      enterPreviewMode();
+      return;
+    }
+    window.storage = realStorageImpl;
     const { data } = await sbClient.auth.getSession();
     if(data && data.session){
       showAuthGate(false);
@@ -1313,6 +1619,7 @@
     const logoutLink = document.getElementById('authLogoutLink');
     if(logoutLink){
       logoutLink.addEventListener('click', async () => {
+        if(PREVIEW_MODE){ location.reload(); return; }
         await sbClient.auth.signOut();
         location.reload();
       });
@@ -1327,119 +1634,6 @@
   const WORK_TYPES = ['Топосъёмка','Разбивочные работы','Исполнительная съёмка','Геодезическая сеть','Мониторинг деформаций','Межевание / кадастр','Технический надзор','Геодезическое сопровождение','Сезонное определение','ПТО','Разное'];
   const STORAGE_KEY = 'objects-journal';
 
-  const IMPORT_SEED = [
-    {
-      name: 'ДС 1',
-      responsible: '',
-      deadline: '2026-11-22',
-      commsDeadline: '2026-11-15',
-      workTypes: ['Топосъёмка','Геодезическая сеть'],
-      logText: 'Импортировано из присланного списка. Ссылка на Яндекс.Диск не скопировалась при вставке — добавьте вручную.\n'
-        + '• Договорная часть: договор, аванс\n'
-        + '• Программа работ: рассмотреть замечания — до 24.08.2026\n'
-        + '• Полевые работы ТОПО — до 20.10.2026\n'
-        + '• Определение пунктов: согласование мест установки, установка пунктов, нивелировка, ГНСС-измерения\n'
-        + '• Отрисовка ТОПО — до 01.11.2026 (выдать план М 1:2000 с участком М 1:500 — до 05.09.2026)\n'
-        + '• Согласование коммуникаций — до 15.11.2026 (направить полосу 300 м М 1:2000)\n'
-        + '• Технический отчёт\n'
-        + '• Сдача объекта',
-    },
-    {
-      name: 'ДС 2.1',
-      responsible: 'Игорь',
-      deadline: '2026-11-22',
-      commsDeadline: '2026-11-15',
-      workTypes: ['Топосъёмка','Геодезическая сеть','Разбивочные работы'],
-      logText: 'Импортировано из присланного списка. Ссылка на Яндекс.Диск не скопировалась при вставке — добавьте вручную.\n'
-        + '• Договорная часть: договор, аванс\n'
-        + '• Программа работ\n'
-        + '• Полевые работы ТОПО — до 20.10.2026\n'
-        + '• Определение пунктов: согласование мест установки, установка пунктов, нивелировка, ГНСС-измерения\n'
-        + '• Отрисовка ТОПО — до 01.11.2026\n'
-        + '• Согласование коммуникаций — до 15.11.2026 (направить полосу 300 м М 1:2000, сделать таблицу согласований)\n'
-        + '• Технический отчёт\n'
-        + '• Сдача объекта\n'
-        + '• Вынос пунктов\n'
-        + '• Запросить границы 500к\n'
-        + '• Договор с «Сигма Метрикс»',
-    },
-    {
-      name: 'ДС 2.2',
-      responsible: 'Игорь',
-      deadline: '2026-10-20',
-      workTypes: ['Топосъёмка','Геодезическая сеть'],
-      logText: 'Импортировано из присланного списка. Ссылка на Яндекс.Диск не скопировалась при вставке — добавьте вручную.\n'
-        + '• Договорная часть: договор, аванс\n'
-        + '• Программа работ\n'
-        + '• Полевые работы ТОПО — до 20.09.2026\n'
-        + '• Определение пунктов: согласование мест установки, установка пунктов, нивелировка, ГНСС-измерения\n'
-        + '• Отрисовка ТОПО — до 01.10.2026\n'
-        + '• Согласование коммуникаций (направить полосу 300 м М 1:2000, сделать таблицу согласований)\n'
-        + '• Технический отчёт (промежуточный отчёт)\n'
-        + '• Сдача объекта',
-    },
-    {
-      name: 'ДС 5',
-      responsible: '',
-      deadline: '',
-      workTypes: ['Топосъёмка','Геодезическая сеть'],
-      logText: 'Импортировано из присланного списка. Даты и ответственный не указаны в исходнике.\n'
-        + '• Договорная часть: договор, аванс\n'
-        + '• Программа работ\n'
-        + '• Полевые работы ТОПО\n'
-        + '• Определение пунктов: согласование мест установки, установка пунктов, нивелировка, ГНСС-измерения\n'
-        + '• Отрисовка ТОПО\n'
-        + '• Согласование коммуникаций (направить полосу 300 м М 1:2000)\n'
-        + '• Технический отчёт\n'
-        + '• Сдача объекта',
-    },
-    {
-      name: 'ДС 6',
-      responsible: '',
-      deadline: '',
-      workTypes: ['Топосъёмка','Геодезическая сеть'],
-      logText: 'Импортировано из присланного списка. Даты и ответственный не указаны в исходнике.\n'
-        + '• Полевые работы ТОПО\n'
-        + '• Отрисовка ТОПО\n'
-        + '• Согласование коммуникаций (направить полосу 300 м М 1:2000)\n'
-        + '• Определение пунктов\n'
-        + '• Нивелировка — до 15.09.2026 (найти людей, выбрать схемы проложения нивелирных ходов)',
-    },
-    {
-      name: 'Одинцово 160 Га',
-      responsible: '',
-      deadline: '2026-11-26',
-      commsDeadline: '2026-11-20',
-      workTypes: ['Топосъёмка','Геодезическая сеть'],
-      logText: 'Импортировано из присланного списка.\n'
-        + '• Договорная часть: договор, аванс\n'
-        + '• Программа работ\n'
-        + '• Полевые работы ТОПО — до 25.10.2026\n'
-        + '• Определение пунктов: согласование мест установки, установка пунктов, нивелировка, ГНСС-измерения\n'
-        + '• Отрисовка ТОПО — до 05.11.2026\n'
-        + '• Согласование коммуникаций — до 20.11.2026\n'
-        + '• Технический отчёт\n'
-        + '• Сдача объекта',
-    },
-    {
-      name: 'Энгельс',
-      responsible: 'Моисеев',
-      deadline: '2026-12-31',
-      workTypes: ['Геодезическое сопровождение'],
-      logText: 'Импортировано из присланного списка.\n'
-        + '• Подготовить / заключить договор\n'
-        + '• Согласовать пропуска\n'
-        + '• Принять 2 сотрудников\n'
-        + '• Обеспечить оборудованием: 2 тахеометра, 2 штатива',
-    },
-    {
-      name: 'НАТС Питер',
-      responsible: 'Головин',
-      deadline: '2026-12-25',
-      workTypes: ['Технический надзор'],
-      logText: 'Импортировано из присланного списка (раздел «Объекты технического надзора»). Количество людей: 9.',
-    },
-  ];
 
 
   // ---------- Сотрудники ----------
@@ -1554,6 +1748,63 @@
   ];
   function fmtMoney(v){ return v ? Number(v).toLocaleString('ru-RU') + ' ₽' : '—'; }
 
+
+  // ---------- Автомобили ----------
+  const VEH_STORAGE_KEY = 'vehicles';
+  const VEH_LOG_TYPES = ['ТО', 'Ремонт', 'Страховка', 'Шины', 'Мойка', 'Штраф', 'Прочее'];
+  const VEH_LOG_TYPE_META = {
+    'ТО':        {bg:'#E5F0E8', color:'#2F6B45'},
+    'Ремонт':    {bg:'#F7E9E4', color:'#8A3A1F'},
+    'Страховка': {bg:'#E3EDF3', color:'#2B5A6B'},
+    'Шины':      {bg:'#EFEEE8', color:'#3A3A35'},
+    'Мойка':     {bg:'#E3EDF3', color:'#2B5A6B'},
+    'Штраф':     {bg:'#FBF3DC', color:'#8A6D1F'},
+    'Прочее':    {bg:'#EFEEE8', color:'#6B6B62'},
+  };
+  const SEED_VEHICLES = [
+  { id: 'veh-01', brand: 'Renault', model: 'Duster', year: '2015', plate: 'У 175 ОУ 777', vin: 'X7LHSRHGN54134649', sts: '77 38 484355', osagoPolicy: '608629596', osagoUntil: '2027-01-21', location: 'Москва', owner: 'Геоаспект', driver: 'в сервисе', mileage: '258941', inspectionUntil: '' , logs: [] },
+  { id: 'veh-02', brand: 'Toyota', model: 'Land Cruiser Prado', year: '2015', plate: 'Т 965 НН 777', vin: 'RUTBH8FJ9F0023722', sts: '77 43 525329', osagoPolicy: '683785870', osagoUntil: '2027-08-12', location: 'Москва', owner: 'Геоаспект', driver: 'Стародубцев', mileage: '418000', inspectionUntil: '' , logs: [] },
+  { id: 'veh-03', brand: 'Renault', model: 'Duster', year: '2017', plate: 'Н 922 ХС 777', vin: 'X7LHSRHGN57872507', sts: '99 01 594794', osagoPolicy: '650751369', osagoUntil: '2027-05-20', location: 'Москва', owner: 'Геоаспект', driver: 'Кузнецов', mileage: '251000', inspectionUntil: '' , logs: [] },
+  { id: 'veh-04', brand: 'Renault', model: 'Duster', year: '2017', plate: 'Н 924 ХС 777', vin: 'X7LHSRHGN57872506', sts: '99 01 594795', osagoPolicy: '660927336', osagoUntil: '2027-06-13', location: 'Туапсе', owner: 'Геоаспект', driver: 'Локтев/Бороденок', mileage: '227492', inspectionUntil: '2027-06-07' , logs: [] },
+  { id: 'veh-06', brand: 'Renault', model: 'Duster', year: '2018', plate: 'К 691 КУ 799', vin: 'X7LHSRHGN61039853', sts: '77 61 106662', osagoPolicy: '681308414', osagoUntil: '2027-08-05', location: 'Москва', owner: 'Геоаспект', driver: 'Локтев/Алексеев', mileage: '183986', inspectionUntil: '2027-06-07' , logs: [] },
+  { id: 'veh-07', brand: 'Peugeot', model: 'Expert', year: '2018', plate: 'С 256 МС 799', vin: 'Z8TVFAHXGJM006424', sts: '99 55 590505', osagoPolicy: '562375674', osagoUntil: '2026-09-04', location: 'Москва', owner: 'Орбита', driver: 'Андреянов', mileage: '94000', inspectionUntil: '' , logs: [] },
+  { id: 'veh-08', brand: 'Renault', model: 'Duster', year: '2019', plate: 'О 045 ОР 799', vin: 'X7LHSRHGN62887533', sts: '99 12 496812', osagoPolicy: '568966212', osagoUntil: '2026-09-26', location: 'Москва', owner: 'Геоаспект', driver: 'Онуфриев', mileage: '148800', inspectionUntil: '' , logs: [] },
+  { id: 'veh-09', brand: 'Renault', model: 'Duster', year: '2019', plate: 'Р 795 ОС 799', vin: 'X7LHSRHGN62845804', sts: '99 12 523481', osagoPolicy: '675013397', osagoUntil: '2027-07-27', location: 'Симферополь', owner: 'Геоаспект', driver: '', mileage: '101302', inspectionUntil: '' , logs: [] },
+  { id: 'veh-10', brand: 'Renault', model: 'Duster', year: '2019', plate: 'Е 008 ХР 123', vin: 'Х7LHSRHGN63679438', sts: '99 12 195616', osagoPolicy: '572593649', osagoUntil: '2026-10-06', location: 'Тосно', owner: 'Геоаспект', driver: 'Агафонов/Сорокин', mileage: '166500', inspectionUntil: '' , logs: [] },
+  { id: 'veh-11', brand: 'Renault', model: 'Duster', year: '2019', plate: 'Р 736 ОС 799', vin: 'X7LHSRHGD63057184', sts: '99 24 43336', osagoPolicy: '669700225', osagoUntil: '2027-07-06', location: 'Симферополь', owner: 'Стародубцев', driver: 'Виниченко/Демидов', mileage: '181000', inspectionUntil: '' , logs: [] },
+  { id: 'veh-12', brand: 'Renault', model: 'Duster', year: '2019', plate: 'Н 245 СА 799', vin: 'X7LHSRHGN63683954', sts: '99 16 247067', osagoPolicy: '595327935', osagoUntil: '2026-12-12', location: 'Москва', owner: 'Геоаспект', driver: 'Исаковский', mileage: '186700', inspectionUntil: '' , logs: [] },
+  { id: 'veh-13', brand: 'Renault', model: 'Duster', year: '2019', plate: 'О 424 СЕ 799', vin: 'X7LHSRHGN64208923', sts: '99 16 263018', osagoPolicy: '595327402', osagoUntil: '2026-12-15', location: 'Москва', owner: 'Орбита', driver: 'Нелипович', mileage: '186000', inspectionUntil: '' , logs: [] },
+  { id: 'veh-14', brand: 'Renault', model: 'Duster', year: '2020', plate: 'А 040 ВО 797', vin: 'X7LHSRHGN66677795', sts: '99 32 442481', osagoPolicy: '496803033', osagoUntil: '2027-02-17', location: 'Москва', owner: 'Геоаспект', driver: 'Калля', mileage: '69226', inspectionUntil: '' , logs: [] },
+  { id: 'veh-15', brand: 'Renault', model: 'Duster', year: '2020', plate: 'М 341 АА 797', vin: 'X7LHSRHGN64928078', sts: '99 19 178741', osagoPolicy: '625937701', osagoUntil: '2027-03-14', location: 'Феодосия', owner: 'Орбита', driver: '', mileage: '134270', inspectionUntil: '2027-11-25' , logs: [] },
+  { id: 'veh-16', brand: 'Renault', model: 'Duster', year: '2020', plate: 'М 338 АА 797', vin: 'X7LHSRHGN64784609', sts: '99 19 178743', osagoPolicy: '625937702', osagoUntil: '2027-03-14', location: 'Симферополь', owner: 'Орбита', driver: 'Серганов', mileage: '198141', inspectionUntil: '2027-11-20' , logs: [] },
+  { id: 'veh-17', brand: 'Renault', model: 'Duster', year: '2020', plate: 'С 819 РУ 799', vin: 'X7LHSRHGN65970818', sts: '99 24 118613', osagoPolicy: '563088049', osagoUntil: '2026-09-10', location: 'Тосно', owner: 'Орбита', driver: 'Задорожный', mileage: '118727', inspectionUntil: '' , logs: [] },
+  { id: 'veh-18', brand: 'Renault', model: 'Duster', year: '2021', plate: 'У 687 ВР 797', vin: 'X7LHSRHGN66738654', sts: '99 33 212246', osagoPolicy: '608829670', osagoUntil: '2027-02-17', location: 'Симферополь', owner: 'Геоаспект', driver: 'Гринев/Алмазов', mileage: '68000', inspectionUntil: '2027-11-24' , logs: [] },
+  { id: 'veh-19', brand: 'Renault', model: 'Duster', year: '2021', plate: 'К 853 ХУ 799', vin: 'X7LHSRES467340137', sts: '99 59 934150', osagoPolicy: '672041386', osagoUntil: '2027-07-14', location: 'Красногорск', owner: 'Геоаспект', driver: 'Шамшудинов', mileage: '58530', inspectionUntil: '' , logs: [] },
+  { id: 'veh-20', brand: 'Renault', model: 'Duster', year: '2021', plate: 'У 952 СУ 799', vin: 'X7LHSRES467340304', sts: '99 65 559780', osagoPolicy: '672041060', osagoUntil: '2027-07-14', location: 'Шахты', owner: 'Геоаспект', driver: 'Черновалов И.', mileage: '', inspectionUntil: '' , logs: [] },
+  { id: 'veh-21', brand: 'Toyota', model: 'Land Cruiser 150', year: '2021', plate: 'Т 955 КВ 797', vin: 'JTEBR3FJ40K241348', sts: '99 38 551695', osagoPolicy: '7093575030', osagoUntil: '2027-02-28', location: 'Москва', owner: 'Геоаспект', driver: 'Ваганов/Скворцов', mileage: '125000', inspectionUntil: '' , logs: [] },
+  { id: 'veh-22', brand: 'Nissan', model: 'Terrano', year: '2021', plate: 'О 200 ВТ 977', vin: 'Z8NHSNHGD67078999', sts: '99 65 996506', osagoPolicy: '558771053', osagoUntil: '2026-08-29', location: 'Москва', owner: 'Геоаспект', driver: 'Самарин', mileage: '35670', inspectionUntil: '' , logs: [] },
+  { id: 'veh-23', brand: 'Renault', model: 'Duster', year: '2021', plate: 'Е 980 УН 799', vin: 'X7LHSRHGN66737648', sts: '99 66 377747', osagoPolicy: '643890666', osagoUntil: '2027-04-27', location: 'Энгельс', owner: 'Орбита', driver: 'Моисеев/Жиганов', mileage: '152726', inspectionUntil: '' , logs: [] },
+  { id: 'veh-24', brand: 'Renault', model: 'Duster', year: '2021', plate: 'О 234 ХС 799', vin: 'X7LHSRHGN66735794', sts: '99 66 377746', osagoPolicy: '643888193', osagoUntil: '2027-04-27', location: 'Москва', owner: 'Орбита', driver: 'Сехин', mileage: '173650', inspectionUntil: '' , logs: [] },
+  { id: 'veh-25', brand: 'Renault', model: 'Duster', year: '2022', plate: 'У 456 ВТ 977', vin: 'X7LHSRES469161737', sts: '99 58 967570', osagoPolicy: '595327936', osagoUntil: '2026-12-12', location: 'Феодосия', owner: 'Геоаспект', driver: 'Загиров', mileage: '35565', inspectionUntil: '' , logs: [] },
+  { id: 'veh-26', brand: 'Lada', model: 'Vesta', year: '2026', plate: 'Е 079 ОН 977', vin: 'XTAGFK110T1047139', sts: '99 90 163875', osagoPolicy: '', osagoUntil: '', location: '', owner: 'Геоаспект', driver: '', mileage: '0', inspectionUntil: '', logs: [] },
+  ];
+  function daysUntil(dateStr){
+    if(!dateStr) return null;
+    return Math.ceil((new Date(dateStr) - new Date()) / 86400000);
+  }
+  function formatCost(n){
+    const num = Number(n);
+    if(!n || Number.isNaN(num)) return '—';
+    return num.toLocaleString('ru-RU') + ' ₽';
+  }
+  function dateWarnClass(dateStr){
+    const d = daysUntil(dateStr);
+    if(d === null) return '';
+    if(d < 0) return 'late';
+    if(d <= 30) return 'today';
+    return '';
+  }
+
   let objects = [];
   let expandedId = null;
   let allExpanded = false;
@@ -1578,6 +1829,15 @@
   let empFilterStatus = '';
   let empSortField = 'fullName';
   let empSortDir = 'asc';
+
+  let vehicles = [];
+  let vehSearchTerm = '';
+  let vehFilterOwner = '';
+  let vehSortKey = null;
+  let vehSortDir = 'asc';
+  let vehEditingId = null;
+  let vehLogVehicleId = null;
+  let vehLogNewEntry = null;
 
   const $ = (sel) => document.querySelector(sel);
 
@@ -1857,179 +2117,31 @@
     }
   }
 
-  // ---------- Интеграция с YouGile ----------
-  const YG_STORAGE_KEY = 'yougile-config';
-  const YG_BASE = 'https://yougile.com/api-v2';
-  let ygConfig = { apiKey:'', boardTitle:'Работы' };
-
-  async function loadYgConfig(){
+  async function loadVehicles(){
     try{
-      const res = await window.storage.get(YG_STORAGE_KEY, false);
-      if(res && res.value){ ygConfig = Object.assign({apiKey:'',boardTitle:'Работы'}, JSON.parse(res.value)); }
-    }catch(e){ /* пока не настроено — нормально */ }
+      const res = await window.storage.get(VEH_STORAGE_KEY, false);
+      if(res && res.value){ vehicles = JSON.parse(res.value); return; }
+    }catch(e){ /* первый запуск — это нормально */ }
+    vehicles = SEED_VEHICLES.slice();
+    try{ await window.storage.set(VEH_STORAGE_KEY, JSON.stringify(vehicles), false); }catch(e){ /* сохраним при первом реальном изменении */ }
   }
-  async function saveYgConfig(){
-    try{ await window.storage.set(YG_STORAGE_KEY, JSON.stringify(ygConfig), false); }
-    catch(e){ console.error('Не удалось сохранить настройки YouGile', e); }
-  }
-
-  function setYgStatus(msg, kind){
-    const el = $('#ygStatus');
-    if(!el) return;
-    el.textContent = msg;
-    el.style.color = kind === 'ok' ? 'var(--active)' : (kind === 'err' ? 'var(--alert)' : 'var(--ink-soft)');
-  }
-
-  async function ygRequest(path, method, body){
-    let res;
-    try{
-      res = await fetch(YG_BASE + path, {
-        method: method || 'GET',
-        headers: Object.assign(
-          {'Content-Type':'application/json'},
-          ygConfig.apiKey ? {'Authorization':'Bearer ' + ygConfig.apiKey} : {}
-        ),
-        body: body ? JSON.stringify(body) : undefined,
-      });
-    }catch(e){
-      throw new Error('Не удалось связаться с YouGile из браузера (похоже на блокировку CORS). Попробуйте способ через CSV-экспорт.');
-    }
-    let data = null;
-    try{ data = await res.json(); }catch(e){ /* ответ без тела — ок для некоторых методов */ }
-    if(!res.ok){
-      const msg = (data && (data.message || data.error || (Array.isArray(data.errors) && data.errors.join('; ')))) || ('HTTP ' + res.status);
-      throw new Error(msg);
-    }
-    return data;
-  }
-  function ygExtractList(data){
-    if(Array.isArray(data)) return data;
-    if(data && Array.isArray(data.content)) return data.content;
-    return [];
-  }
-
-  async function ygTestConnection(){
-    setYgStatus('Проверяем ключ…');
-    const data = await ygRequest('/projects', 'GET');
-    const list = ygExtractList(data);
-    setYgStatus('Подключение работает. Проектов в компании уже: ' + list.length, 'ok');
-    $('#ygSendWrap').hidden = false;
-    renderYgSendLabel();
-  }
-  function ygAutoMatchColumn(stageLabel, columns){
-    const norm = s => (s||'').toLowerCase().trim();
-    const target = norm(stageLabel);
-    let hit = columns.find(c => norm(c.title) === target);
-    if(!hit) hit = columns.find(c => norm(c.title).includes(target) || target.includes(norm(c.title)));
-    return hit ? hit.id : '';
-  }
-  async function ygEnsureProject(o){
-    if(o.yougileProjectId) return o.yougileProjectId;
-    const created = await ygRequest('/projects', 'POST', { title: o.name });
-    o.yougileProjectId = created.id;
-    await saveObjects();
-    return o.yougileProjectId;
-  }
-  async function ygEnsureBoard(o){
-    if(o.yougileBoardId) return o.yougileBoardId;
-    await ygEnsureProject(o);
-    const created = await ygRequest('/boards', 'POST', { title: ygConfig.boardTitle || 'Работы', projectId: o.yougileProjectId });
-    o.yougileBoardId = created.id;
-    await saveObjects();
-    return o.yougileBoardId;
-  }
-  async function ygEnsureColumns(o){
-    o.yougileColumnMap = o.yougileColumnMap || {};
-    const missing = STAGES.filter(s => !o.yougileColumnMap[s.key]);
-    if(missing.length === 0) return o.yougileColumnMap;
-    await ygEnsureBoard(o);
-    let existing = [];
-    try{
-      const data = await ygRequest('/columns?boardId=' + encodeURIComponent(o.yougileBoardId), 'GET');
-      existing = ygExtractList(data);
-    }catch(e){ /* доска только что создана — колонок ещё нет, это нормально */ }
-    for(const s of STAGES){
-      if(o.yougileColumnMap[s.key]) continue;
-      const auto = ygAutoMatchColumn(s.label, existing);
-      if(auto){
-        o.yougileColumnMap[s.key] = auto;
-        continue;
-      }
-      const col = await ygRequest('/columns', 'POST', { title: s.label, boardId: o.yougileBoardId });
-      o.yougileColumnMap[s.key] = col.id;
-      existing.push(col);
-      await new Promise(r => setTimeout(r, 200));
-    }
-    await saveObjects();
-    return o.yougileColumnMap;
-  }
-  function renderYgSendLabel(){
-    const btn = $('#ygSendAllBtn');
-    if(btn) btn.textContent = 'Отправить все объекты в YouGile (' + objects.length + ')';
-  }
-
-  function ygBuildDescription(o){
-    const stage = STAGES[stageIndex(o.status)];
-    const lines = [
-      o.customer ? 'Заказчик: ' + o.customer : '',
-      o.address ? 'Адрес: ' + o.address : '',
-      o.contract ? '№ договора: ' + o.contract : '',
-      o.responsible ? 'Ответственный: ' + o.responsible : '',
-      (o.workTypes && o.workTypes.length) ? 'Вид работ: ' + o.workTypes.join(', ') : '',
-      o.deadline ? 'Плановый срок сдачи: ' + fmtDate(o.deadline) : '',
-      stage ? 'Статус в журнале: ' + stage.label : '',
-      '',
-      'Синхронизировано из Журнала объектов ' + todayISO() + '.',
-    ].filter(Boolean);
-    return lines.join('\n');
-  }
-
-  async function ygSendObject(o, opts){
-    opts = opts || {};
-    if(!ygConfig.apiKey){
-      if(!opts.silent) showToast('Сначала укажите API-ключ YouGile в настройках интеграции.', true);
-      return false;
-    }
-    try{
-      await ygEnsureColumns(o); // по цепочке создаст и проект, и доску, если их ещё нет
-      const columnId = o.yougileColumnMap && o.yougileColumnMap[o.status];
-      if(!columnId){
-        if(!opts.silent) showToast('Не удалось определить колонку для статуса «' + (STAGES[stageIndex(o.status)]?.label || o.status) + '».', true);
+  async function saveVehicles(){
+    const maxRetries = 2;
+    for(let attempt = 0; attempt <= maxRetries; attempt++){
+      try{
+        const res = await window.storage.set(VEH_STORAGE_KEY, JSON.stringify(vehicles), false);
+        if(res) return true;
+        throw new Error('пустой ответ от хранилища');
+      }catch(e){
+        console.error('Storage error (автомобили, попытка ' + (attempt+1) + ')', e);
+        if(attempt < maxRetries){
+          await new Promise(r => setTimeout(r, 500 * (attempt + 1)));
+          continue;
+        }
+        showToast('Не удалось сохранить автомобили: ' + (e && e.message ? e.message : e), true);
         return false;
       }
-      const payload = { title: o.name, columnId: columnId, description: ygBuildDescription(o) };
-      let data;
-      if(o.yougileTaskId){
-        data = await ygRequest('/tasks/' + o.yougileTaskId, 'PUT', payload);
-      }else{
-        data = await ygRequest('/tasks', 'POST', payload);
-        if(data && data.id) o.yougileTaskId = data.id;
-      }
-      o.yougileSyncedAt = new Date().toISOString();
-      await saveObjects();
-      if(!opts.silent) showToast('«' + o.name + '» отправлен в свой проект в YouGile');
-      return true;
-    }catch(e){
-      console.error('YouGile send error', e);
-      if(!opts.silent) showToast('Не удалось отправить «' + o.name + '»: ' + (e && e.message ? e.message : e), true);
-      return false;
     }
-  }
-
-  async function ygSendAll(){
-    if(!ygConfig.apiKey){ showToast('Сначала настройте интеграцию с YouGile.', true); return; }
-    const toSend = objects.filter(o => !o.archived);
-    if(toSend.length === 0){ showToast('Нет активных объектов — нечего отправлять (архивные пропускаются).', true); return; }
-    let ok = 0, fail = 0;
-    for(let i = 0; i < toSend.length; i++){
-      const o = toSend[i];
-      $('#ygProgress').textContent = 'Отправка ' + (i+1) + ' из ' + toSend.length + ': «' + o.name + '»…';
-      const success = await ygSendObject(o, {silent:true});
-      if(success) ok++; else fail++;
-      if(i < toSend.length - 1) await new Promise(r => setTimeout(r, 1500));
-    }
-    $('#ygProgress').textContent = 'Готово: успешно ' + ok + (fail ? ', с ошибками ' + fail : '') + '.';
-    renderList();
   }
 
   function buildStatusOptions(select){
@@ -2090,6 +2202,76 @@
       const filled = i <= idx;
       return `<div class="oj-core-seg" style="${filled ? `background:${s.color};border-color:${s.color}` : ''}"></div>`;
     }).join('') + '</div>';
+  }
+
+  function renderGanttChart(phases, objId){
+    if(!phases.length){
+      return '<div style="color:var(--ink-faint);font-size:12.5px;padding:6px 0 2px;">Этапов пока нет — добавьте первый выше, чтобы построить график.</div>';
+    }
+    const dated = phases.filter(p => p.start && p.end);
+    const allDates = dated.flatMap(p => [p.start, p.end]);
+    const base = allDates.length ? allDates : [todayISO()];
+    const minRaw = base.reduce((a,b) => a < b ? a : b);
+    const maxRaw = base.reduce((a,b) => a > b ? a : b);
+    const minD = new Date(minRaw); minD.setDate(minD.getDate() - 3);
+    const maxD = new Date(maxRaw); maxD.setDate(maxD.getDate() + 3);
+    const totalMs = Math.max(maxD - minD, 86400000);
+    const pct = (d) => ((new Date(d) - minD) / totalMs) * 100;
+
+    const monthTicks = [];
+    const cursor = new Date(minD.getFullYear(), minD.getMonth(), 1);
+    while(cursor <= maxD){
+      monthTicks.push({label: MONTH_NAMES_RU[cursor.getMonth()] + ' ' + cursor.getFullYear(), pct: pct(cursor.toISOString().slice(0,10))});
+      cursor.setMonth(cursor.getMonth() + 1);
+    }
+    const weekTicks = [];
+    const wcursor = new Date(minD);
+    const dow = wcursor.getDay();
+    wcursor.setDate(wcursor.getDate() + (dow === 0 ? -6 : 1 - dow)); // выравниваем на понедельник
+    while(wcursor <= maxD){
+      const p = pct(wcursor.toISOString().slice(0,10));
+      if(p >= 0 && p <= 100) weekTicks.push({pct: p, day: wcursor.getDate()});
+      wcursor.setDate(wcursor.getDate() + 7);
+    }
+    const weekGrid = weekTicks.map(t => `<div class="oj-gantt-weekline" style="left:${t.pct}%;"></div>`).join('');
+    const todayPct = pct(todayISO());
+    const showToday = todayPct >= 0 && todayPct <= 100;
+
+    const scaleRow = `
+      <div class="oj-gantt-row oj-gantt-scale-row">
+        <div class="oj-gantt-label"></div>
+        <div class="oj-gantt-track">
+          ${weekGrid}
+          ${weekTicks.map(t => `<div class="oj-gantt-weeknum" style="left:${t.pct}%;">${t.day}</div>`).join('')}
+          ${monthTicks.map(t => `<div class="oj-gantt-tick" style="left:${t.pct}%;">${t.label}</div>`).join('')}
+          ${showToday ? `<div class="oj-gantt-today" style="left:${todayPct}%;"></div>` : ''}
+        </div>
+        <div class="oj-gantt-dates"></div>
+        <div></div>
+      </div>`;
+
+    const rows = phases.map((p, idx) => {
+      const hasBar = !!(p.start && p.end);
+      const left = hasBar ? pct(p.start) : 0;
+      const width = hasBar ? Math.max(pct(p.end) - left, 1) : 0;
+      return `
+      <div class="oj-gantt-row">
+        <div class="oj-gantt-label" title="${esc(p.name)}">${esc(p.name)}</div>
+        <div class="oj-gantt-track">
+          ${weekGrid}
+          ${hasBar ? `<div class="oj-gantt-bar" style="left:${left}%;width:${width}%;" title="${esc(p.name)}: ${fmtDate(p.start)} — ${fmtDate(p.end)}"></div>` : `<span style="font-size:11px;color:var(--ink-faint);">без дат</span>`}
+          ${showToday ? `<div class="oj-gantt-today" style="left:${todayPct}%;"></div>` : ''}
+        </div>
+        <div class="oj-gantt-dates">${p.start?fmtDate(p.start):'—'} – ${p.end?fmtDate(p.end):'—'}</div>
+        <div class="oj-gantt-rowactions">
+          <button type="button" class="oj-staff-icon-btn schedUpBtn" data-obj-id="${objId}" data-phase-id="${p.id}" title="Переместить выше" ${idx===0?'disabled':''}>↑</button>
+          <button type="button" class="oj-staff-icon-btn schedDownBtn" data-obj-id="${objId}" data-phase-id="${p.id}" title="Переместить ниже" ${idx===phases.length-1?'disabled':''}>↓</button>
+          <button type="button" class="oj-staff-icon-btn danger schedDelBtn" data-obj-id="${objId}" data-phase-id="${p.id}" title="Удалить этап">✕</button>
+        </div>
+      </div>`;
+    }).join('');
+
+    return `<div class="oj-gantt-wrap">${scaleRow}${rows}</div>`;
   }
 
   function sortValue(o, field){
@@ -2315,6 +2497,64 @@
         });
       }
     }
+    const schedAddBtn = listEl.querySelector('.schedAddBtn');
+    if(schedAddBtn){
+      on(schedAddBtn, 'click', async (ev) => {
+        ev.stopPropagation();
+        const row = schedAddBtn.closest('.oj-row');
+        const objId = row.dataset.id;
+        const nameInput = row.querySelector('.schedPhaseInput');
+        const startInput = row.querySelector('.schedStartInput');
+        const endInput = row.querySelector('.schedEndInput');
+        const name = nameInput.value.trim();
+        const start = startInput.value;
+        const end = endInput.value;
+        if(!name){ showToast('Введите название этапа.', true); return; }
+        if(start && end && end < start){ showToast('Дата окончания раньше даты начала.', true); return; }
+        const o = objects.find(x => x.id === objId);
+        if(!o) return;
+        o.schedule = o.schedule || [];
+        o.schedule.push({id: uid(), name, start, end});
+        o.updatedAt = todayISO();
+        await saveObjects();
+        renderAll();
+        showToast('Этап добавлен');
+      });
+    }
+    listEl.querySelectorAll('.schedDelBtn').forEach(btn => {
+      on(btn, 'click', async (ev) => {
+        ev.stopPropagation();
+        const o = objects.find(x => x.id === btn.dataset.objId);
+        if(!o || !o.schedule) return;
+        o.schedule = o.schedule.filter(p => p.id !== btn.dataset.phaseId);
+        o.updatedAt = todayISO();
+        await saveObjects();
+        renderAll();
+        showToast('Этап удалён');
+      });
+    });
+    function moveSchedPhase(objId, phaseId, dir){
+      const o = objects.find(x => x.id === objId);
+      if(!o || !o.schedule) return;
+      const idx = o.schedule.findIndex(p => p.id === phaseId);
+      const swapWith = idx + dir;
+      if(idx === -1 || swapWith < 0 || swapWith >= o.schedule.length) return;
+      [o.schedule[idx], o.schedule[swapWith]] = [o.schedule[swapWith], o.schedule[idx]];
+      o.updatedAt = todayISO();
+      saveObjects().then(() => renderAll());
+    }
+    listEl.querySelectorAll('.schedUpBtn').forEach(btn => {
+      on(btn, 'click', (ev) => {
+        ev.stopPropagation();
+        moveSchedPhase(btn.dataset.objId, btn.dataset.phaseId, -1);
+      });
+    });
+    listEl.querySelectorAll('.schedDownBtn').forEach(btn => {
+      on(btn, 'click', (ev) => {
+        ev.stopPropagation();
+        moveSchedPhase(btn.dataset.objId, btn.dataset.phaseId, 1);
+      });
+    });
     const empAddBtn = listEl.querySelector('.employeeAddBtn');
     if(empAddBtn){
       on(empAddBtn, 'click', async (ev) => {
@@ -2726,14 +2966,22 @@
       </div>
       </div>
 
+      <div class="oj-schedule-section">
+        <div class="oj-doc-group-title" style="margin-top:0;">График работ по объекту</div>
+        <div class="oj-schedule-addrow">
+          <input type="text" class="schedPhaseInput" placeholder="Название этапа…">
+          <input type="date" class="schedStartInput" title="Начало">
+          <input type="date" class="schedEndInput" title="Окончание">
+          <button type="button" class="oj-btn oj-btn-ghost schedAddBtn">Добавить этап</button>
+        </div>
+        ${renderGanttChart(o.schedule || [], o.id)}
+      </div>
+
       <div class="oj-detail-actions">
         <button class="oj-btn oj-btn-danger" data-action="delete">Удалить объект</button>
         <button class="oj-btn oj-btn-ghost" data-action="duplicate">Дублировать</button>
         <button class="oj-btn oj-btn-ghost" data-action="edit">Изменить данные</button>
         <button class="oj-btn oj-btn-ghost" data-action="archive">${o.archived ? 'Вернуть из архива' : 'В архив'}</button>
-        <button class="oj-btn oj-btn-ghost" data-action="yougile">${o.yougileTaskId ? 'Обновить в YouGile' : 'Отправить в YouGile'}</button>
-        <button class="oj-btn oj-btn-ghost" data-action="yougile-csv">Экспорт CSV (этот объект)</button>
-        ${o.yougileTaskId ? `<span style="font-size:11.5px;color:var(--ink-faint);align-self:center;">в YouGile${o.yougileSyncedAt ? ' · ' + fmtDate(o.yougileSyncedAt.slice(0,10)) : ''}</span>` : ''}
       </div>
     </div>`;
   }
@@ -2971,21 +3219,6 @@
       }
     }else if(action === 'edit'){
       openForm(id);
-    }else if(action === 'yougile'){
-      const o = objects.find(x => x.id === id);
-      if(!o) return;
-      if(!ygConfig.apiKey){
-        showToast('Сначала настройте интеграцию с YouGile (кнопка «YouGile ⇄» в шапке).', true);
-        return;
-      }
-      showToast('Отправляем «' + o.name + '» в YouGile…');
-      const success = await ygSendObject(o);
-      if(success) renderAll();
-    }else if(action === 'yougile-csv'){
-      const o = objects.find(x => x.id === id);
-      if(!o) return;
-      const safeName = o.name.replace(/[^a-zA-Zа-яА-Яё0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'object';
-      exportYgCsv([o], o.name, 'yougile-' + safeName + '.csv');
     }else if(action === 'archive'){
       const o = objects.find(x => x.id === id);
       if(!o) return;
@@ -3143,6 +3376,7 @@
     renderList();
     if(!$('#ojSummary').hidden) renderSummary();
     if(mainView === 'staff') renderStaff();
+    if(mainView === 'vehicles') renderVehicles();
   }
 
   /* --- Сотрудники: рендер --- */
@@ -3363,15 +3597,387 @@
     });
   });
 
+  /* --- Автомобили: рендер --- */
+  const VEH_COLUMNS = [
+    {key:'brandModel', label:'Марка / модель'},
+    {key:'year', label:'Год'},
+    {key:'plate', label:'Гос.номер'},
+    {key:'location', label:'Город/объект'},
+    {key:'owner', label:'Собственник'},
+    {key:'driver', label:'Водитель'},
+    {key:'mileage', label:'Пробег'},
+    {key:'osagoUntil', label:'ОСАГО до'},
+    {key:'inspectionUntil', label:'ТО до'},
+  ];
+  function vehSortValue(v, key){
+    if(key === 'brandModel') return ((v.brand||'') + ' ' + (v.model||'')).trim().toLowerCase();
+    if(key === 'osagoUntil' || key === 'inspectionUntil') return v[key] ? new Date(v[key]).getTime() : null;
+    if(key === 'year' || key === 'mileage'){
+      const n = Number(v[key]);
+      return v[key] !== '' && v[key] != null && !Number.isNaN(n) ? n : null;
+    }
+    return (v[key] || '').toString().toLowerCase();
+  }
+  function compareVehicles(a, b){
+    if(!vehSortKey) return 0;
+    const av = vehSortValue(a, vehSortKey);
+    const bv = vehSortValue(b, vehSortKey);
+    const aEmpty = av === null || av === '';
+    const bEmpty = bv === null || bv === '';
+    if(aEmpty && bEmpty) return 0;
+    if(aEmpty) return 1;
+    if(bEmpty) return -1;
+    let cmp;
+    if(typeof av === 'number' && typeof bv === 'number') cmp = av - bv;
+    else cmp = String(av).localeCompare(String(bv), 'ru', {numeric:true, sensitivity:'base'});
+    return vehSortDir === 'asc' ? cmp : -cmp;
+  }
+  function buildVehFilters(){
+    const owners = Array.from(new Set(vehicles.map(v => v.owner).filter(Boolean))).sort((a,b) => a.localeCompare(b,'ru'));
+    $('#vehFilterOwner').innerHTML = '<option value="">Любой собственник</option>' + owners.map(o => `<option value="${esc(o)}">${esc(o)}</option>`).join('');
+    $('#vehFilterOwner').value = vehFilterOwner;
+  }
+  function getFilteredVehicles(){
+    return vehicles.filter(v => {
+      if(vehFilterOwner && v.owner !== vehFilterOwner) return false;
+      if(vehSearchTerm){
+        const hay = [(v.brand||'')+' '+(v.model||''), v.plate, v.driver, v.location].join(' ').toLowerCase();
+        if(!hay.includes(vehSearchTerm.toLowerCase())) return false;
+      }
+      return true;
+    }).sort(compareVehicles);
+  }
+  function getVehAlerts(){
+    const list = [];
+    vehicles.forEach(v => {
+      const to = daysUntil(v.inspectionUntil);
+      const ins = daysUntil(v.osagoUntil);
+      if(to !== null && to <= 30) list.push({v, type:'Техосмотр', days: to});
+      if(ins !== null && ins <= 30) list.push({v, type:'ОСАГО', days: ins});
+    });
+    return list.sort((a,b) => a.days - b.days);
+  }
+  function updateVehSortIndicators(){
+    document.querySelectorAll('#vehTable th[data-sort]').forEach(th => {
+      const arrow = th.querySelector('.vehSortArrow');
+      if(th.dataset.sort === vehSortKey){
+        th.classList.add('sorted');
+        if(arrow) arrow.textContent = vehSortDir === 'asc' ? ' ▲' : ' ▼';
+      }else{
+        th.classList.remove('sorted');
+        if(arrow) arrow.textContent = '';
+      }
+    });
+  }
+  function renderVehStats(){
+    const wrap = $('#vehStats');
+    if(!wrap) return;
+    const alerts = getVehAlerts();
+    wrap.innerHTML = `
+      <div class="oj-staff-stat"><div class="oj-staff-stat-label">Всего машин</div><div class="oj-staff-stat-value">${vehicles.length}</div></div>
+      <div class="oj-staff-stat"><div class="oj-staff-stat-label">ОСАГО/ТО ≤ 30 дней</div><div class="oj-staff-stat-value" style="color:${alerts.length?'var(--active)':'inherit'}">${alerts.length}</div></div>
+    `;
+  }
+  function renderVehAlerts(){
+    const wrap = $('#vehAlerts');
+    if(!wrap) return;
+    const alerts = getVehAlerts();
+    if(alerts.length === 0){ wrap.hidden = true; wrap.innerHTML = ''; return; }
+    wrap.hidden = false;
+    wrap.innerHTML = `
+      <div class="oj-chart-title" style="margin-bottom:8px;">Ближайшие сроки (ОСАГО / техосмотр)</div>
+      ${alerts.slice(0, 8).map(a => `
+        <div class="oj-veh-alert-row">
+          <div><b>${esc(a.v.brand)} ${esc(a.v.model)}</b> · ${esc(a.v.plate||'')} <span style="color:var(--ink-faint);">· ${a.type}</span></div>
+          <span class="oj-staff-mono ${a.days < 0 ? 'late' : 'today'}">${a.days < 0 ? 'просрочено на ' + (-a.days) + ' дн.' : a.days === 0 ? 'сегодня' : 'через ' + a.days + ' дн.'}</span>
+        </div>
+      `).join('')}
+    `;
+  }
+  function renderVehicles(){
+    buildVehFilters();
+    renderVehStats();
+    renderVehAlerts();
+    updateVehSortIndicators();
+    const items = getFilteredVehicles();
+    const body = $('#vehTableBody');
+    const table = $('#vehTable');
+    const empty = $('#vehEmpty');
+    if(!body) return;
+    if(items.length === 0){
+      body.innerHTML = '';
+      table.style.display = 'none';
+      empty.hidden = false;
+      empty.textContent = vehicles.length ? 'Ничего не найдено по заданным фильтрам.' : 'Список техники пуст.';
+      return;
+    }
+    empty.hidden = true;
+    table.style.display = 'table';
+    body.innerHTML = items.map(v => `
+      <tr data-id="${v.id}">
+        <td class="oj-staff-name">${esc(v.brand)} ${esc(v.model)}</td>
+        <td class="oj-staff-mono">${esc(v.year)||'—'}</td>
+        <td class="oj-staff-mono">${esc(v.plate)||'—'}</td>
+        <td>${esc(v.location)||'—'}</td>
+        <td>${esc(v.owner)||'—'}</td>
+        <td>${esc(v.driver)||'—'}</td>
+        <td class="oj-staff-mono">${v.mileage ? Number(v.mileage).toLocaleString('ru-RU') + ' км' : '—'}</td>
+        <td class="oj-staff-mono ${dateWarnClass(v.osagoUntil)}">${v.osagoUntil ? fmtDate(v.osagoUntil) : '—'}</td>
+        <td class="oj-staff-mono ${dateWarnClass(v.inspectionUntil)}">${v.inspectionUntil ? fmtDate(v.inspectionUntil) : '—'}</td>
+        <td>
+          <div class="oj-staff-actions">
+            <button type="button" class="oj-staff-icon-btn vehLogBtn" data-id="${v.id}" title="Журнал ТО и расходов">☰</button>
+            <button type="button" class="oj-staff-icon-btn vehEditBtn" data-id="${v.id}" title="Изменить">✎</button>
+            <button type="button" class="oj-staff-icon-btn danger vehDelBtn" data-id="${v.id}" title="Удалить">✕</button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
+    body.querySelectorAll('.vehEditBtn').forEach(btn => on(btn, 'click', () => openVehForm(btn.dataset.id)));
+    body.querySelectorAll('.vehLogBtn').forEach(btn => on(btn, 'click', () => openVehLog(btn.dataset.id)));
+    body.querySelectorAll('.vehDelBtn').forEach(btn => {
+      on(btn, 'click', async () => {
+        const v = vehicles.find(x => x.id === btn.dataset.id);
+        if(!v) return;
+        const ok = await askConfirm('Удалить «' + v.brand + ' ' + v.model + ' (' + (v.plate||'без номера') + ')»? Это действие нельзя отменить.');
+        if(!ok) return;
+        vehicles = vehicles.filter(x => x.id !== v.id);
+        await saveVehicles();
+        renderVehicles();
+        showToast('Машина удалена');
+      });
+    });
+  }
+
+  /* --- Автомобили: панель добавления/редактирования --- */
+  const vehOverlay = $('#ojVehOverlay');
+  const vehPanel = $('#ojVehPanel');
+  function openVehForm(id){
+    vehEditingId = id || null;
+    const v = id ? vehicles.find(x => x.id === id) : null;
+    $('#ojVehPanelTitle').textContent = v ? 'Редактировать транспорт' : 'Новая машина';
+    $('#vehFBrand').value = v ? v.brand||'' : '';
+    $('#vehFYear').value = v ? v.year||'' : '';
+    $('#vehFModel').value = v ? v.model||'' : '';
+    $('#vehFPlate').value = v ? v.plate||'' : '';
+    $('#vehFVin').value = v ? v.vin||'' : '';
+    $('#vehFSts').value = v ? v.sts||'' : '';
+    $('#vehFOsagoPolicy').value = v ? v.osagoPolicy||'' : '';
+    $('#vehFOsagoUntil').value = v ? v.osagoUntil||'' : '';
+    $('#vehFInspectionUntil').value = v ? v.inspectionUntil||'' : '';
+    $('#vehFLocation').value = v ? v.location||'' : '';
+    $('#vehFOwner').value = v ? v.owner||'' : (vehicles[0]?.owner || 'Геоаспект');
+    $('#vehFDriver').value = v ? v.driver||'' : '';
+    $('#vehFMileage').value = v ? v.mileage||'' : '';
+    $('#vehFNotes').value = v ? v.notes||'' : '';
+    vehOverlay.hidden = false;
+    vehPanel.hidden = false;
+  }
+  function closeVehForm(){
+    vehOverlay.hidden = true;
+    vehPanel.hidden = true;
+    vehEditingId = null;
+  }
+  async function saveVehForm(){
+    const brand = $('#vehFBrand').value.trim();
+    if(!brand){ showToast('Укажите марку машины.', true); return; }
+    const data = {
+      id: vehEditingId || uid(),
+      brand,
+      year: $('#vehFYear').value.trim(),
+      model: $('#vehFModel').value.trim(),
+      plate: $('#vehFPlate').value.trim(),
+      vin: $('#vehFVin').value.trim(),
+      sts: $('#vehFSts').value.trim(),
+      osagoPolicy: $('#vehFOsagoPolicy').value.trim(),
+      osagoUntil: $('#vehFOsagoUntil').value || '',
+      inspectionUntil: $('#vehFInspectionUntil').value || '',
+      location: $('#vehFLocation').value.trim(),
+      owner: $('#vehFOwner').value.trim(),
+      driver: $('#vehFDriver').value.trim(),
+      mileage: $('#vehFMileage').value ? Number($('#vehFMileage').value) : '',
+      notes: $('#vehFNotes').value.trim(),
+      logs: vehEditingId ? (vehicles.find(x=>x.id===vehEditingId)||{}).logs || [] : [],
+    };
+    if(vehEditingId){
+      vehicles = vehicles.map(x => x.id === vehEditingId ? data : x);
+    }else{
+      vehicles.push(data);
+    }
+    await saveVehicles();
+    closeVehForm();
+    renderVehicles();
+    showToast(vehEditingId ? 'Машина обновлена' : 'Машина добавлена');
+  }
+  on($('#vehAddBtn'), 'click', () => openVehForm(null));
+  on($('#vehCancelBtn'), 'click', closeVehForm);
+  on(vehOverlay, 'click', closeVehForm);
+  on($('#vehSaveBtn'), 'click', saveVehForm);
+
+  on($('#vehSearch'), 'input', () => { vehSearchTerm = $('#vehSearch').value; renderVehicles(); });
+  on($('#vehFilterOwner'), 'change', () => { vehFilterOwner = $('#vehFilterOwner').value; renderVehicles(); });
+  document.querySelectorAll('#vehTable th[data-sort]').forEach(th => {
+    on(th, 'click', () => {
+      const key = th.dataset.sort;
+      if(vehSortKey === key){ vehSortDir = vehSortDir === 'asc' ? 'desc' : 'asc'; }
+      else{ vehSortKey = key; vehSortDir = 'asc'; }
+      renderVehicles();
+    });
+  });
+
+  /* --- Автомобили: журнал ТО и расходов --- */
+  const vehLogOverlay = $('#ojVehLogOverlay');
+  const vehLogPanel = $('#ojVehLogPanel');
+  function emptyVehLogEntry(){
+    return {id: uid(), date: todayISO(), type: 'ТО', description:'', cost:'', mileage:'', attachment:null};
+  }
+  function renderVehLogEntries(){
+    const v = vehicles.find(x => x.id === vehLogVehicleId);
+    const wrap = $('#vehLogEntries');
+    if(!v || !wrap) return;
+    const logs = (v.logs || []).slice().sort((a,b) => (b.date||'').localeCompare(a.date||''));
+    if(logs.length === 0){
+      wrap.innerHTML = '<div style="padding:24px 0;text-align:center;color:var(--ink-faint);font-size:13px;">Записей пока нет.</div>';
+      return;
+    }
+    wrap.innerHTML = logs.map(e => {
+      const tc = VEH_LOG_TYPE_META[e.type] || VEH_LOG_TYPE_META['Прочее'];
+      return `
+      <div class="oj-veh-log-row">
+        <div style="display:flex;gap:10px;align-items:flex-start;flex:1;min-width:0;">
+          <span class="oj-staff-pill" style="background:${tc.bg};color:${tc.color};white-space:nowrap;">${esc(e.type)}</span>
+          <div style="min-width:0;">
+            <div style="font-size:13px;font-weight:600;word-break:break-word;">${esc(e.description)||'—'}</div>
+            <div class="oj-staff-mono" style="font-size:11px;color:var(--ink-faint);margin-top:3px;">
+              ${e.date ? fmtDate(e.date) : '—'}${e.mileage ? ' · ' + Number(e.mileage).toLocaleString('ru-RU') + ' км' : ''}
+            </div>
+            ${e.attachment ? `<a href="${e.attachment.dataUrl}" download="${esc(e.attachment.name)}" style="font-size:11px;color:var(--accent);margin-top:5px;display:inline-block;">📎 ${esc(e.attachment.name)}</a>` : ''}
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;">
+          <span class="oj-staff-mono" style="font-size:13px;font-weight:700;white-space:nowrap;">${formatCost(e.cost)}</span>
+          <button type="button" class="oj-staff-icon-btn danger vehLogDelBtn" data-id="${e.id}" title="Удалить">✕</button>
+        </div>
+      </div>`;
+    }).join('');
+    wrap.querySelectorAll('.vehLogDelBtn').forEach(btn => {
+      on(btn, 'click', async () => {
+        const ok = await askConfirm('Удалить эту запись? Это действие нельзя отменить.');
+        if(!ok) return;
+        const vv = vehicles.find(x => x.id === vehLogVehicleId);
+        vv.logs = (vv.logs || []).filter(x => x.id !== btn.dataset.id);
+        await saveVehicles();
+        renderVehLogStats();
+        renderVehLogEntries();
+        showToast('Запись удалена');
+      });
+    });
+  }
+  function renderVehLogStats(){
+    const v = vehicles.find(x => x.id === vehLogVehicleId);
+    const wrap = $('#vehLogStats');
+    if(!v || !wrap) return;
+    const total = (v.logs||[]).reduce((sum,e) => sum + (Number(e.cost)||0), 0);
+    wrap.innerHTML = `
+      <div class="oj-staff-stat"><div class="oj-staff-stat-label">Всего потрачено</div><div class="oj-staff-stat-value">${formatCost(total)}</div></div>
+      <div class="oj-staff-stat"><div class="oj-staff-stat-label">Записей</div><div class="oj-staff-stat-value">${(v.logs||[]).length}</div></div>
+    `;
+  }
+  function openVehLog(id){
+    vehLogVehicleId = id;
+    vehLogNewEntry = null;
+    const v = vehicles.find(x => x.id === id);
+    if(!v) return;
+    $('#ojVehLogTitle').textContent = v.brand + ' ' + v.model;
+    $('#vehLogNewEntry').hidden = true;
+    $('#vehLogEFileErr').textContent = '';
+    renderVehLogStats();
+    renderVehLogEntries();
+    vehLogOverlay.hidden = false;
+    vehLogPanel.hidden = false;
+  }
+  function closeVehLog(){
+    vehLogOverlay.hidden = true;
+    vehLogPanel.hidden = true;
+    vehLogVehicleId = null;
+    vehLogNewEntry = null;
+  }
+  on($('#vehLogCloseBtn'), 'click', closeVehLog);
+  on(vehLogOverlay, 'click', closeVehLog);
+  on($('#vehLogAddBtn'), 'click', () => {
+    vehLogNewEntry = emptyVehLogEntry();
+    $('#vehLogEDate').value = vehLogNewEntry.date;
+    $('#vehLogEType').value = vehLogNewEntry.type;
+    $('#vehLogEDesc').value = '';
+    $('#vehLogECost').value = '';
+    $('#vehLogEMileage').value = '';
+    $('#vehLogEFile').value = '';
+    $('#vehLogEFileName').textContent = '';
+    $('#vehLogEFileErr').textContent = '';
+    $('#vehLogNewEntry').hidden = false;
+  });
+  on($('#vehLogECancelBtn'), 'click', () => {
+    vehLogNewEntry = null;
+    $('#vehLogNewEntry').hidden = true;
+  });
+  on($('#vehLogEFile'), 'change', (ev) => {
+    const file = ev.target.files && ev.target.files[0];
+    ev.target.value = '';
+    if(!file) return;
+    if(file.type !== 'application/pdf'){
+      $('#vehLogEFileErr').textContent = 'Можно прикрепить только PDF-файл.';
+      return;
+    }
+    if(file.size > 4 * 1024 * 1024){
+      $('#vehLogEFileErr').textContent = 'Файл слишком большой (максимум 4 МБ).';
+      return;
+    }
+    $('#vehLogEFileErr').textContent = '';
+    const reader = new FileReader();
+    reader.onload = () => {
+      if(vehLogNewEntry){
+        vehLogNewEntry.attachment = {name: file.name, dataUrl: reader.result};
+        $('#vehLogEFileName').textContent = '📎 ' + file.name;
+      }
+    };
+    reader.onerror = () => { $('#vehLogEFileErr').textContent = 'Не удалось прочитать файл.'; };
+    reader.readAsDataURL(file);
+  });
+  on($('#vehLogESaveBtn'), 'click', async () => {
+    const description = $('#vehLogEDesc').value.trim();
+    if(!description){ showToast('Введите описание записи.', true); return; }
+    const v = vehicles.find(x => x.id === vehLogVehicleId);
+    if(!v) return;
+    const entry = {
+      id: vehLogNewEntry ? vehLogNewEntry.id : uid(),
+      date: $('#vehLogEDate').value || todayISO(),
+      type: $('#vehLogEType').value,
+      description,
+      cost: $('#vehLogECost').value,
+      mileage: $('#vehLogEMileage').value,
+      attachment: vehLogNewEntry ? vehLogNewEntry.attachment : null,
+    };
+    v.logs = v.logs || [];
+    v.logs.push(entry);
+    await saveVehicles();
+    vehLogNewEntry = null;
+    $('#vehLogNewEntry').hidden = true;
+    renderVehLogStats();
+    renderVehLogEntries();
+    showToast('Запись добавлена');
+  });
+
   /* --- главные вкладки --- */
   function setMainView(view){
     mainView = view;
     $('#objectsView').hidden = (view !== 'objects');
     $('#staffView').hidden = (view !== 'staff');
+    $('#vehiclesView').hidden = (view !== 'vehicles');
     $('#ojMainTabs').querySelectorAll('.oj-maintab').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.view === view);
     });
     if(view === 'staff') renderStaff();
+    if(view === 'vehicles') renderVehicles();
   }
   $('#ojMainTabs').querySelectorAll('.oj-maintab').forEach(btn => {
     on(btn, 'click', () => setMainView(btn.dataset.view));
@@ -3504,124 +4110,6 @@
     if(willShow) renderSummary();
   });
 
-  on($('#ojExportBtn'), 'click', () => {
-    const toExport = objects.filter(o => !o.archived);
-    if(toExport.length === 0){
-      showToast('Нет активных объектов для экспорта (архивные пропускаются — полная база доступна через «Экспорт базы (JSON)»).', true);
-      return;
-    }
-    const header = ['Название','Адрес','Заказчик','№ договора','Вид работ','Ответственный','Статус','Срок сдачи','Обновлён'];
-    const rows = toExport.map(o => [
-      o.name, o.address, o.customer, o.contract,
-      (o.workTypes||[]).join('; '),
-      o.responsible,
-      STAGES[stageIndex(o.status)]?.label || o.status,
-      o.deadline ? fmtDate(o.deadline) : '',
-      o.updatedAt ? fmtDate(o.updatedAt) : '',
-    ]);
-    const csv = [header, ...rows].map(r => r.map(v => `"${(v||'').toString().replace(/"/g,'""')}"`).join(';')).join('\n');
-    showExportModal('Экспорт CSV', '\uFEFF' + csv, 'объекты-журнал.csv', 'text/csv;charset=utf-8;');
-  });
-
-  function ygChecklistItems(o){
-    if((o.workTypes||[]).includes('Разное')) return [];
-    const docs = o.docs || {};
-    const dates = o.docDates || {};
-    const notes = o.docNotes || {};
-    const isTopo = (o.workTypes||[]).includes('Топосъёмка');
-    const isGeoNet = (o.workTypes||[]).includes('Геодезическая сеть');
-    const isSupervision = (o.workTypes||[]).includes('Технический надзор');
-    const isSeasonal = (o.workTypes||[]).includes('Сезонное определение');
-    const isPTO = (o.workTypes||[]).includes('ПТО') || (o.workTypes||[]).includes('Геодезическое сопровождение');
-    const showPoints = isTopo || isGeoNet;
-    const showAgreements = isTopo;
-    const items = [];
-    const push = (group, key, label) => {
-      items.push({group, label, done: !!docs[key], date: dates[key] || '', note: notes[key] || ''});
-    };
-
-    push('Договорная часть', 'contractSigned', 'Договор');
-    if(isPTO){
-      items.push({group:'Договорная часть', label:'Сумма контракта', done: !!o.contractAmount, date:'', note: o.contractAmount ? ('Сумма: ' + o.contractAmount) : ''});
-    }
-    if(!isSupervision && !isPTO){
-      push('Договорная часть', 'advance', 'Аванс');
-      if(!isSeasonal) push('Договорная часть', 'actOfWork', 'Акт выполненных работ');
-      push('Договорная часть', 'balance', 'Остаток');
-    }
-    if(!isSupervision && !isSeasonal && !isPTO){
-      push('ТЗ', 'tz', 'ТЗ получено');
-      push('Программа работ', 'programSent', 'Программа отправлена');
-      push('Программа работ', 'programApproved', 'Программа согласована');
-    }
-    if(showPoints){
-      if(showAgreements) push('Определение пунктов', 'pointsAgreed', 'Согласование мест установки пунктов');
-      push('Определение пунктов', 'pointsInstalled', 'Установка пунктов');
-      push('Определение пунктов', 'leveling', 'Нивелировка');
-      push('Определение пунктов', 'gnss', 'ГНСС-измерения');
-    }
-    if(showAgreements){
-      items.push({group:'Согласование коммуникаций', label:'Согласование коммуникаций', done: !!o.commsLink, date: o.commsDeadline || '', note: o.commsLink || ''});
-    }
-    if(!isSupervision && !isPTO){
-      push('Отчёт и сдача', 'reportSent', 'Отчёт направлен');
-      push('Отчёт и сдача', 'reportApproved', 'Отчёт согласован');
-      push('Отчёт и сдача', 'act', 'Акт подписан');
-    }
-    if(isSupervision){
-      (o.employees||[]).forEach(emp => {
-        items.push({group:'Сотрудники на объекте', label: emp, done: true, date:'', note:''});
-      });
-    }
-    return items;
-  }
-
-  function exportYgCsv(objList, titleSuffix, filename){
-    const header = ['Project','Column','Title','Description','Deadline','Assignee'];
-    const rows = [];
-    objList.forEach(o => {
-      const infoDesc = [
-        o.customer ? 'Заказчик: ' + o.customer : '',
-        o.address ? 'Адрес: ' + o.address : '',
-        o.contract ? '№ договора: ' + o.contract : '',
-        (o.workTypes && o.workTypes.length) ? 'Вид работ: ' + o.workTypes.join(', ') : '',
-        o.deadline ? 'Плановый срок сдачи: ' + fmtDate(o.deadline) : '',
-      ].filter(Boolean).join('\n');
-      rows.push([o.name, 'Инфо', 'Информация об объекте', infoDesc, o.deadline ? fmtDate(o.deadline) : '', o.responsible || '']);
-
-      ygChecklistItems(o).forEach(item => {
-        const descParts = [];
-        if(item.note) descParts.push(item.note);
-        if(item.date) descParts.push('Дата: ' + fmtDate(item.date));
-        descParts.push(item.done ? 'Статус: выполнено' : 'Статус: в работе');
-        rows.push([
-          o.name,
-          item.group,
-          (item.done ? '✓ ' : '') + item.label,
-          descParts.join('\n'),
-          o.deadline ? fmtDate(o.deadline) : '',
-          o.responsible || '',
-        ]);
-      });
-    });
-    const csv = [header, ...rows].map(r => r.map(v => `"${(v||'').toString().replace(/"/g,'""')}"`).join(';')).join('\n');
-    showExportModal(
-      'Экспорт CSV для YouGile' + (titleSuffix ? ' — ' + titleSuffix : ''),
-      csv,
-      filename,
-      'text/csv;charset=utf-8;',
-      'Каждый объект — свой Project (проект) в YouGile, а пункты чек-листа (Договор, Аванс, Полевые и т.д.) — отдельные задачи, распределённые по колонкам-разделам. Выполненные пункты помечены «✓» в названии. Названия столбцов (Project, Column, Title...) — по документации YouGile, сверьте перед первой загрузкой с образцом на странице импорта.'
-    );
-  }
-  on($('#ojExportYgCsvBtn'), 'click', () => {
-    const toExport = objects.filter(o => !o.archived);
-    if(toExport.length === 0){
-      showToast('Нет активных объектов для экспорта (архивные пропускаются).', true);
-      return;
-    }
-    exportYgCsv(toExport, '', 'объекты-для-yougile.csv');
-  });
-
   on($('#ojExportDbBtn'), 'click', () => {
     if(objects.length === 0){
       showToast('Журнал пуст — нечего экспортировать.', true);
@@ -3678,43 +4166,6 @@
     }
   });
 
-  on($('#ojImportBtn'), 'click', async () => {
-    const existingNames = new Set(objects.map(o => o.name));
-    const toAdd = IMPORT_SEED.filter(s => !existingNames.has(s.name));
-    const skipped = IMPORT_SEED.length - toAdd.length;
-    if(toAdd.length === 0){
-      showToast('Все объекты из списка уже есть в журнале.');
-      return;
-    }
-    const ok = await askConfirm(
-      `Добавить ${toAdd.length} объект(ов) из присланного списка?` + (skipped ? ` ${skipped} уже есть в журнале и будут пропущены.` : ''),
-      'Импортировать'
-    );
-    if(!ok) return;
-    const now = todayISO();
-    toAdd.forEach(s => {
-      objects.push({
-        id: uid(),
-        name: s.name,
-        address: '',
-        customer: '',
-        contract: '',
-        responsible: s.responsible || '',
-        deadline: s.deadline || '',
-        commsDeadline: s.commsDeadline || '',
-        workTypes: s.workTypes || [],
-        status: 'contract',
-        docs: {},
-        createdAt: now,
-        updatedAt: now,
-        log: [{date: now, text: s.logText, status: 'contract'}],
-      });
-    });
-    await saveObjects();
-    renderAll();
-    showToast(`Добавлено объектов: ${toAdd.length}` + (skipped ? `, пропущено: ${skipped}` : ''));
-  });
-
   on($('#ojResetLink'), 'click', async () => {
     const ok = await askConfirm('Полностью очистить журнал? Это действие необратимо.', 'Очистить');
     if(ok){
@@ -3726,48 +4177,6 @@
     }
   });
 
-  /* --- YouGile: панель --- */
-  const ygOverlay = $('#ojYgOverlay');
-  const ygPanel = $('#ojYgPanel');
-  function openYgPanel(){
-    $('#ygApiKey').value = ygConfig.apiKey || '';
-    $('#ygBoardTitleInput').value = ygConfig.boardTitle || 'Работы';
-    $('#ygSendWrap').hidden = true;
-    $('#ygProgress').textContent = '';
-    setYgStatus(ygConfig.apiKey ? 'Нажмите «Сохранить и подключиться», чтобы проверить ключ.' : 'Ключ ещё не указан.');
-    ygOverlay.hidden = false;
-    ygPanel.hidden = false;
-    if(ygConfig.apiKey){
-      ygTestConnection().catch(e => setYgStatus(e.message, 'err'));
-    }
-  }
-  function closeYgPanel(){
-    ygOverlay.hidden = true;
-    ygPanel.hidden = true;
-  }
-  on($('#ojYouGileBtn'), 'click', openYgPanel);
-  on($('#ygCloseBtn'), 'click', closeYgPanel);
-  on(ygOverlay, 'click', closeYgPanel);
-
-  on($('#ygConnectBtn'), 'click', async () => {
-    const key = $('#ygApiKey').value.trim();
-    if(!key){ showToast('Вставьте API-ключ.', true); return; }
-    ygConfig.apiKey = key;
-    ygConfig.boardTitle = ($('#ygBoardTitleInput').value || '').trim() || 'Работы';
-    await saveYgConfig();
-    try{
-      await ygTestConnection();
-    }catch(e){
-      setYgStatus(e.message, 'err');
-    }
-  });
-  on($('#ygBoardTitleInput'), 'change', async () => {
-    ygConfig.boardTitle = ($('#ygBoardTitleInput').value || '').trim() || 'Работы';
-    await saveYgConfig();
-  });
-
-  on($('#ygSendAllBtn'), 'click', ygSendAll);
-
   /* --- init --- */
   async function init(){
     setDebug('запущен, строю форму…');
@@ -3776,11 +4185,11 @@
     buildEmpFilters();
     setDebug('загружаю сохранённые объекты…');
     await loadObjects();
-    await loadYgConfig();
     await loadEmployees();
+    await loadVehicles();
     loadingEl.style.display = 'none';
     renderAll();
-    setDebug('готово · объектов в журнале: ' + objects.length + ' · сотрудников: ' + employees.length, 'ok');
+    setDebug('готово · объектов в журнале: ' + objects.length + ' · сотрудников: ' + employees.length + ' · машин: ' + vehicles.length, 'ok');
   }
   let __booted = false;
   function boot(){
@@ -3796,6 +4205,7 @@
 
   if('serviceWorker' in navigator){
     window.addEventListener('load', () => {
+      if(PREVIEW_MODE) return;
       navigator.serviceWorker.register('./sw.js').catch(e => console.error('SW register failed', e));
     });
   }
