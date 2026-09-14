@@ -17,7 +17,4041 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Журнал объектов — ГЕОАСПЕКТ</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="theme-color" content="#1E2422">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+Condensed:wght@500;600&display=swap');
+
+:root{
+  --bg:#F2F3EF;
+  --surface:#FFFFFF;
+  --surface-2:#FBFBF9;
+  --ink:#1E2422;
+  --ink-soft:#5C6560;
+  --ink-faint:#96A099;
+  --line:#DBDED4;
+  --accent:#2A5FA5;
+  --accent-soft:#E7EEF6;
+  --alert:#B23A22;
+  --alert-soft:#F7E9E4;
+  --active:#C9762E;
+  --active-soft:#F3E4D3;
+  --passive:#5C7A94;
+  --passive-soft:#E2E9EE;
+  --radius:5px;
+  --font-display:'IBM Plex Sans',sans-serif;
+  --font-cond:'IBM Plex Sans Condensed',sans-serif;
+  --font-mono:'IBM Plex Mono',monospace;
+}
+
+*{box-sizing:border-box;}
+.oj-app{
+  font-family:var(--font-display);
+  color:var(--ink);
+  background:var(--bg);
+  padding:28px 24px 60px;
+  max-width:1380px;
+  margin:0 auto;
+  min-height:100%;
+}
+.oj-app *{box-sizing:border-box;}
+
+/* header */
+.oj-brandmark-name{
+  font-family:var(--font-cond);
+  font-size:13px;
+  font-weight:700;
+  letter-spacing:.06em;
+  color:var(--ink-soft);
+  margin-bottom:6px;
+}
+.oj-titlerow{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:16px;
+  flex-wrap:wrap;
+  margin-bottom:22px;
+}
+.oj-title{
+  font-size:26px;
+  font-weight:700;
+  letter-spacing:-.01em;
+  margin:0;
+}
+.oj-btn{
+  font-family:var(--font-display);
+  font-size:13px;
+  font-weight:600;
+  border-radius:var(--radius);
+  border:1px solid transparent;
+  padding:9px 16px;
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  transition:opacity .15s ease, transform .1s ease;
+}
+.oj-btn:active{transform:translateY(1px);}
+.oj-btn-primary{background:var(--accent);color:#fff;}
+.oj-btn-primary:hover{opacity:.9;}
+.oj-btn-ghost{background:transparent;color:var(--ink-soft);border-color:var(--line);}
+.oj-btn-ghost:hover{border-color:var(--ink-faint);color:var(--ink);}
+.oj-btn-text{background:transparent;color:var(--accent);border:none;padding:4px 0;font-weight:600;}
+.oj-btn-danger{background:transparent;color:var(--alert);border:1px solid var(--alert-soft);}
+.oj-btn-danger:hover{background:var(--alert-soft);}
+
+/* strata legend */
+.oj-legend{
+  display:flex;
+  gap:1px;
+  background:var(--line);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  overflow:hidden;
+  margin-bottom:20px;
+}
+.oj-legend-item{
+  flex:1;
+  min-width:0;
+  background:var(--surface);
+  padding:10px 12px;
+  cursor:pointer;
+  border-bottom:3px solid transparent;
+  transition:background .15s ease;
+}
+.oj-legend-item:hover{background:var(--surface-2);}
+.oj-legend-item.active{background:var(--surface-2);}
+.oj-legend-count{
+  font-family:var(--font-mono);
+  font-size:18px;
+  font-weight:600;
+  line-height:1;
+}
+.oj-legend-label{
+  font-family:var(--font-cond);
+  font-size:10.5px;
+  font-weight:600;
+  letter-spacing:.03em;
+  color:var(--ink-soft);
+  margin-top:4px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+/* toolbar */
+.oj-toolbar{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-bottom:18px;
+}
+.oj-input,.oj-select{
+  font-family:var(--font-display);
+  font-size:13px;
+  padding:9px 11px;
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  background:var(--surface);
+  color:var(--ink);
+}
+.oj-input{flex:1;min-width:160px;}
+.oj-select{min-width:150px;}
+.oj-input:focus,.oj-select:focus,.oj-btn:focus,textarea:focus{
+  outline:2px solid var(--accent);
+  outline-offset:1px;
+}
+
+/* list */
+.oj-list{display:flex;flex-direction:column;gap:8px;}
+.oj-row{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-left:3px solid transparent;
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.oj-row-active{border-left-color:var(--active);}
+.oj-row-passive{border-left-color:var(--passive);}
+.oj-row.archived{background:var(--surface-2);opacity:.78;}
+.oj-row.misc{background:#FBF7FC;border-left-color:#7A3D8A;}
+.oj-priority-dot{
+  flex:0 0 auto;
+  width:11px;
+  height:11px;
+  border-radius:50%;
+  border:1.5px solid var(--line);
+  background:transparent;
+  cursor:pointer;
+  padding:0;
+  margin-right:2px;
+}
+.oj-priority-dot:hover{border-color:var(--ink-faint);}
+.oj-priority-active{background:var(--active);border-color:var(--active);}
+.oj-priority-passive{background:var(--passive);border-color:var(--passive);}
+.oj-priority-tag{
+  font-family:var(--font-cond);
+  font-size:9.5px;
+  font-weight:600;
+  letter-spacing:.03em;
+  text-transform:uppercase;
+  padding:1px 6px;
+  border-radius:20px;
+  vertical-align:middle;
+}
+.oj-priority-tag-active{background:var(--active-soft);color:var(--active);}
+.oj-priority-tag-passive{background:var(--passive-soft);color:var(--passive);}
+.oj-row-head{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:12px 14px;
+  cursor:pointer;
+}
+.oj-core{
+  display:flex;
+  flex-direction:column-reverse;
+  gap:2px;
+  flex:0 0 auto;
+  width:14px;
+}
+.oj-core-seg{
+  width:14px;
+  height:7px;
+  border-radius:1px;
+  background:var(--line);
+  border:1px solid var(--line);
+}
+.oj-row-main{flex:1;min-width:0;}
+.oj-row-name{
+  font-weight:600;
+  font-size:14.5px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.oj-row-sub{
+  font-size:12px;
+  color:var(--ink-soft);
+  margin-top:2px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.oj-row-meta{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex:0 0 auto;
+}
+.oj-badge{
+  font-family:var(--font-cond);
+  font-size:10.5px;
+  font-weight:600;
+  letter-spacing:.03em;
+  padding:4px 8px;
+  border-radius:20px;
+  white-space:nowrap;
+}
+.oj-deadline{
+  font-family:var(--font-mono);
+  font-size:12px;
+  color:var(--ink-soft);
+  white-space:nowrap;
+}
+.oj-deadline.late{color:var(--alert);font-weight:600;}
+.oj-chevron{
+  color:var(--ink-faint);
+  font-size:12px;
+  flex:0 0 auto;
+  transition:transform .15s ease;
+}
+.oj-row.open .oj-chevron{transform:rotate(90deg);}
+
+.oj-row-body{
+  border-top:1px solid var(--line);
+  padding:16px;
+  background:var(--surface-2);
+  display:none;
+}
+.oj-row.open .oj-row-body{display:block;}
+
+.oj-row-columns{
+  display:flex;
+  gap:28px;
+  align-items:flex-start;
+}
+.oj-row-col-left{flex:1 1 42%;min-width:0;}
+.oj-row-col-right{
+  flex:1 1 55%;
+  min-width:280px;
+  border-left:1px solid var(--line);
+  padding-left:24px;
+}
+@media (max-width:900px){
+  .oj-row-columns{flex-direction:column;}
+  .oj-row-col-right{
+    border-left:none;
+    padding-left:0;
+    border-top:1px dashed var(--line);
+    padding-top:14px;
+    width:100%;
+  }
+}
+.oj-row-columns.misc-full .oj-row-col-left{display:none;}
+.oj-row-columns.misc-full .oj-row-col-right{
+  flex:1 1 100%;
+  border-left:none;
+  padding-left:0;
+}
+
+.oj-detail-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px 20px;
+  font-size:13px;
+  margin-bottom:14px;
+}
+.oj-detail-field label{
+  display:block;
+  font-family:var(--font-cond);
+  font-size:10.5px;
+  font-weight:600;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+  color:var(--ink-faint);
+  margin-bottom:2px;
+}
+.oj-detail-field div{font-family:var(--font-mono);font-size:13px;}
+.oj-worktypes{display:flex;flex-wrap:wrap;gap:5px;}
+.oj-worktype-notes{display:flex;flex-direction:column;gap:7px;}
+.oj-worktype-note-row{display:flex;align-items:center;gap:8px;}
+.oj-worktype-note-row .oj-worktype-tag{flex:0 0 auto;}
+.oj-worktype-note-row input{
+  flex:1;
+  min-width:0;
+  font-family:var(--font-display);
+  font-size:12.5px;
+  padding:6px 9px;
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  background:var(--surface);
+  color:var(--ink);
+}
+.oj-worktype-tag{
+  font-family:var(--font-cond);
+  font-size:10.5px;
+  font-weight:600;
+  padding:3px 8px;
+  border-radius:20px;
+  background:var(--accent-soft);
+  color:var(--accent);
+}
+
+.oj-docs{
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+  margin-bottom:16px;
+  padding:10px 0;
+  border-top:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+}
+.oj-doc{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-size:12.5px;
+  cursor:pointer;
+  user-select:none;
+}
+.oj-doc input{accent-color:var(--accent);width:14px;height:14px;flex:0 0 auto;}
+.oj-doc-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  max-width:420px;
+}
+.oj-doc-row .oj-doc{flex:1;min-width:0;}
+.oj-doc-date{
+  flex:0 0 auto;
+  width:126px;
+  font-family:var(--font-mono);
+  font-size:11px;
+  padding:5px 6px;
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  background:var(--surface);
+  color:var(--ink-soft);
+}
+.oj-doc-block{display:flex;flex-direction:column;gap:4px;}
+.oj-doc-note{
+  margin-left:20px;
+  font-family:var(--font-display);
+  font-size:12px;
+  padding:6px 9px;
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  background:var(--surface);
+  color:var(--ink);
+}
+.oj-docs-notes-toggle{
+  align-self:flex-end;
+  font-family:var(--font-cond);
+  font-size:10.5px;
+  font-weight:600;
+  letter-spacing:.03em;
+  color:var(--accent);
+  cursor:pointer;
+  user-select:none;
+  margin-bottom:2px;
+}
+.oj-doc-group-title{
+  font-family:var(--font-cond);
+  font-size:10px;
+  font-weight:600;
+  letter-spacing:.05em;
+  text-transform:uppercase;
+  color:var(--ink-faint);
+  margin-top:6px;
+}
+
+.oj-schedule-section{
+  border-top:1px solid var(--line);
+  margin-top:18px;
+  padding-top:16px;
+}
+.oj-schedule-addrow{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-bottom:16px;
+}
+.oj-schedule-addrow input[type=text]{flex:1;min-width:180px;}
+.oj-schedule-addrow input[type=date]{width:150px;}
+.oj-gantt-wrap{
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  overflow-x:auto;
+  background:var(--surface);
+}
+.oj-gantt-row{
+  display:grid;
+  grid-template-columns:170px 1fr 140px 88px;
+  gap:10px;
+  align-items:center;
+  padding:8px 12px;
+  border-bottom:1px solid var(--line);
+  min-width:660px;
+}
+.oj-gantt-row:last-child{border-bottom:none;}
+.oj-gantt-rowactions{display:flex;gap:4px;justify-content:flex-end;}
+.oj-gantt-rowactions .oj-staff-icon-btn:disabled{opacity:.3;cursor:default;}
+.oj-gantt-scale-row{
+  background:var(--surface-2);
+  padding-top:4px;
+  padding-bottom:4px;
+}
+.oj-gantt-label{
+  font-size:12.5px;
+  font-weight:600;
+  color:var(--ink);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.oj-gantt-track{
+  position:relative;
+  height:22px;
+  background:var(--surface-2);
+  border-radius:4px;
+}
+.oj-gantt-scale-row .oj-gantt-track{background:transparent;height:28px;}
+.oj-gantt-tick{
+  position:absolute;
+  top:13px;
+  font-family:var(--font-mono);
+  font-size:10px;
+  color:var(--ink-faint);
+  white-space:nowrap;
+  transform:translateX(-2px);
+  border-left:1px solid var(--line);
+  padding-left:4px;
+  height:15px;
+}
+.oj-gantt-weeknum{
+  position:absolute;
+  top:0;
+  font-family:var(--font-mono);
+  font-size:9px;
+  color:var(--ink-faint);
+  opacity:.75;
+  transform:translateX(2px);
+}
+.oj-gantt-weekline{
+  position:absolute;
+  top:0;
+  bottom:0;
+  width:0;
+  border-left:1px dotted var(--line);
+}
+.oj-gantt-bar{
+  position:absolute;
+  top:3px;
+  height:16px;
+  background:var(--accent);
+  border-radius:3px;
+  min-width:4px;
+}
+.oj-gantt-today{
+  position:absolute;
+  top:0;
+  bottom:0;
+  width:0;
+  border-left:1.5px dashed var(--alert);
+}
+.oj-gantt-dates{
+  font-family:var(--font-mono);
+  font-size:11px;
+  color:var(--ink-soft);
+  white-space:nowrap;
+}
+.oj-linkrow{display:flex;gap:8px;align-items:center;}
+.oj-linkrow input{
+  flex:1;
+  font-family:var(--font-mono);
+  font-size:12.5px;
+  padding:8px 10px;
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  background:var(--surface);
+  color:var(--ink);
+}
+.oj-linkrow select{
+  width:100%;
+  font-family:var(--font-display);
+  font-size:12.5px;
+  padding:6px 8px;
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  background:var(--surface);
+  color:var(--ink);
+}
+.oj-linkrow select[multiple] option{padding:4px 6px;}
+.oj-linkopen{
+  font-family:var(--font-cond);
+  font-size:11.5px;
+  font-weight:600;
+  color:var(--accent);
+  white-space:nowrap;
+  text-decoration:none;
+}
+.oj-linkopen:hover{text-decoration:underline;}
+.oj-employees-list{display:flex;flex-direction:column;gap:5px;margin-bottom:8px;}
+.oj-employee-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  font-size:12.5px;
+  padding:6px 10px;
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+}
+.oj-employee-remove{
+  background:transparent;
+  border:none;
+  color:var(--ink-faint);
+  cursor:pointer;
+  font-size:15px;
+  line-height:1;
+  padding:2px 4px;
+}
+.oj-employee-remove:hover{color:var(--alert);}
+
+.oj-log{margin-bottom:14px;}
+.oj-log-entries{max-height:420px;overflow-y:auto;}
+.oj-log-title{
+  font-family:var(--font-cond);
+  font-size:11px;
+  font-weight:600;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+  color:var(--ink-faint);
+  margin-bottom:8px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  cursor:pointer;
+  user-select:none;
+}
+.oj-log-toggle-icon{font-size:10px;color:var(--ink-faint);}
+.oj-log-entry{
+  display:flex;
+  gap:10px;
+  align-items:flex-start;
+  padding:7px 0;
+  border-top:1px dashed var(--line);
+  font-size:13px;
+}
+.oj-log-entry:first-child{border-top:none;}
+.oj-log-edit-btn{
+  flex:0 0 auto;
+  margin-left:auto;
+  background:transparent;
+  border:none;
+  color:var(--ink-faint);
+  cursor:pointer;
+  font-size:12px;
+  padding:2px 5px;
+  border-radius:3px;
+  line-height:1.6;
+}
+.oj-log-edit-btn:hover{color:var(--accent);background:var(--accent-soft);}
+.oj-log-del-btn{
+  flex:0 0 auto;
+  background:transparent;
+  border:none;
+  color:var(--ink-faint);
+  cursor:pointer;
+  font-size:12px;
+  padding:2px 5px;
+  border-radius:3px;
+  line-height:1.6;
+}
+.oj-log-del-btn:hover{color:var(--alert);background:var(--alert-soft);}
+.oj-log-entry-edit{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  padding:10px 0;
+  border-top:1px dashed var(--line);
+}
+.oj-log-entry-edit input,.oj-log-entry-edit select{
+  font-family:var(--font-display);
+  font-size:12.5px;
+  padding:7px 9px;
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  background:var(--surface);
+  color:var(--ink);
+}
+.oj-log-edit-actions{display:flex;gap:8px;justify-content:flex-end;}
+.oj-log-date{
+  font-family:var(--font-mono);
+  font-size:11.5px;
+  color:var(--ink-faint);
+  flex:0 0 72px;
+  padding-top:1px;
+}
+.oj-log-text{flex:1;white-space:pre-line;}
+.oj-log-status{
+  font-family:var(--font-cond);
+  font-size:10px;
+  font-weight:600;
+  color:var(--ink-soft);
+}
+.oj-log-entry.is-task .oj-log-text.done{
+  text-decoration:line-through;
+  color:var(--ink-faint);
+}
+.oj-log-task-check{
+  flex:0 0 auto;
+  width:15px;
+  height:15px;
+  margin-top:2px;
+  accent-color:var(--accent);
+  cursor:pointer;
+}
+.oj-log-due{
+  font-family:var(--font-mono);
+  font-size:10.5px;
+  color:var(--ink-soft);
+  flex:0 0 auto;
+  white-space:nowrap;
+}
+.oj-log-due.late{color:var(--alert);font-weight:600;}
+.oj-log-due.today{color:var(--active);font-weight:600;}
+.oj-log-type-badge{
+  font-family:var(--font-cond);
+  font-size:9.5px;
+  font-weight:700;
+  letter-spacing:.03em;
+  text-transform:uppercase;
+  color:var(--accent);
+  flex:0 0 auto;
+  padding-top:2px;
+}
+
+.oj-entryform{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-bottom:14px;
+}
+.oj-entryform input[type=text]{flex:1;min-width:140px;}
+.oj-entryform input[type=date]{width:140px;}
+.oj-entrydone-label{
+  display:flex;
+  align-items:center;
+  gap:5px;
+  font-size:12.5px;
+  color:var(--ink-soft);
+  white-space:nowrap;
+  padding:0 4px;
+}
+
+.oj-detail-actions{
+  display:flex;
+  gap:10px;
+  justify-content:flex-end;
+  border-top:1px solid var(--line);
+  padding-top:12px;
+}
+
+.oj-empty{
+  text-align:center;
+  padding:50px 20px;
+  color:var(--ink-soft);
+  border:1px dashed var(--line);
+  border-radius:var(--radius);
+  font-size:13.5px;
+}
+.oj-loading{
+  text-align:center;
+  padding:40px 20px;
+  color:var(--ink-faint);
+  font-family:var(--font-mono);
+  font-size:12.5px;
+}
+
+/* overlay form */
+.oj-overlay{
+  position:fixed;inset:0;
+  background:rgba(30,36,34,.35);
+  z-index:40;
+}
+.oj-panel{
+  position:fixed;
+  top:0;right:0;bottom:0;
+  width:min(420px,100%);
+  background:var(--surface);
+  z-index:41;
+  overflow-y:auto;
+  padding:22px;
+  box-shadow:-8px 0 24px rgba(0,0,0,.12);
+}
+.oj-panel-title{font-size:17px;font-weight:700;margin:0 0 18px;}
+.oj-field{margin-bottom:13px;}
+.oj-field label{
+  display:block;
+  font-family:var(--font-cond);
+  font-size:11px;
+  font-weight:600;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+  color:var(--ink-soft);
+  margin-bottom:4px;
+}
+.oj-field input,.oj-field select,.oj-field textarea{
+  width:100%;
+  font-family:var(--font-display);
+  font-size:13.5px;
+  padding:9px 10px;
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  background:var(--surface);
+  color:var(--ink);
+}
+.oj-field textarea{resize:vertical;min-height:60px;}
+.oj-checkrow{display:flex;flex-wrap:wrap;gap:10px;}
+.oj-checkrow label{
+  display:flex;align-items:center;gap:5px;
+  font-family:var(--font-display);
+  font-size:12.5px;
+  text-transform:none;
+  font-weight:400;
+  color:var(--ink);
+}
+.oj-checkrow input{width:auto;accent-color:var(--accent);}
+.oj-panel-actions{
+  display:flex;gap:10px;margin-top:20px;
+  position:sticky;bottom:0;background:var(--surface);padding-top:10px;
+}
+.oj-panel-actions .oj-btn{flex:1;justify-content:center;}
+
+.oj-footer{
+  margin-top:26px;
+  text-align:center;
+  font-size:11.5px;
+  color:var(--ink-faint);
+}
+.oj-footer a{color:var(--ink-faint);text-decoration:underline;cursor:pointer;}
+
+.oj-maintabs{
+  display:flex;
+  gap:4px;
+  border-bottom:1px solid var(--line);
+  margin-bottom:22px;
+}
+.oj-maintab{
+  font-family:var(--font-cond);
+  font-size:13px;
+  font-weight:600;
+  letter-spacing:.02em;
+  color:var(--ink-faint);
+  background:transparent;
+  border:none;
+  border-bottom:2px solid transparent;
+  padding:9px 4px;
+  margin-right:20px;
+  cursor:pointer;
+}
+.oj-maintab:hover{color:var(--ink-soft);}
+.oj-maintab.active{color:var(--ink);border-bottom-color:var(--ink);}
+
+.oj-staff-stats{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+  gap:10px;
+  margin-bottom:18px;
+}
+.oj-staff-stat{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:11px 14px;
+}
+.oj-staff-stat-label{
+  font-family:var(--font-cond);
+  font-size:10px;
+  font-weight:600;
+  letter-spacing:.05em;
+  text-transform:uppercase;
+  color:var(--ink-faint);
+  margin-bottom:3px;
+}
+.oj-staff-stat-value{font-size:20px;font-weight:700;color:var(--ink);}
+
+.oj-staff-table-wrap{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  overflow-x:auto;
+}
+.oj-staff-table{width:100%;border-collapse:collapse;font-size:13px;min-width:880px;}
+.oj-staff-table thead tr{background:var(--surface-2);text-align:left;}
+.oj-staff-table th{
+  font-family:var(--font-cond);
+  font-size:10.5px;
+  font-weight:600;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+  color:var(--ink-faint);
+  padding:10px 12px;
+  border-bottom:1px solid var(--line);
+  white-space:nowrap;
+  cursor:pointer;
+  user-select:none;
+}
+.oj-staff-table th:hover{color:var(--ink-soft);}
+.oj-staff-table th.sorted{color:var(--ink);}
+.empSortArrow{color:var(--accent);font-size:9px;}
+.oj-staff-table td{
+  padding:10px 12px;
+  border-bottom:1px solid var(--line);
+  color:var(--ink);
+  vertical-align:middle;
+}
+.oj-staff-table tbody tr:last-child td{border-bottom:none;}
+.oj-staff-table tbody tr:hover{background:var(--surface-2);}
+.oj-staff-name{font-weight:600;}
+.oj-staff-mono{font-family:var(--font-mono);font-size:12px;color:var(--ink-soft);}
+.oj-staff-actions{display:flex;gap:6px;}
+.oj-staff-pill{
+  display:inline-block;
+  padding:3px 9px;
+  border-radius:20px;
+  font-size:11px;
+  font-weight:600;
+  white-space:nowrap;
+}
+.oj-staff-pill.st-active{background:#E7F3EC;color:#1A5F3F;}
+.oj-staff-pill.st-vacation{background:var(--active-soft);color:var(--active);}
+.oj-staff-pill.st-decree{background:#EFE4F3;color:#7A3D8A;}
+.oj-staff-pill.st-sick{background:var(--alert-soft);color:var(--alert);}
+.oj-staff-pill.st-fired{background:var(--surface-2);color:var(--ink-faint);}
+.oj-staff-icon-btn{
+  background:transparent;
+  border:1px solid var(--line);
+  border-radius:4px;
+  padding:4px 6px;
+  cursor:pointer;
+  color:var(--ink-soft);
+  font-size:12px;
+  line-height:1;
+}
+.oj-staff-icon-btn:hover{color:var(--accent);background:var(--accent-soft);border-color:var(--accent);}
+.oj-staff-icon-btn.danger:hover{color:var(--alert);background:var(--alert-soft);border-color:var(--alert);}
+.oj-staff-mono.late{color:var(--alert);font-weight:600;}
+.oj-staff-mono.today{color:var(--active);font-weight:600;}
+.oj-veh-alerts{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:14px 16px;
+  margin-bottom:18px;
+}
+.oj-veh-alert-row{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  padding:7px 0;
+  border-bottom:1px solid var(--line);
+  font-size:13px;
+}
+.oj-veh-alert-row:last-child{border-bottom:none;}
+.oj-veh-log-row{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:10px;
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:12px 14px;
+  margin-bottom:8px;
+}
+
+.oj-toast{
+  position:fixed;
+  left:50%;
+  bottom:22px;
+  transform:translateX(-50%);
+  background:var(--ink);
+  color:#fff;
+  font-size:13px;
+  padding:10px 16px;
+  border-radius:var(--radius);
+  z-index:60;
+  max-width:min(90vw,420px);
+  box-shadow:0 6px 20px rgba(0,0,0,.2);
+}
+.oj-toast.error{background:var(--alert);}
+
+.oj-debugbar{
+  font-family:var(--font-mono);
+  font-size:10.5px;
+  padding:6px 10px;
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  color:var(--ink-soft);
+  margin-bottom:12px;
+}
+.oj-debugbar.err{background:var(--alert-soft);color:var(--alert);border-color:var(--alert);}
+.oj-debugbar.ok{background:#EAF3EC;color:#2E5C3A;border-color:#BEDAC4;}
+
+.oj-confirm-overlay{position:fixed;inset:0;background:rgba(30,36,34,.4);z-index:70;}
+.oj-confirm-box{
+  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+  background:var(--surface);
+  border-radius:var(--radius);
+  padding:20px;
+  width:min(360px,90vw);
+  z-index:71;
+  box-shadow:0 10px 40px rgba(0,0,0,.25);
+}
+.oj-confirm-msg{font-size:14px;margin-bottom:18px;line-height:1.45;color:var(--ink);}
+.oj-confirm-input{
+  width:100%;
+  font-family:var(--font-display);
+  font-size:13.5px;
+  padding:9px 10px;
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  background:var(--surface);
+  color:var(--ink);
+  margin:-8px 0 18px;
+}
+.oj-confirm-actions{display:flex;gap:10px;justify-content:flex-end;}
+
+.oj-export-overlay{position:fixed;inset:0;background:rgba(30,36,34,.4);z-index:80;}
+.oj-export-box{
+  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+  background:var(--surface);
+  border-radius:var(--radius);
+  padding:20px;
+  width:min(560px,92vw);
+  z-index:81;
+  box-shadow:0 10px 40px rgba(0,0,0,.25);
+}
+.oj-export-title{font-size:15px;font-weight:700;margin-bottom:8px;}
+.oj-export-hint{font-size:12px;color:var(--ink-soft);margin-bottom:10px;line-height:1.4;}
+.oj-export-textarea{
+  width:100%;
+  height:220px;
+  font-family:var(--font-mono);
+  font-size:11.5px;
+  padding:10px;
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  background:var(--surface-2);
+  color:var(--ink);
+  resize:vertical;
+  margin-bottom:14px;
+}
+.oj-export-actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;}
+
+.oj-summary{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:16px 18px;
+  margin-bottom:16px;
+}
+.oj-summary-title{font-size:15px;font-weight:700;margin-bottom:14px;}
+.oj-summary-charts{display:flex;flex-direction:column;gap:22px;}
+.oj-chart-block{display:flex;flex-direction:column;gap:6px;}
+.oj-tasks-summary-list{display:flex;flex-direction:column;gap:1px;max-height:340px;overflow-y:auto;border:1px solid var(--line);border-radius:var(--radius);}
+.oj-tasks-summary-row{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:8px 10px;
+  background:var(--surface);
+  cursor:pointer;
+  border-bottom:1px solid var(--line);
+}
+.oj-tasks-summary-row:last-child{border-bottom:none;}
+.oj-tasks-summary-row:hover{background:var(--accent-soft);}
+.oj-tasks-summary-check{flex:0 0 auto;width:15px;height:15px;accent-color:var(--accent);cursor:pointer;}
+.oj-tasks-summary-obj{
+  flex:0 0 auto;
+  max-width:160px;
+  font-family:var(--font-cond);
+  font-size:11px;
+  font-weight:700;
+  color:var(--ink-soft);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.oj-tasks-summary-text{flex:1;font-size:12.5px;color:var(--ink);min-width:0;}
+.oj-chart-title{
+  font-family:var(--font-cond);
+  font-size:11px;
+  font-weight:600;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+  color:var(--ink-faint);
+  margin-bottom:4px;
+}
+.oj-chart-row{display:flex;align-items:center;gap:8px;}
+.oj-chart-label{
+  flex:0 0 118px;
+  font-family:var(--font-cond);
+  font-size:11.5px;
+  color:var(--ink-soft);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.oj-chart-bar-track{flex:1;background:var(--bg);border-radius:3px;height:15px;overflow:hidden;}
+.oj-chart-bar{height:100%;border-radius:3px;transition:width .3s ease;min-width:2px;}
+.oj-chart-value{
+  flex:0 0 26px;
+  text-align:right;
+  font-family:var(--font-mono);
+  font-size:11.5px;
+  color:var(--ink-soft);
+}
+
+@media (max-width:560px){
+  .oj-chart-label{flex-basis:82px;font-size:10.5px;}
+  .oj-doc-row{flex-wrap:wrap;}
+  .oj-doc-date{width:120px;margin-left:20px;}
+  .oj-app{padding:18px 14px 50px;}
+  .oj-title{font-size:21px;}
+  .oj-detail-grid{grid-template-columns:1fr;}
+  .oj-legend{flex-wrap:wrap;}
+  .oj-legend-item{flex:1 1 33%;}
+  .oj-row-head{flex-wrap:wrap;}
+  .oj-row-meta{width:100%;justify-content:space-between;padding-left:28px;}
+}
+
+</style>
+</head>
+<body>
+
+<div id="authGate" style="position:fixed;inset:0;background:#F2F3EF;z-index:1000;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Sans',sans-serif;">
+  <div style="background:#FFFFFF;border:1px solid #DBDED4;border-radius:6px;padding:32px;width:320px;max-width:90vw;">
+    <h2 style="margin:0 0 4px;font-size:19px;color:#1E2422;">Журнал объектов</h2>
+    <p style="margin:0 0 20px;font-size:12.5px;color:#5C6560;">ГЕОАСПЕКТ — вход по рабочей почте</p>
+    <input type="email" id="authEmail" placeholder="Email" autocomplete="username" style="width:100%;box-sizing:border-box;margin-bottom:10px;padding:9px 10px;border:1px solid #DBDED4;border-radius:5px;font-size:13px;">
+    <input type="password" id="authPassword" placeholder="Пароль" autocomplete="current-password" style="width:100%;box-sizing:border-box;margin-bottom:14px;padding:9px 10px;border:1px solid #DBDED4;border-radius:5px;font-size:13px;">
+    <button type="button" id="authLoginBtn" style="width:100%;padding:10px;background:#2A5FA5;color:#fff;border:none;border-radius:5px;font-size:13px;font-weight:600;cursor:pointer;">Войти</button>
+    <div id="authStatus" style="color:#5C6560;font-size:12px;margin-top:12px;min-height:16px;"></div>
+  </div>
+</div>
+
+<div class="oj-app">
+  <div class="oj-debugbar" id="ojDebug">JS: инициализация…</div>
+  <div class="oj-brandmark-name">ГЕОАСПЕКТ</div>
+
+  <div class="oj-maintabs" id="ojMainTabs">
+    <button class="oj-maintab active" data-view="objects">Объекты</button>
+    <button class="oj-maintab" data-view="staff">Сотрудники</button>
+    <button class="oj-maintab" data-view="vehicles">Автомобили</button>
+  </div>
+
+  <div id="objectsView">
+  <div class="oj-titlerow">
+    <h1 class="oj-title">Журнал объектов</h1>
+    <button class="oj-btn oj-btn-primary" id="ojAddBtn">+ Объект</button>
+  </div>
+
+  <div class="oj-legend" id="ojLegend"></div>
+
+  <div class="oj-toolbar">
+    <input class="oj-input" id="ojSearch" type="text" placeholder="Поиск по названию, заказчику, адресу, ответственному…">
+    <select class="oj-select" id="ojFilterType"><option value="">Все виды работ</option></select>
+    <select class="oj-select" id="ojFilterPriority">
+      <option value="">Режим: все</option>
+      <option value="active">Только активные</option>
+      <option value="passive">Только пассивные</option>
+      <option value="none">Без режима</option>
+    </select>
+    <select class="oj-select" id="ojSortField">
+      <option value="name" selected>Сортировка: название</option>
+      <option value="deadline">Сортировка: срок сдачи</option>
+      <option value="customer">Сортировка: заказчик</option>
+      <option value="responsible">Сортировка: ответственный</option>
+    </select>
+    <button class="oj-btn oj-btn-ghost" id="ojSortDir" title="Изменить направление сортировки">↑ по возрастанию</button>
+    <button class="oj-btn oj-btn-ghost" id="ojArchiveToggleBtn">В архиве (0)</button>
+    <button class="oj-btn oj-btn-ghost" id="ojExpandAllBtn">Развернуть все</button>
+    <button class="oj-btn oj-btn-primary" id="ojSummaryBtn">Сводка</button>
+    <button class="oj-btn oj-btn-ghost" id="ojExportDbBtn">Экспорт базы (JSON)</button>
+    <button class="oj-btn oj-btn-ghost" id="ojImportDbBtn">Импорт базы (JSON)</button>
+    <input type="file" id="ojImportDbFile" accept="application/json,.json" style="display:none;">
+  </div>
+
+  <div class="oj-summary" id="ojSummary" hidden>
+    <div class="oj-summary-title" style="display:flex;justify-content:space-between;align-items:center;">
+      <span>Сводка по объектам</span>
+      <button type="button" class="oj-btn oj-btn-ghost" id="ojSummaryExportBtn" style="font-size:11.5px;padding:5px 10px;">Экспорт сводки (Excel/CSV)</button>
+    </div>
+    <div class="oj-summary-charts" id="ojSummaryCharts"></div>
+  </div>
+
+  <div class="oj-loading" id="ojLoading">Загрузка журнала…</div>
+  <div class="oj-list" id="ojList" style="display:none;"></div>
+  <div class="oj-empty" id="ojEmpty" hidden>Пока нет ни одного объекта.<br>Нажмите «+ Объект», чтобы добавить первую запись.</div>
+  </div>
+
+  <div id="staffView" hidden>
+    <div class="oj-titlerow">
+      <h1 class="oj-title">Сотрудники</h1>
+      <button class="oj-btn oj-btn-primary" id="empAddBtn">+ Сотрудник</button>
+    </div>
+
+    <div class="oj-staff-stats" id="empStats"></div>
+
+    <div class="oj-toolbar">
+      <input class="oj-input" id="empSearch" type="text" placeholder="Поиск по ФИО, должности…">
+      <select class="oj-select" id="empFilterCompany"><option value="">Все компании</option></select>
+      <select class="oj-select" id="empFilterDept"><option value="">Все подразделения</option></select>
+      <select class="oj-select" id="empFilterStatus"><option value="">Любой статус</option></select>
+      <select class="oj-select" id="empSortField">
+        <option value="fullName" selected>Сортировка: ФИО</option>
+        <option value="company">Сортировка: компания</option>
+        <option value="department">Сортировка: подразделение</option>
+        <option value="position">Сортировка: должность</option>
+        <option value="objectName">Сортировка: объект</option>
+        <option value="hireDate">Сортировка: дата приёма</option>
+        <option value="rate">Сортировка: ставка</option>
+      </select>
+      <button class="oj-btn oj-btn-ghost" id="empSortDir" title="Изменить направление сортировки">↑ по возрастанию</button>
+    </div>
+
+    <div class="oj-staff-table-wrap">
+      <table class="oj-staff-table" id="empTable">
+        <thead>
+          <tr>
+            <th data-sort="fullName">ФИО<span class="empSortArrow"></span></th>
+            <th data-sort="company">Компания<span class="empSortArrow"></span></th>
+            <th data-sort="position">Должность<span class="empSortArrow"></span></th>
+            <th data-sort="objectName">Объект<span class="empSortArrow"></span></th>
+            <th data-sort="hireDate">Дата приёма<span class="empSortArrow"></span></th>
+            <th data-sort="status">Статус<span class="empSortArrow"></span></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="empTableBody"></tbody>
+      </table>
+    </div>
+    <div class="oj-empty" id="empEmpty" hidden>Никого не найдено.</div>
+  </div>
+
+  <div id="vehiclesView" hidden>
+    <div class="oj-titlerow">
+      <h1 class="oj-title">Автомобили</h1>
+      <button class="oj-btn oj-btn-primary" id="vehAddBtn">+ Машина</button>
+    </div>
+
+    <div class="oj-staff-stats" id="vehStats"></div>
+
+    <div class="oj-veh-alerts" id="vehAlerts" hidden></div>
+
+    <div class="oj-toolbar">
+      <input class="oj-input" id="vehSearch" type="text" placeholder="Поиск: марка, номер, водитель, город…">
+      <select class="oj-select" id="vehFilterOwner"><option value="">Любой собственник</option></select>
+    </div>
+
+    <div class="oj-staff-table-wrap">
+      <table class="oj-staff-table" id="vehTable">
+        <thead>
+          <tr>
+            <th data-sort="brandModel">Марка / модель<span class="vehSortArrow"></span></th>
+            <th data-sort="year">Год<span class="vehSortArrow"></span></th>
+            <th data-sort="plate">Гос.номер<span class="vehSortArrow"></span></th>
+            <th data-sort="location">Город/объект<span class="vehSortArrow"></span></th>
+            <th data-sort="owner">Собственник<span class="vehSortArrow"></span></th>
+            <th data-sort="driver">Водитель<span class="vehSortArrow"></span></th>
+            <th data-sort="mileage">Пробег<span class="vehSortArrow"></span></th>
+            <th data-sort="osagoUntil">ОСАГО до<span class="vehSortArrow"></span></th>
+            <th data-sort="inspectionUntil">ТО до<span class="vehSortArrow"></span></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="vehTableBody"></tbody>
+      </table>
+    </div>
+    <div class="oj-empty" id="vehEmpty" hidden>Список техники пуст.</div>
+  </div>
+
+  <div class="oj-footer">
+    Данные хранятся в общей базе Geoaspekt. <a id="ojResetLink">Очистить журнал</a> · <a id="authLogoutLink">Выйти</a> (<span id="authUserEmail"></span>)
+  </div>
+</div>
+<div class="oj-toast" id="ojToast" hidden></div>
+
+<div class="oj-confirm-overlay" id="ojConfirmOverlay" hidden></div>
+<div class="oj-confirm-box" id="ojConfirmBox" hidden>
+  <div class="oj-confirm-msg" id="ojConfirmMsg"></div>
+  <div class="oj-confirm-actions">
+    <button type="button" class="oj-btn oj-btn-ghost" id="ojConfirmCancelBtn">Отмена</button>
+    <button type="button" class="oj-btn" id="ojConfirmOkBtn" style="background:var(--alert);color:#fff;">Подтвердить</button>
+  </div>
+</div>
+
+<div class="oj-export-overlay" id="ojExportOverlay" hidden></div>
+<div class="oj-export-box" id="ojExportBox" hidden>
+  <div class="oj-export-title" id="ojExportTitle">Экспорт</div>
+  <div class="oj-export-hint" id="ojExportHint">Скачивание файла может не работать в этой среде — надёжнее всего скопировать текст и вставить в Excel, Google Таблицы или обычный файл.</div>
+  <textarea class="oj-export-textarea" id="ojExportTextarea" readonly></textarea>
+  <div class="oj-export-actions">
+    <button type="button" class="oj-btn oj-btn-ghost" id="ojExportCloseBtn">Закрыть</button>
+    <button type="button" class="oj-btn oj-btn-ghost" id="ojExportDownloadBtn">Скачать файл</button>
+    <button type="button" class="oj-btn oj-btn-primary" id="ojExportCopyBtn">Скопировать</button>
+  </div>
+</div>
+
+<div class="oj-overlay" id="ojOverlay" hidden></div>
+<aside class="oj-panel" id="ojPanel" hidden>
+  <h2 class="oj-panel-title" id="ojPanelTitle">Новый объект</h2>
+  <div id="ojForm">
+    <div class="oj-field">
+      <label>Название объекта</label>
+      <input type="text" id="fName">
+    </div>
+    <div class="oj-field">
+      <label>Адрес / местоположение</label>
+      <input type="text" id="fAddress">
+    </div>
+    <div class="oj-field">
+      <label>Заказчик</label>
+      <input type="text" id="fCustomer">
+    </div>
+    <div class="oj-field">
+      <label>№ договора</label>
+      <input type="text" id="fContract">
+    </div>
+    <div class="oj-field">
+      <label>Вид работ</label>
+      <div class="oj-checkrow" id="fWorkTypes"></div>
+    </div>
+    <div class="oj-field">
+      <label>Ответственный</label>
+      <input type="text" id="fResponsible">
+    </div>
+    <div class="oj-field">
+      <label>Ответственный от заказчика</label>
+      <input type="text" id="fCustomerResponsible">
+    </div>
+    <div class="oj-field">
+      <label>Плановый срок сдачи</label>
+      <input type="date" id="fDeadline">
+    </div>
+    <div class="oj-field">
+      <label>Статус</label>
+      <select id="fStatus"></select>
+    </div>
+    <div class="oj-field">
+      <label>Примечание</label>
+      <textarea id="fNote" placeholder="Необязательно — попадёт первой записью в журнал"></textarea>
+    </div>
+    <div class="oj-panel-actions">
+      <button type="button" class="oj-btn oj-btn-ghost" id="ojCancelBtn">Отмена</button>
+      <button type="button" class="oj-btn oj-btn-primary" id="ojSaveBtn">Сохранить</button>
+    </div>
+  </div>
+</aside>
+
+<div class="oj-overlay" id="ojEmpOverlay" hidden></div>
+<aside class="oj-panel" id="ojEmpPanel" hidden>
+  <h2 class="oj-panel-title" id="ojEmpPanelTitle">Новый сотрудник</h2>
+  <div class="oj-field">
+    <label>ФИО</label>
+    <input type="text" id="empFName">
+  </div>
+  <div class="oj-field">
+    <label>Компания</label>
+    <select id="empFCompany"></select>
+  </div>
+  <div class="oj-field">
+    <label>Должность</label>
+    <input type="text" id="empFPosition" placeholder="Инженер-геодезист">
+  </div>
+  <div class="oj-field">
+    <label>Подразделение</label>
+    <select id="empFDept"></select>
+  </div>
+  <div class="oj-field">
+    <label>Объект</label>
+    <select id="empFObject"><option value="">Не назначен</option></select>
+  </div>
+  <div class="oj-field">
+    <label>Дата приёма</label>
+    <input type="date" id="empFHireDate">
+  </div>
+  <div class="oj-field">
+    <label>Ставка, ₽/мес</label>
+    <input type="number" id="empFRate">
+  </div>
+  <div class="oj-field">
+    <label>Телефон</label>
+    <input type="text" id="empFPhone" placeholder="+7 900 000-00-00">
+  </div>
+  <div class="oj-field">
+    <label>Статус</label>
+    <select id="empFStatus"></select>
+  </div>
+  <div class="oj-field">
+    <label>Примечание</label>
+    <textarea id="empFNotes"></textarea>
+  </div>
+  <div class="oj-panel-actions">
+    <button type="button" class="oj-btn oj-btn-ghost" id="empCancelBtn">Отмена</button>
+    <button type="button" class="oj-btn oj-btn-primary" id="empSaveBtn">Сохранить</button>
+  </div>
+</aside>
+
+<div class="oj-overlay" id="ojVehOverlay" hidden></div>
+<aside class="oj-panel" id="ojVehPanel" hidden>
+  <h2 class="oj-panel-title" id="ojVehPanelTitle">Новая машина</h2>
+  <div class="oj-detail-grid" style="grid-template-columns:2fr 1fr;">
+    <div class="oj-field"><label>Марка</label><input type="text" id="vehFBrand" placeholder="Renault"></div>
+    <div class="oj-field"><label>Год</label><input type="text" id="vehFYear" placeholder="2021"></div>
+  </div>
+  <div class="oj-field"><label>Модель</label><input type="text" id="vehFModel" placeholder="Duster"></div>
+  <div class="oj-detail-grid">
+    <div class="oj-field"><label>Гос.номер</label><input type="text" id="vehFPlate" placeholder="А 123 ВС 77"></div>
+    <div class="oj-field"><label>VIN</label><input type="text" id="vehFVin"></div>
+  </div>
+  <div class="oj-detail-grid">
+    <div class="oj-field"><label>СТС (серия и номер)</label><input type="text" id="vehFSts"></div>
+    <div class="oj-field"><label>Полис ОСАГО №</label><input type="text" id="vehFOsagoPolicy"></div>
+  </div>
+  <div class="oj-detail-grid">
+    <div class="oj-field"><label>ОСАГО действует до</label><input type="date" id="vehFOsagoUntil"></div>
+    <div class="oj-field"><label>Техосмотр до</label><input type="date" id="vehFInspectionUntil"></div>
+  </div>
+  <div class="oj-field"><label>Город / объект</label><input type="text" id="vehFLocation" placeholder="Москва"></div>
+  <div class="oj-detail-grid">
+    <div class="oj-field"><label>Собственник</label><input type="text" id="vehFOwner" placeholder="Геоаспект"></div>
+    <div class="oj-field"><label>Водитель</label><input type="text" id="vehFDriver"></div>
+  </div>
+  <div class="oj-field"><label>Пробег, км</label><input type="number" id="vehFMileage"></div>
+  <div class="oj-field"><label>Заметки</label><textarea id="vehFNotes"></textarea></div>
+  <div class="oj-panel-actions">
+    <button type="button" class="oj-btn oj-btn-ghost" id="vehCancelBtn">Отмена</button>
+    <button type="button" class="oj-btn oj-btn-primary" id="vehSaveBtn">Сохранить</button>
+  </div>
+</aside>
+
+<div class="oj-overlay" id="ojVehLogOverlay" hidden></div>
+<aside class="oj-panel" id="ojVehLogPanel" hidden style="max-width:600px;">
+  <h2 class="oj-panel-title" id="ojVehLogTitle">Журнал ТО и расходов</h2>
+  <div class="oj-staff-stats" id="vehLogStats" style="grid-template-columns:1fr 1fr;margin-bottom:16px;"></div>
+
+  <button type="button" class="oj-btn oj-btn-primary" id="vehLogAddBtn" style="width:100%;margin-bottom:14px;">+ Добавить запись</button>
+
+  <div id="vehLogNewEntry" hidden style="border:1px solid var(--line);border-radius:var(--radius);padding:14px;background:var(--surface-2);margin-bottom:16px;">
+    <div class="oj-detail-grid">
+      <div class="oj-field"><label>Дата</label><input type="date" id="vehLogEDate"></div>
+      <div class="oj-field"><label>Тип</label>
+        <select id="vehLogEType">
+          <option>ТО</option><option>Ремонт</option><option>Страховка</option><option>Шины</option><option>Мойка</option><option>Штраф</option><option>Прочее</option>
+        </select>
+      </div>
+    </div>
+    <div class="oj-field"><label>Описание</label><input type="text" id="vehLogEDesc" placeholder="Замена масла и фильтров"></div>
+    <div class="oj-detail-grid">
+      <div class="oj-field"><label>Стоимость, ₽</label><input type="number" id="vehLogECost" placeholder="0"></div>
+      <div class="oj-field"><label>Пробег на момент, км</label><input type="number" id="vehLogEMileage"></div>
+    </div>
+    <div class="oj-field">
+      <label>Акт / документ (PDF)</label>
+      <input type="file" accept="application/pdf" id="vehLogEFile">
+      <div id="vehLogEFileName" style="font-size:12px;color:var(--ink-soft);margin-top:5px;"></div>
+      <div id="vehLogEFileErr" style="font-size:11.5px;color:var(--alert);margin-top:4px;"></div>
+    </div>
+    <div class="oj-panel-actions">
+      <button type="button" class="oj-btn oj-btn-ghost" id="vehLogECancelBtn">Отмена</button>
+      <button type="button" class="oj-btn oj-btn-primary" id="vehLogESaveBtn">Сохранить запись</button>
+    </div>
+  </div>
+
+  <div id="vehLogEntries"></div>
+
+  <div class="oj-panel-actions">
+    <button type="button" class="oj-btn oj-btn-ghost" id="vehLogCloseBtn" style="flex:1;">Закрыть</button>
+  </div>
+</aside>
+
+<script>
+(function(){
+  try{
+    var __d0 = document.getElementById('ojDebug');
+    if(__d0) __d0.textContent = 'JS: скрипт запущен…';
+  }catch(e0){}
+
+  // ---------- Supabase: подключение и вход ----------
+  const SUPABASE_URL = 'https://xzcdjdomwxoycvohnkly.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_57UHMQeM0ahOxdnRn-JTZQ_5FUmB4Vh';
+  const sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  // Внутри превью Claude сетевые запросы к внешним сервисам (в т.ч. к Supabase)
+  // блокируются песочницей — вход и синхронизация там принципиально не могут
+  // сработать. Вместо того чтобы угадывать это по адресу страницы (ненадёжно —
+  // разные способы открыть превью дают разные адреса), проверяем НАПРЯМУЮ:
+  // пробуем достучаться до Supabase, и если браузер физически не может
+  // выполнить запрос (а не просто база отвечает отказом доступа) — включаем
+  // локальный режим предпросмотра: без входа, данные живут только в памяти
+  // вкладки и пропадают при закрытии — только чтобы можно было проверить
+  // интерфейс и функции, не более того.
+  let PREVIEW_MODE = false;
+  const __previewStore = {};
+  const previewStorageImpl = {
+    async get(key){
+      if(!(key in __previewStore)) return null;
+      return { key, value: __previewStore[key], shared: false };
+    },
+    async set(key, value){
+      __previewStore[key] = value;
+      return { key, value, shared: false };
+    },
+    async delete(key){
+      const existed = key in __previewStore;
+      delete __previewStore[key];
+      return { key, deleted: existed, shared: false };
+    },
+  };
+  // Тот же интерфейс, что был у window.storage внутри Claude — только теперь
+  // поверх настоящей общей базы Supabase, а не локального/Claude-хранилища.
+  const realStorageImpl = {
+    async get(key){
+      const { data, error } = await sbClient.from('kv_store').select('value').eq('key', key).maybeSingle();
+      if(error) throw error;
+      if(!data) return null;
+      return { key, value: JSON.stringify(data.value), shared: false };
+    },
+    async set(key, value){
+      const { error } = await sbClient.from('kv_store').upsert({ key, value: JSON.parse(value), updated_at: new Date().toISOString() });
+      if(error) throw error;
+      return { key, value, shared: false };
+    },
+    async delete(key){
+      const { error } = await sbClient.from('kv_store').delete().eq('key', key);
+      if(error) throw error;
+      return { key, deleted: true, shared: false };
+    },
+  };
+  async function isNetworkReachable(){
+    try{
+      // Supabase не всегда выбрасывает исключение при сетевом сбое (CORS/блокировка) —
+      // иногда он молча возвращает это как обычное поле error в ответе. Проверяем оба варианта.
+      const { error } = await sbClient.from('kv_store').select('key').limit(1);
+      if(error && /fetch|network|failed/i.test(error.message || '')){
+        console.error('Сетевая ошибка при проверке связи с Supabase — включаю режим предпросмотра', error);
+        return false;
+      }
+      return true;
+    }catch(e){
+      console.error('Проверка сети не прошла (исключение) — включаю режим предпросмотра', e);
+      return false;
+    }
+  }
+
+  function setAuthStatus(msg, isErr){
+    const el = document.getElementById('authStatus');
+    if(el){ el.textContent = msg || ''; el.style.color = isErr ? '#B23A22' : '#5C6560'; }
+  }
+  function showAuthGate(show){
+    const gate = document.getElementById('authGate');
+    if(gate) gate.style.display = show ? 'flex' : 'none';
+  }
+  async function doLogin(){
+    const email = document.getElementById('authEmail').value.trim();
+    const password = document.getElementById('authPassword').value;
+    if(!email || !password){ setAuthStatus('Введите почту и пароль.', true); return; }
+    setAuthStatus('Входим…');
+    let result;
+    try{
+      result = await sbClient.auth.signInWithPassword({ email, password });
+    }catch(e){
+      enterPreviewMode();
+      return;
+    }
+    const { error } = result;
+    if(error){
+      if(/fetch|network|failed/i.test(error.message || '')){
+        enterPreviewMode();
+        return;
+      }
+      setAuthStatus(error.message === 'Invalid login credentials' ? 'Неверная почта или пароль.' : error.message, true);
+      return;
+    }
+    showAuthGate(false);
+    boot();
+  }
+  document.getElementById('authLoginBtn').addEventListener('click', doLogin);
+  document.getElementById('authPassword').addEventListener('keydown', (ev) => { if(ev.key === 'Enter') doLogin(); });
+
+  function seedDemoObjectForPreview(){
+    const addDays = (n) => {
+      const d = new Date();
+      d.setDate(d.getDate() + n);
+      return d.toISOString().slice(0,10);
+    };
+    const demo = {
+      id: 'demo-obj-1',
+      name: 'Демо-объект (пример графика работ)',
+      address: 'Москва',
+      customer: 'ООО Пример',
+      contract: 'Д-2026/001',
+      responsible: 'Иванов',
+      customerResponsible: '',
+      status: 'field',
+      priority: '',
+      workTypes: ['Топосъёмка'],
+      workTypeNotes: {},
+      deadline: addDays(35),
+      docs: {}, docDates: {}, docNotes: {},
+      commsLink: '', commsDeadline: '',
+      employees: [],
+      log: [],
+      archived: false,
+      createdAt: addDays(-30),
+      updatedAt: todayISO(),
+      schedule: [
+        {id: uid(), name: 'Подготовительные работы', start: addDays(-30), end: addDays(-18)},
+        {id: uid(), name: 'Полевые изыскания', start: addDays(-15), end: addDays(5)},
+        {id: uid(), name: 'Камеральная обработка', start: addDays(8), end: addDays(24)},
+        {id: uid(), name: 'Сдача отчёта заказчику', start: addDays(28), end: addDays(33)},
+      ],
+    };
+    __previewStore[STORAGE_KEY] = JSON.stringify([demo]);
+  }
+  function enterPreviewMode(){
+    PREVIEW_MODE = true;
+    window.storage = previewStorageImpl;
+    seedDemoObjectForPreview();
+    showAuthGate(false);
+    const emailEl = document.getElementById('authUserEmail');
+    if(emailEl) emailEl.textContent = 'режим предпросмотра';
+    const banner = document.createElement('div');
+    banner.textContent = '⚠ Режим предпросмотра — сеть недоступна в этой среде, вход и синхронизация с общей базой отключены, данные не сохранятся. Откройте настоящий адрес на GitHub Pages для полноценной работы.';
+    banner.style.cssText = 'background:#F7E9E4;color:#B23A22;font-size:12.5px;padding:8px 16px;text-align:center;';
+    document.body.insertBefore(banner, document.body.firstChild);
+    boot();
+  }
+  async function checkAuthAndStart(){
+    const reachable = await isNetworkReachable();
+    if(!reachable){
+      enterPreviewMode();
+      return;
+    }
+    window.storage = realStorageImpl;
+    const { data } = await sbClient.auth.getSession();
+    if(data && data.session){
+      showAuthGate(false);
+      const emailEl = document.getElementById('authUserEmail');
+      if(emailEl) emailEl.textContent = data.session.user.email || '';
+      boot();
+    }else{
+      showAuthGate(true);
+    }
+  }
+  document.addEventListener('DOMContentLoaded', () => {
+    const logoutLink = document.getElementById('authLogoutLink');
+    if(logoutLink){
+      logoutLink.addEventListener('click', async () => {
+        if(PREVIEW_MODE){ location.reload(); return; }
+        await sbClient.auth.signOut();
+        location.reload();
+      });
+    }
+  });
+
+  const STAGES = [
+    {key:'contract',  label:'Договор',               color:'#9CA39A'},
+    {key:'field',     label:'Полевые работы',        color:'#B98A46'},
+    {key:'office',    label:'Камеральная обработка', color:'#BFA047'},
+  ];
+  const WORK_TYPES = ['Топосъёмка','Разбивочные работы','Исполнительная съёмка','Геодезическая сеть','Мониторинг деформаций','Межевание / кадастр','Технический надзор','Геодезическое сопровождение','Сезонное определение','ПТО','Разное'];
+  const STORAGE_KEY = 'objects-journal';
+
+
+
+  // ---------- Сотрудники ----------
+  const EMP_STATUS_META = {
+    active:   {key:'active',   label:'Работает',    css:'st-active'},
+    vacation: {key:'vacation', label:'Отпуск',      css:'st-vacation'},
+    decree:   {key:'decree',   label:'Декрет',      css:'st-decree'},
+    sick:     {key:'sick',     label:'Больничный',  css:'st-sick'},
+    fired:    {key:'fired',    label:'Уволен',      css:'st-fired'},
+  };
+  const COMPANIES = ['ГЕОАСПЕКТ', 'ОРБИТА'];
+  const DEPARTMENTS = [
+    'администрация',
+    'Геодезический отдел',
+    'Кадастровый отдел',
+    'Картографический отдел',
+    'Маркшейдерский отдел',
+    'Отдел экологии',
+    'Отдел геологии',
+    'Отдел гидрометеорологических изысканий',
+    'Производственно-технический отдел',
+    'Основное подразделение',
+    'Проектирование',
+    'Технический заказчик',
+  ];
+  const EMP_STORAGE_KEY = 'employees';
+  const SEED_EMPLOYEES = [
+  {"id": "emp-гео-0000000022", "fullName": "Келепурис Дмитрий Костас", "position": "заместитель генерального директора", "department": "администрация", "company": "ГЕОАСПЕКТ", "objectId": "", "hireDate": "2010-03-15", "rate": 103448, "phone": "", "status": "active", "notes": "Таб. № 0000000022, дата рождения 29.04.1980"},
+  {"id": "emp-гео-0000000041", "fullName": "Кузнецова Светлана Григорьевна", "position": "главный бухгалтер", "department": "администрация", "company": "ГЕОАСПЕКТ", "objectId": "", "hireDate": "2012-02-01", "rate": 30000, "phone": "", "status": "active", "notes": "Таб. № 0000000041, дата рождения 09.10.1977"},
+  {"id": "emp-гео-00144", "fullName": "Кулеш Валентина Владимировна", "position": "специалист по режиму секретности", "department": "администрация", "company": "ГЕОАСПЕКТ", "objectId": "", "hireDate": "2026-04-06", "rate": 45977, "phone": "", "status": "active", "notes": "Таб. № 00144, дата рождения 09.09.1971"},
+  {"id": "emp-гео-0000000028", "fullName": "Скворцов Максим Геннадьевич", "position": "генеральный директор", "department": "администрация", "company": "ГЕОАСПЕКТ", "objectId": "", "hireDate": "2010-12-21", "rate": 109195, "phone": "", "status": "active", "notes": "Таб. № 0000000028, дата рождения 21.07.1980"},
+  {"id": "emp-гео-0000000024", "fullName": "Скворцова Анна Юрьевна", "position": "секретарь", "department": "администрация", "company": "ГЕОАСПЕКТ", "objectId": "", "hireDate": "2010-06-01", "rate": 45977, "phone": "", "status": "active", "notes": "Таб. № 0000000024, дата рождения 07.08.1979"},
+  {"id": "emp-гео-0000000179", "fullName": "Тренина Екатерина Николаевна", "position": "инженер по качеству", "department": "администрация", "company": "ГЕОАСПЕКТ", "objectId": "", "hireDate": "2019-09-06", "rate": 183939, "phone": "", "status": "active", "notes": "Таб. № 0000000179, дата рождения 01.11.1982"},
+  {"id": "emp-гео-0000000071", "fullName": "Ушань Игорь Александрович", "position": "заместитель генерального директора по производству", "department": "администрация", "company": "ГЕОАСПЕКТ", "objectId": "", "hireDate": "2014-07-14", "rate": 229885, "phone": "", "status": "active", "notes": "Таб. № 0000000071, дата рождения 15.01.1988"},
+  {"id": "emp-гео-0000000144", "fullName": "Алексеев Юрий Викторович", "position": "помощник геодезиста", "department": "Геодезический отдел", "company": "ГЕОАСПЕКТ", "objectId": "", "hireDate": "2017-07-14", "rate": 103449, "phone": "", "status": "active", "notes": "Таб. № 0000000144, дата рождения 22.08.1975"},
+  {"id": "emp-гео-0000000187", "fullName": "Алмазов Андрей Андреевич", "position": "техник-геодезист", "department": "Геодезический отдел", "company": "ГЕОАСПЕКТ", "objectId": "", "hireDate": "2019-10-28", "rate": 103448, "phone": "", "status": "active", "notes": "Таб. № 0000000187, дата рождения 21.02.1991"},
+  {"id": "emp-гео-00165", "fullName": "Балейчук Михаил Владимирович", "position": "помощник геодезиста", "department": "Геодезический отдел", "company": "ГЕОАСПЕКТ", "objectId": "", "hireDate": "2026-08-18", "rate": 114943, "phone": "", "status": "active", "notes": "Таб. № 00165, дата рождения 08.05.2024"},
+  {"id": "emp-гео-0000000095", "fullName": "Виниченко Анатолий Владимирович", "position": "инженер-геодезист", "department": "Геодезический отдел", "company": "ГЕОАСПЕКТ", "objectId": "", "hireDate": "2015-08-03", "rate": 114943, "phone": "", "status": "active", "notes": "Таб. № 0000000095, дата рождения 05.10.1975"},
+  {"id": "emp-гео-00150", "fullName": "Головин Евгений Александрович", "position": "инженер-геодезист", "department": "Геодезический отдел", "company": "ГЕОАСПЕКТ", "objectId": "", "hireDate": "2026-04-20", "rate": 183908, "phone": "", "status": "active", "notes": "Таб. № 00150, дата рождения 18.09.1976"},
+  {"id": "emp-гео-0000000116", "fullName": "Гринев Евгений Владимирович", "position": "помощник геодезиста", "department": "Геодезический отдел", "company": "ГЕОАСПЕКТ", "objectId": "", "hireDate": "2016-08-01", "rate": 80460, "phone": "", "status": "active", "notes": "Таб. № 0000000116, дата рождения 21.02.1984"},
+  {"id": "emp-гео-00105", "fullName": "Демидов Владимир Николаевич", "position": "техник-геодезист", "department": "Геодезический отдел", "company": "ГЕОАСПЕКТ", "objectId": "", "hireDate": "2023-11-03", "rate": 80460, "phone": "", "status": "active", "notes": "Таб. № 00105, дата рождения 23.01.1983"},
+  {"id": "emp-гео-00164", "fullName": "Жиганов Илья Алексеевич", "position": "помощник геодезиста", "department": "Геодезический отдел", "company": "ГЕОАСПЕКТ", "objectId": "", "hireDate": "2026-08-10", "rate": 114943, "phone": "", "status": "active", "notes": "Таб. № 00164, дата рождения 31.07.2001"},
+  {"id": "emp-гео-0000000202", "fullName": "Задорожный Кирилл Дмитриевич", "position": "инженер-геодезист", "department": "Геодезический отдел", "company": "ГЕОАСПЕКТ", "objectId": "", "hireDate": "2020-10-19", "rate": 137931, "phone": "", "status": "active", "notes": "Таб. № 0000000202, дата рождения 27.03.1993"},
+  {"id": "emp-гео-00160", "fullName": "Зубков Артем Геннадьевич", "position": "техник-геодезист", "department": "Геодезический отдел", "company": "ГЕОАСПЕКТ", "objectId": "", "hireDate": "2026-07-27", "rate": 137931, "phone": "", "status": "active", "notes": "Таб. № 00160, дата рождения 06.07.2004"},
+  {"id": "emp-гео-00139", "fullName": "Исаковский Александр Николаевич", "position": "инженер-геодезист", "department": "Геодезический отдел", "company": "ГЕОАСПЕКТ", "objectId": "", "hireDate": "2025-12-25", "rate": 137931, "phone": "", "status": "active", "notes": "Таб. № 00139, дата рождения 24.05.1981"},
+  {"id": "emp-гео-0000000030", "fullName": "Калля Максим Юрьевич", "position": "начальник геодезического отдела", "department": "Геодезический отдел", "company": "ГЕОАСПЕКТ", "objectId": "", "hireDate": "2011-03-21", "rate": 137931, "phone": "", "status": "active", "notes": "Таб. № 0000000030, дата рождения 03.08.1984"},
+  {"id": "emp-гео-00151", "fullName": "Калля Юрий Аркадьевич", "position": "инженер-геодезист", "department": "Геодезический отдел", "company": "ГЕОАСПЕКТ", "objectId": "", "hireDate": "2026-05-04", "rate": 126437, "phone": "", "status": "active", "notes": "Таб. № 00151, дата рождения 20.07.1958"},
+  {"id": "emp-гео-00133", "fullName": "Кононов Константин Михайлович", "position": "геодезист", "department": "Геодезический отдел", "company": "ГЕОАСПЕКТ", "objectId": "", "hireDate": "2025-07-22", "rate": 137931, "phone": "", "status": "active", "notes": "Таб. № 00133, дата рождения 31.08.1998"},
+  {"id": "emp-гео-0000000109", "fullName": "Копейкин Александр Александрович", "position": "помощник геодезиста", "department": "Геодезический отдел", "company": "ГЕОАСПЕКТ", "objectId": "", "hireDate": "2016-05-04", "rate": 103448, "phone": "", "status": "active", "notes": "Таб. № 0000000109, дата рождения 15.11.1989"},
+  {"id": "emp-гео-0000000157", "fullName": "Кузнецов Владислав Ильич", "position": "инженер-геодезист", "department": "Геодезический отдел", "company": "ГЕОАСПЕКТ", "objectId": "", "hireDate": "2018-09-03", "rate": 137931, "phone": "", "status": "active", "notes": "Таб. № 0000000157, дата рождения 01.06.1997"},
+  {"id": "emp-гео-0000000142", "fullName": "Локтев Дмитрий Николаевич", "position": "техник-геодезист", "department": "Геодезический отдел", "company": "ГЕОАСПЕКТ", "objectId": "", "hireDate": "2017-07-12", "rate": 114943, "phone": "", "status": "active", "notes": "Таб. № 0000000142, дата рождения 07.09.1985"},
+  {"id": "emp-гео-00162", "fullName": "Матвеев Михаил Валерьевич", "position": "ведущий инженер-геодезист", "department": "Геодезический отдел", "company": "ГЕОАСПЕКТ", "objectId": "", "hireDate": "2026-08-03", "rate": 160920, "phone": "", "status": "active", "notes": "Таб. № 00162, дата рождения 26.09.1977"},
+  {"id": "emp-гео-00143", "fullName": "Раздобаров Алексей Васильевич", "position": "техник-геодезист", "department": "Геодезический отдел", "company": "ГЕОАСПЕКТ", "objectId": "", "hireDate": "2026-04-06", "rate": 160920, "phone": "", "status": "active", "notes": "Таб. № 00143, дата рождения 20.02.2001"},
+  {"id": "emp-гео-0000000137", "fullName": "Резников Иван Сергеевич", "position": "геодезист", "department": "Геодезический отдел", "company": "ГЕОАСПЕКТ", "objectId": "", "hireDate": "2017-05-04", "rate": 137931, "phone": "", "status": "active", "notes": "Таб. № 0000000137, дата рождения 23.09.1985"},
+  {"id": "emp-гео-0000000183", "fullName": "Решетняк Андрей Васильевич", "position": "инженер-геодезист", "department": "Геодезический отдел", "company": "ГЕОАСПЕКТ", "objectId": "", "hireDate": "2019-10-07", "rate": 183908, "phone": "", "status": "active", "notes": "Таб. № 0000000183, дата рождения 25.04.1991"},
+  {"id": "emp-гео-00122", "fullName": "Русанов Александр Юрьевич", "position": "техник-геодезист", "department": "Геодезический отдел", "company": "ГЕОАСПЕКТ", "objectId": "", "hireDate": "2024-09-03", "rate": 91954, "phone": "", "status": "active", "notes": "Таб. № 00122, дата рождения 29.01.2004"},
+  {"id": "emp-гео-0000000180", "fullName": "Рыков Артем Викторович", "position": "геодезист", "department": "Геодезический отдел", "company": "ГЕОАСПЕКТ", "objectId": "", "hireDate": "2019-09-16", "rate": 80460, "phone": "", "status": "active", "notes": "Таб. № 0000000180, дата рождения 18.02.1997"},
+  {"id": "emp-гео-0000000038", "fullName": "Рыхальский Юрий Константинович", "position": "ведущий инженер-геодезист", "department": "Геодезический отдел", "company": "ГЕОАСПЕКТ", "objectId": "", "hireDate": "2011-12-01", "rate": 114943, "phone": "", "status": "active", "notes": "Таб. № 0000000038, дата рождения 30.10.1962"},
+  {"id": "emp-гео-0000000015", "fullName": "Стародубцев Александр Александрович", "position": "заместитель начальника геодезического отдела", "department": "Геодезический отдел", "company": "ГЕОАСПЕКТ", "objectId": "", "hireDate": "2008-11-01", "rate": 137931, "phone": "", "status": "active", "notes": "Таб. № 0000000015, дата рождения 20.07.1986"},
+  {"id": "emp-гео-0000000198", "fullName": "Суздалев Фёдор Владимирович", "position": "инженер-геодезист", "department": "Геодезический отдел", "company": "ГЕОАСПЕКТ", "objectId": "", "hireDate": "2020-07-13", "rate": 114943, "phone": "", "status": "active", "notes": "Таб. № 0000000198, дата рождения 10.11.1997"},
+  {"id": "emp-гео-00147", "fullName": "Фомин Данил Александрович", "position": "помощник геодезиста", "department": "Геодезический отдел", "company": "ГЕОАСПЕКТ", "objectId": "", "hireDate": "2026-04-20", "rate": 114943, "phone": "", "status": "active", "notes": "Таб. № 00147, дата рождения 04.09.2006"},
+  {"id": "emp-гео-00136", "fullName": "Ханин Иван Евгеньевич", "position": "помощник геодезиста", "department": "Геодезический отдел", "company": "ГЕОАСПЕКТ", "objectId": "", "hireDate": "2025-10-24", "rate": 91954, "phone": "", "status": "active", "notes": "Таб. № 00136, дата рождения 24.03.2003"},
+  {"id": "emp-гео-0000000050", "fullName": "Черновалов Константин Алексеевич", "position": "инженер-геодезист", "department": "Геодезический отдел", "company": "ГЕОАСПЕКТ", "objectId": "", "hireDate": "2012-11-01", "rate": 114943, "phone": "", "status": "active", "notes": "Таб. № 0000000050, дата рождения 24.02.1978"},
+  {"id": "emp-гео-0000000200", "fullName": "Павлов Владимир Васильевич", "position": "кадастровый инженер", "department": "Кадастровый отдел", "company": "ГЕОАСПЕКТ", "objectId": "", "hireDate": "2020-08-04", "rate": 34483, "phone": "", "status": "active", "notes": "Таб. № 0000000200, дата рождения 10.04.1982"},
+  {"id": "emp-гео-0000000120", "fullName": "Павлова Наталья Сергеевна", "position": "кадастровый инженер", "department": "Кадастровый отдел", "company": "ГЕОАСПЕКТ", "objectId": "", "hireDate": "2016-11-01", "rate": 22989, "phone": "", "status": "active", "notes": "Таб. № 0000000120, дата рождения 29.09.1982"},
+  {"id": "emp-гео-00154", "fullName": "Конова Алёна Сергеевна", "position": "картограф", "department": "Картографический отдел", "company": "ГЕОАСПЕКТ", "objectId": "", "hireDate": "2026-06-17", "rate": 45977, "phone": "", "status": "active", "notes": "Таб. № 00154, дата рождения 26.10.2004"},
+  {"id": "emp-гео-0000000049", "fullName": "Люлина Галина Александровна", "position": "картограф", "department": "Картографический отдел", "company": "ГЕОАСПЕКТ", "objectId": "", "hireDate": "2012-10-01", "rate": 114943, "phone": "", "status": "active", "notes": "Таб. № 0000000049, дата рождения 28.01.1986"},
+  {"id": "emp-гео-00135", "fullName": "Михайлова Алина Андреевна", "position": "картограф", "department": "Картографический отдел", "company": "ГЕОАСПЕКТ", "objectId": "", "hireDate": "2025-10-09", "rate": 160920, "phone": "", "status": "active", "notes": "Таб. № 00135, дата рождения 19.08.2003"},
+  {"id": "emp-гео-00137", "fullName": "Нестерова Юлия Дмитриевна", "position": "геодезист", "department": "Картографический отдел", "company": "ГЕОАСПЕКТ", "objectId": "", "hireDate": "2025-11-17", "rate": 114943, "phone": "", "status": "active", "notes": "Таб. № 00137, дата рождения 23.03.1990"},
+  {"id": "emp-гео-00148", "fullName": "Пятницкая Алёна Дмитриевна", "position": "картограф", "department": "Картографический отдел", "company": "ГЕОАСПЕКТ", "objectId": "", "hireDate": "2026-04-20", "rate": 103448, "phone": "", "status": "active", "notes": "Таб. № 00148, дата рождения 07.05.2006"},
+  {"id": "emp-гео-0000000111", "fullName": "Сувирова Татьяна Михайловна", "position": "начальник картографического отдела", "department": "Картографический отдел", "company": "ГЕОАСПЕКТ", "objectId": "", "hireDate": "2016-07-04", "rate": 137931, "phone": "", "status": "decree", "notes": "Таб. № 0000000111, дата рождения 13.01.1994. В декретном отпуске с 29.04.2025"},
+  {"id": "emp-гео-00121", "fullName": "Чекурда Полина Викторовна", "position": "начальник картографического отдела", "department": "Картографический отдел", "company": "ГЕОАСПЕКТ", "objectId": "", "hireDate": "2024-08-19", "rate": 149425, "phone": "", "status": "active", "notes": "Таб. № 00121, дата рождения 16.08.2004"},
+  {"id": "emp-гео-0000000143", "fullName": "Алмазов Александр Андреевич", "position": "заместитель главного маркшейдера", "department": "Маркшейдерский отдел", "company": "ГЕОАСПЕКТ", "objectId": "", "hireDate": "2017-06-08", "rate": 137931, "phone": "", "status": "active", "notes": "Таб. № 0000000143, дата рождения 16.06.1988"},
+  {"id": "emp-гео-0000000074", "fullName": "Изварина Алла Петровна", "position": "маркшейдер", "department": "Маркшейдерский отдел", "company": "ГЕОАСПЕКТ", "objectId": "", "hireDate": "2014-09-01", "rate": 137931, "phone": "", "status": "active", "notes": "Таб. № 0000000074, дата рождения 05.03.1966"},
+  {"id": "emp-гео-0000000066", "fullName": "Копейкин Роман Александрович", "position": "маркшейдер", "department": "Маркшейдерский отдел", "company": "ГЕОАСПЕКТ", "objectId": "", "hireDate": "2014-03-03", "rate": 137931, "phone": "", "status": "active", "notes": "Таб. № 0000000066, дата рождения 05.03.1980"},
+  {"id": "emp-гео-0000000110", "fullName": "Серганов Сергей Викторович", "position": "маркшейдер", "department": "Маркшейдерский отдел", "company": "ГЕОАСПЕКТ", "objectId": "", "hireDate": "2016-06-01", "rate": 137931, "phone": "", "status": "active", "notes": "Таб. № 0000000110, дата рождения 12.01.1984"},
+  {"id": "emp-гео-0000000047", "fullName": "Черновалов Илья Алексеевич", "position": "главный маркшейдер", "department": "Маркшейдерский отдел", "company": "ГЕОАСПЕКТ", "objectId": "", "hireDate": "2012-05-17", "rate": 137931, "phone": "", "status": "active", "notes": "Таб. № 0000000047, дата рождения 10.09.1975"},
+  {"id": "emp-гео-0000000094", "fullName": "Шамшудинов Артур Таифович", "position": "маркшейдер", "department": "Маркшейдерский отдел", "company": "ГЕОАСПЕКТ", "objectId": "", "hireDate": "2015-08-03", "rate": 201149, "phone": "", "status": "active", "notes": "Таб. № 0000000094, дата рождения 28.05.1986"},
+  {"id": "emp-гео-0000000216", "fullName": "Полищук Светлана Львовна", "position": "инженер-эколог", "department": "Отдел экологии", "company": "ГЕОАСПЕКТ", "objectId": "", "hireDate": "2021-07-20", "rate": 57471, "phone": "", "status": "active", "notes": "Таб. № 0000000216, дата рождения 27.07.1973"},
+  {"id": "emp-гео-0000000222", "fullName": "Белозерова Антонина Анатольевна", "position": "инженер-геолог", "department": "Отдел геологии", "company": "ГЕОАСПЕКТ", "objectId": "", "hireDate": "2022-02-01", "rate": 57471, "phone": "", "status": "active", "notes": "Таб. № 0000000222, дата рождения 06.09.1988"},
+  {"id": "emp-гео-0000000037", "fullName": "Самохин Михаил Алексеевич", "position": "инженер-гидрометеоролог", "department": "Отдел гидрометеорологических изысканий", "company": "ГЕОАСПЕКТ", "objectId": "", "hireDate": "2011-10-14", "rate": 12500, "phone": "", "status": "active", "notes": "Таб. № 0000000037, дата рождения 12.02.1981"},
+  {"id": "emp-гео-0000000153", "fullName": "Левченко Надежда Викторовна", "position": "инженер ПТО", "department": "Производственно-технический отдел", "company": "ГЕОАСПЕКТ", "objectId": "", "hireDate": "2018-05-15", "rate": 91954, "phone": "", "status": "active", "notes": "Таб. № 0000000153, дата рождения 04.12.1990"},
+  {"id": "emp-гео-0000000152", "fullName": "Рыкова Дарья Сергеевна", "position": "инженер ПТО", "department": "Производственно-технический отдел", "company": "ГЕОАСПЕКТ", "objectId": "", "hireDate": "2018-04-23", "rate": 80460, "phone": "", "status": "active", "notes": "Таб. № 0000000152, дата рождения 12.02.1990"},
+  {"id": "emp-орб-00007", "fullName": "Поляков Дмитрий Александрович", "position": "генеральный директор", "department": "Основное подразделение", "company": "ОРБИТА", "objectId": "", "hireDate": "2017-07-01", "rate": 137931, "phone": "", "status": "active", "notes": "Таб. № 00007, дата рождения 16.05.1982"},
+  {"id": "emp-орб-00032", "fullName": "Агафонов Вячеслав Олегович", "position": "инженер-геодезист", "department": "Основное подразделение", "company": "ОРБИТА", "objectId": "", "hireDate": "2018-10-01", "rate": 137931, "phone": "", "status": "active", "notes": "Таб. № 00032, дата рождения 27.10.1992"},
+  {"id": "emp-орб-00143", "fullName": "Акефьев Алексей Владимирович", "position": "инженер-геодезист", "department": "Основное подразделение", "company": "ОРБИТА", "objectId": "", "hireDate": "2026-07-23", "rate": 183908, "phone": "", "status": "active", "notes": "Таб. № 00143, дата рождения 10.01.1976"},
+  {"id": "emp-орб-00040", "fullName": "Загиров Айдар Ирикович", "position": "инженер-геодезист", "department": "Основное подразделение", "company": "ОРБИТА", "objectId": "", "hireDate": "2019-09-06", "rate": 183908, "phone": "", "status": "active", "notes": "Таб. № 00040, дата рождения 14.08.1997"},
+  {"id": "emp-орб-00140", "fullName": "Куць Александр Викторович", "position": "инженер-геодезист", "department": "Основное подразделение", "company": "ОРБИТА", "objectId": "", "hireDate": "2026-05-20", "rate": 183908, "phone": "", "status": "active", "notes": "Таб. № 00140, дата рождения 07.01.1987"},
+  {"id": "emp-орб-00127", "fullName": "Лях Антон Игоревич", "position": "инженер-геодезист", "department": "Основное подразделение", "company": "ОРБИТА", "objectId": "", "hireDate": "2025-01-27", "rate": 201149, "phone": "", "status": "active", "notes": "Таб. № 00127, дата рождения 11.03.2003"},
+  {"id": "emp-орб-00080", "fullName": "Моисеев Александр Ильич", "position": "инженер-геодезист", "department": "Основное подразделение", "company": "ОРБИТА", "objectId": "", "hireDate": "2021-04-09", "rate": 201149, "phone": "", "status": "active", "notes": "Таб. № 00080, дата рождения 02.08.1992"},
+  {"id": "emp-орб-00042", "fullName": "Руденко Максим Александрович", "position": "помощник геодезиста", "department": "Основное подразделение", "company": "ОРБИТА", "objectId": "", "hireDate": "2019-11-01", "rate": 80460, "phone": "", "status": "active", "notes": "Таб. № 00042, дата рождения 31.01.1999"},
+  {"id": "emp-орб-00115", "fullName": "Сорокин Станислав Сергеевич", "position": "техник-геодезист", "department": "Основное подразделение", "company": "ОРБИТА", "objectId": "", "hireDate": "2023-04-17", "rate": 137931, "phone": "", "status": "active", "notes": "Таб. № 00115, дата рождения 19.10.1992"},
+  {"id": "emp-орб-00019", "fullName": "Андреев Иван Александрович", "position": "помощник геодезиста", "department": "Основное подразделение", "company": "ОРБИТА", "objectId": "", "hireDate": "2018-02-01", "rate": 201149, "phone": "", "status": "active", "notes": "Таб. № 00019, дата рождения 29.08.1985"},
+  {"id": "emp-орб-00039", "fullName": "Шамин Евгений Анатольевич", "position": "начальник геодезического отдела", "department": "Основное подразделение", "company": "ОРБИТА", "objectId": "", "hireDate": "2019-07-15", "rate": 229885, "phone": "", "status": "active", "notes": "Таб. № 00039, дата рождения 25.05.1977"},
+  {"id": "emp-орб-00060", "fullName": "Елизарова Екатерина Владимировна", "position": "картограф", "department": "Основное подразделение", "company": "ОРБИТА", "objectId": "", "hireDate": "2020-07-02", "rate": 137931, "phone": "", "status": "active", "notes": "Таб. № 00060, дата рождения 26.04.1982"},
+  {"id": "emp-орб-00124", "fullName": "Богданов Антон Владимирович", "position": "инженер ПТО", "department": "Основное подразделение", "company": "ОРБИТА", "objectId": "", "hireDate": "2024-07-17", "rate": 149425, "phone": "", "status": "active", "notes": "Таб. № 00124, дата рождения 22.11.1991"},
+  {"id": "emp-орб-00133", "fullName": "Веприков Сергей Владимирович", "position": "инженер ПТО", "department": "Основное подразделение", "company": "ОРБИТА", "objectId": "", "hireDate": "2026-02-19", "rate": 160920, "phone": "", "status": "active", "notes": "Таб. № 00133, дата рождения 22.07.1994"},
+  {"id": "emp-орб-00144", "fullName": "Керопян Артур Дереникович", "position": "инженер ПТО", "department": "Основное подразделение", "company": "ОРБИТА", "objectId": "", "hireDate": "2026-08-03", "rate": 137931, "phone": "", "status": "active", "notes": "Таб. № 00144, дата рождения 24.11.2003"},
+  {"id": "emp-орб-00114", "fullName": "Онуфриев Максим Олегович", "position": "инженер ПТО", "department": "Основное подразделение", "company": "ОРБИТА", "objectId": "", "hireDate": "2023-04-03", "rate": 183908, "phone": "", "status": "active", "notes": "Таб. № 00114, дата рождения 16.10.1996"},
+  {"id": "emp-орб-00077", "fullName": "Савченко Николай Андреевич", "position": "инженер ПТО", "department": "Основное подразделение", "company": "ОРБИТА", "objectId": "", "hireDate": "2021-03-10", "rate": 183908, "phone": "", "status": "active", "notes": "Таб. № 00077, дата рождения 19.12.1998"},
+  {"id": "emp-орб-00130", "fullName": "Слугин Алексей Иванович", "position": "инженер ПТО", "department": "Основное подразделение", "company": "ОРБИТА", "objectId": "", "hireDate": "2025-08-07", "rate": 91954, "phone": "", "status": "active", "notes": "Таб. № 00130, дата рождения 21.01.2003"},
+  {"id": "emp-орб-00054", "fullName": "Соловьева Наталья Олеговна", "position": "помощник руководителя", "department": "Основное подразделение", "company": "ОРБИТА", "objectId": "", "hireDate": "2020-03-25", "rate": 160920, "phone": "", "status": "active", "notes": "Таб. № 00054, дата рождения 27.09.1986"},
+  {"id": "emp-орб-00098", "fullName": "Хованов Александр Евгеньевич", "position": "помощник руководителя", "department": "Основное подразделение", "company": "ОРБИТА", "objectId": "", "hireDate": "2022-04-27", "rate": 149426, "phone": "", "status": "active", "notes": "Таб. № 00098, дата рождения 11.09.1973"},
+  {"id": "emp-орб-00061", "fullName": "Ваганов Антон Юрьевич", "position": "курьер", "department": "Основное подразделение", "company": "ОРБИТА", "objectId": "", "hireDate": "2020-07-13", "rate": 91954, "phone": "", "status": "active", "notes": "Таб. № 00061, дата рождения 14.06.1996"},
+  {"id": "emp-орб-00132", "fullName": "Толстихин Денис Октавиевич", "position": "начальник отдела инженерно-экологических изысканий", "department": "Основное подразделение", "company": "ОРБИТА", "objectId": "", "hireDate": "2025-10-31", "rate": 25862, "phone": "", "status": "active", "notes": "Таб. № 00132, дата рождения 18.07.1973"},
+  {"id": "emp-орб-00074", "fullName": "Тишкина Эльвира Васильевна", "position": "главный специалист отдела инженерно-экологических изысканий", "department": "Основное подразделение", "company": "ОРБИТА", "objectId": "", "hireDate": "2021-02-08", "rate": 20115, "phone": "", "status": "active", "notes": "Таб. № 00074, дата рождения 27.02.1971"},
+  {"id": "emp-орб-00131", "fullName": "Риле Наталья Сергеевна", "position": "ведущий инженер отдела инженерно-экологических изысканий", "department": "Основное подразделение", "company": "ОРБИТА", "objectId": "", "hireDate": "2025-10-31", "rate": 20115, "phone": "", "status": "active", "notes": "Таб. № 00131, дата рождения 25.09.1973"},
+  {"id": "emp-орб-00139", "fullName": "Хабарова Елена Альбертовна", "position": "ведущий инженер отдела инженерно-экологических изысканий", "department": "Основное подразделение", "company": "ОРБИТА", "objectId": "", "hireDate": "2026-04-02", "rate": 20115, "phone": "", "status": "active", "notes": "Таб. № 00139, дата рождения 22.12.1969"},
+  {"id": "emp-орб-00076", "fullName": "Хабарова Елена Альбертовна", "position": "ведущий инженер отдела инженерно-экологических изысканий", "department": "Основное подразделение", "company": "ОРБИТА", "objectId": "", "hireDate": "2021-02-08", "rate": 20115, "phone": "", "status": "active", "notes": "Таб. № 00076, дата рождения 22.12.1969"},
+  {"id": "emp-орб-00107", "fullName": "Журавлева Ольга Саркисовна", "position": "уборщица", "department": "Основное подразделение", "company": "ОРБИТА", "objectId": "", "hireDate": "2022-10-11", "rate": 13793, "phone": "", "status": "active", "notes": "Таб. № 00107, дата рождения 27.01.1983"},
+  {"id": "emp-орб-00142", "fullName": "Сметанина Юлия Владимировна", "position": "инженер-картограф", "department": "Основное подразделение", "company": "ОРБИТА", "objectId": "", "hireDate": "2026-07-20", "rate": 114943, "phone": "", "status": "active", "notes": "Таб. № 00142, дата рождения 13.03.1981"},
+  ];
+  function fmtMoney(v){ return v ? Number(v).toLocaleString('ru-RU') + ' ₽' : '—'; }
+
+
+  // ---------- Автомобили ----------
+  const VEH_STORAGE_KEY = 'vehicles';
+  const VEH_LOG_TYPES = ['ТО', 'Ремонт', 'Страховка', 'Шины', 'Мойка', 'Штраф', 'Прочее'];
+  const VEH_LOG_TYPE_META = {
+    'ТО':        {bg:'#E5F0E8', color:'#2F6B45'},
+    'Ремонт':    {bg:'#F7E9E4', color:'#8A3A1F'},
+    'Страховка': {bg:'#E3EDF3', color:'#2B5A6B'},
+    'Шины':      {bg:'#EFEEE8', color:'#3A3A35'},
+    'Мойка':     {bg:'#E3EDF3', color:'#2B5A6B'},
+    'Штраф':     {bg:'#FBF3DC', color:'#8A6D1F'},
+    'Прочее':    {bg:'#EFEEE8', color:'#6B6B62'},
+  };
+  const SEED_VEHICLES = [
+  { id: 'veh-01', brand: 'Renault', model: 'Duster', year: '2015', plate: 'У 175 ОУ 777', vin: 'X7LHSRHGN54134649', sts: '77 38 484355', osagoPolicy: '608629596', osagoUntil: '2027-01-21', location: 'Москва', owner: 'Геоаспект', driver: 'в сервисе', mileage: '258941', inspectionUntil: '' , logs: [] },
+  { id: 'veh-02', brand: 'Toyota', model: 'Land Cruiser Prado', year: '2015', plate: 'Т 965 НН 777', vin: 'RUTBH8FJ9F0023722', sts: '77 43 525329', osagoPolicy: '683785870', osagoUntil: '2027-08-12', location: 'Москва', owner: 'Геоаспект', driver: 'Стародубцев', mileage: '418000', inspectionUntil: '' , logs: [] },
+  { id: 'veh-03', brand: 'Renault', model: 'Duster', year: '2017', plate: 'Н 922 ХС 777', vin: 'X7LHSRHGN57872507', sts: '99 01 594794', osagoPolicy: '650751369', osagoUntil: '2027-05-20', location: 'Москва', owner: 'Геоаспект', driver: 'Кузнецов', mileage: '251000', inspectionUntil: '' , logs: [] },
+  { id: 'veh-04', brand: 'Renault', model: 'Duster', year: '2017', plate: 'Н 924 ХС 777', vin: 'X7LHSRHGN57872506', sts: '99 01 594795', osagoPolicy: '660927336', osagoUntil: '2027-06-13', location: 'Туапсе', owner: 'Геоаспект', driver: 'Локтев/Бороденок', mileage: '227492', inspectionUntil: '2027-06-07' , logs: [] },
+  { id: 'veh-06', brand: 'Renault', model: 'Duster', year: '2018', plate: 'К 691 КУ 799', vin: 'X7LHSRHGN61039853', sts: '77 61 106662', osagoPolicy: '681308414', osagoUntil: '2027-08-05', location: 'Москва', owner: 'Геоаспект', driver: 'Локтев/Алексеев', mileage: '183986', inspectionUntil: '2027-06-07' , logs: [] },
+  { id: 'veh-07', brand: 'Peugeot', model: 'Expert', year: '2018', plate: 'С 256 МС 799', vin: 'Z8TVFAHXGJM006424', sts: '99 55 590505', osagoPolicy: '562375674', osagoUntil: '2026-09-04', location: 'Москва', owner: 'Орбита', driver: 'Андреянов', mileage: '94000', inspectionUntil: '' , logs: [] },
+  { id: 'veh-08', brand: 'Renault', model: 'Duster', year: '2019', plate: 'О 045 ОР 799', vin: 'X7LHSRHGN62887533', sts: '99 12 496812', osagoPolicy: '568966212', osagoUntil: '2026-09-26', location: 'Москва', owner: 'Геоаспект', driver: 'Онуфриев', mileage: '148800', inspectionUntil: '' , logs: [] },
+  { id: 'veh-09', brand: 'Renault', model: 'Duster', year: '2019', plate: 'Р 795 ОС 799', vin: 'X7LHSRHGN62845804', sts: '99 12 523481', osagoPolicy: '675013397', osagoUntil: '2027-07-27', location: 'Симферополь', owner: 'Геоаспект', driver: '', mileage: '101302', inspectionUntil: '' , logs: [] },
+  { id: 'veh-10', brand: 'Renault', model: 'Duster', year: '2019', plate: 'Е 008 ХР 123', vin: 'Х7LHSRHGN63679438', sts: '99 12 195616', osagoPolicy: '572593649', osagoUntil: '2026-10-06', location: 'Тосно', owner: 'Геоаспект', driver: 'Агафонов/Сорокин', mileage: '166500', inspectionUntil: '' , logs: [] },
+  { id: 'veh-11', brand: 'Renault', model: 'Duster', year: '2019', plate: 'Р 736 ОС 799', vin: 'X7LHSRHGD63057184', sts: '99 24 43336', osagoPolicy: '669700225', osagoUntil: '2027-07-06', location: 'Симферополь', owner: 'Стародубцев', driver: 'Виниченко/Демидов', mileage: '181000', inspectionUntil: '' , logs: [] },
+  { id: 'veh-12', brand: 'Renault', model: 'Duster', year: '2019', plate: 'Н 245 СА 799', vin: 'X7LHSRHGN63683954', sts: '99 16 247067', osagoPolicy: '595327935', osagoUntil: '2026-12-12', location: 'Москва', owner: 'Геоаспект', driver: 'Исаковский', mileage: '186700', inspectionUntil: '' , logs: [] },
+  { id: 'veh-13', brand: 'Renault', model: 'Duster', year: '2019', plate: 'О 424 СЕ 799', vin: 'X7LHSRHGN64208923', sts: '99 16 263018', osagoPolicy: '595327402', osagoUntil: '2026-12-15', location: 'Москва', owner: 'Орбита', driver: 'Нелипович', mileage: '186000', inspectionUntil: '' , logs: [] },
+  { id: 'veh-14', brand: 'Renault', model: 'Duster', year: '2020', plate: 'А 040 ВО 797', vin: 'X7LHSRHGN66677795', sts: '99 32 442481', osagoPolicy: '496803033', osagoUntil: '2027-02-17', location: 'Москва', owner: 'Геоаспект', driver: 'Калля', mileage: '69226', inspectionUntil: '' , logs: [] },
+  { id: 'veh-15', brand: 'Renault', model: 'Duster', year: '2020', plate: 'М 341 АА 797', vin: 'X7LHSRHGN64928078', sts: '99 19 178741', osagoPolicy: '625937701', osagoUntil: '2027-03-14', location: 'Феодосия', owner: 'Орбита', driver: '', mileage: '134270', inspectionUntil: '2027-11-25' , logs: [] },
+  { id: 'veh-16', brand: 'Renault', model: 'Duster', year: '2020', plate: 'М 338 АА 797', vin: 'X7LHSRHGN64784609', sts: '99 19 178743', osagoPolicy: '625937702', osagoUntil: '2027-03-14', location: 'Симферополь', owner: 'Орбита', driver: 'Серганов', mileage: '198141', inspectionUntil: '2027-11-20' , logs: [] },
+  { id: 'veh-17', brand: 'Renault', model: 'Duster', year: '2020', plate: 'С 819 РУ 799', vin: 'X7LHSRHGN65970818', sts: '99 24 118613', osagoPolicy: '563088049', osagoUntil: '2026-09-10', location: 'Тосно', owner: 'Орбита', driver: 'Задорожный', mileage: '118727', inspectionUntil: '' , logs: [] },
+  { id: 'veh-18', brand: 'Renault', model: 'Duster', year: '2021', plate: 'У 687 ВР 797', vin: 'X7LHSRHGN66738654', sts: '99 33 212246', osagoPolicy: '608829670', osagoUntil: '2027-02-17', location: 'Симферополь', owner: 'Геоаспект', driver: 'Гринев/Алмазов', mileage: '68000', inspectionUntil: '2027-11-24' , logs: [] },
+  { id: 'veh-19', brand: 'Renault', model: 'Duster', year: '2021', plate: 'К 853 ХУ 799', vin: 'X7LHSRES467340137', sts: '99 59 934150', osagoPolicy: '672041386', osagoUntil: '2027-07-14', location: 'Красногорск', owner: 'Геоаспект', driver: 'Шамшудинов', mileage: '58530', inspectionUntil: '' , logs: [] },
+  { id: 'veh-20', brand: 'Renault', model: 'Duster', year: '2021', plate: 'У 952 СУ 799', vin: 'X7LHSRES467340304', sts: '99 65 559780', osagoPolicy: '672041060', osagoUntil: '2027-07-14', location: 'Шахты', owner: 'Геоаспект', driver: 'Черновалов И.', mileage: '', inspectionUntil: '' , logs: [] },
+  { id: 'veh-21', brand: 'Toyota', model: 'Land Cruiser 150', year: '2021', plate: 'Т 955 КВ 797', vin: 'JTEBR3FJ40K241348', sts: '99 38 551695', osagoPolicy: '7093575030', osagoUntil: '2027-02-28', location: 'Москва', owner: 'Геоаспект', driver: 'Ваганов/Скворцов', mileage: '125000', inspectionUntil: '' , logs: [] },
+  { id: 'veh-22', brand: 'Nissan', model: 'Terrano', year: '2021', plate: 'О 200 ВТ 977', vin: 'Z8NHSNHGD67078999', sts: '99 65 996506', osagoPolicy: '558771053', osagoUntil: '2026-08-29', location: 'Москва', owner: 'Геоаспект', driver: 'Самарин', mileage: '35670', inspectionUntil: '' , logs: [] },
+  { id: 'veh-23', brand: 'Renault', model: 'Duster', year: '2021', plate: 'Е 980 УН 799', vin: 'X7LHSRHGN66737648', sts: '99 66 377747', osagoPolicy: '643890666', osagoUntil: '2027-04-27', location: 'Энгельс', owner: 'Орбита', driver: 'Моисеев/Жиганов', mileage: '152726', inspectionUntil: '' , logs: [] },
+  { id: 'veh-24', brand: 'Renault', model: 'Duster', year: '2021', plate: 'О 234 ХС 799', vin: 'X7LHSRHGN66735794', sts: '99 66 377746', osagoPolicy: '643888193', osagoUntil: '2027-04-27', location: 'Москва', owner: 'Орбита', driver: 'Сехин', mileage: '173650', inspectionUntil: '' , logs: [] },
+  { id: 'veh-25', brand: 'Renault', model: 'Duster', year: '2022', plate: 'У 456 ВТ 977', vin: 'X7LHSRES469161737', sts: '99 58 967570', osagoPolicy: '595327936', osagoUntil: '2026-12-12', location: 'Феодосия', owner: 'Геоаспект', driver: 'Загиров', mileage: '35565', inspectionUntil: '' , logs: [] },
+  { id: 'veh-26', brand: 'Lada', model: 'Vesta', year: '2026', plate: 'Е 079 ОН 977', vin: 'XTAGFK110T1047139', sts: '99 90 163875', osagoPolicy: '', osagoUntil: '', location: '', owner: 'Геоаспект', driver: '', mileage: '0', inspectionUntil: '', logs: [] },
+  ];
+  function daysUntil(dateStr){
+    if(!dateStr) return null;
+    return Math.ceil((new Date(dateStr) - new Date()) / 86400000);
+  }
+  function formatCost(n){
+    const num = Number(n);
+    if(!n || Number.isNaN(num)) return '—';
+    return num.toLocaleString('ru-RU') + ' ₽';
+  }
+  function dateWarnClass(dateStr){
+    const d = daysUntil(dateStr);
+    if(d === null) return '';
+    if(d < 0) return 'late';
+    if(d <= 30) return 'today';
+    return '';
+  }
+
+  let objects = [];
+  let expandedId = null;
+  let allExpanded = false;
+  let editingId = null;
+  let editingLogEntry = null;
+  let collapsedLogIds = new Set();
+  let docNotesVisible = new Set();
+  let filterType = '';
+  let filterStatus = '';
+  let filterPriority = '';
+  let showArchived = false;
+  let searchTerm = '';
+  let sortField = 'name';
+  let sortDir = 'asc';
+  let mainView = 'objects';
+
+  let employees = [];
+  let empEditingId = null;
+  let empSearchTerm = '';
+  let empFilterCompany = '';
+  let empFilterDept = '';
+  let empFilterStatus = '';
+  let empSortField = 'fullName';
+  let empSortDir = 'asc';
+
+  let vehicles = [];
+  let vehSearchTerm = '';
+  let vehFilterOwner = '';
+  let vehSortKey = null;
+  let vehSortDir = 'asc';
+  let vehEditingId = null;
+  let vehLogVehicleId = null;
+  let vehLogNewEntry = null;
+
+  const $ = (sel) => document.querySelector(sel);
+
+  let toastTimer = null;
+  function showToast(msg, isError){
+    const t = document.getElementById('ojToast');
+    if(!t) return;
+    t.textContent = msg;
+    t.className = 'oj-toast' + (isError ? ' error' : '');
+    t.hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { t.hidden = true; }, isError ? 5000 : 2200);
+  }
+  function setDebug(msg, state){
+    const d = document.getElementById('ojDebug');
+    if(!d) return;
+    d.textContent = 'JS: ' + msg;
+    d.className = 'oj-debugbar' + (state ? ' ' + state : '');
+  }
+  function on(el, evt, handler){
+    if(!el){ setDebug('элемент для обработчика "' + evt + '" не найден в разметке', 'err'); return; }
+    el.addEventListener(evt, async (e) => {
+      try{
+        await handler(e);
+      }catch(err){
+        console.error('Handler error on "' + evt + '"', err);
+        showToast('Ошибка при обработке действия: ' + (err && err.message ? err.message : err), true);
+        setDebug('ошибка обработчика: ' + (err && err.message ? err.message : err), 'err');
+      }
+    });
+  }
+  window.addEventListener('error', (e) => {
+    showToast('Ошибка скрипта: ' + (e.message || 'см. консоль'), true);
+    setDebug('ошибка скрипта: ' + (e.message || 'см. консоль'), 'err');
+  });
+
+  function askConfirm(message, confirmLabel){
+    return new Promise((resolve) => {
+      const ov = document.getElementById('ojConfirmOverlay');
+      const box = document.getElementById('ojConfirmBox');
+      const msgEl = document.getElementById('ojConfirmMsg');
+      const okBtn = document.getElementById('ojConfirmOkBtn');
+      const cancelBtn = document.getElementById('ojConfirmCancelBtn');
+      const existingInput = document.getElementById('ojConfirmInput');
+      if(existingInput) existingInput.style.display = 'none';
+      if(!ov || !box || !msgEl || !okBtn || !cancelBtn){
+        resolve(window_confirm_fallback(message));
+        return;
+      }
+      msgEl.textContent = message;
+      okBtn.textContent = confirmLabel || 'Подтвердить';
+      ov.hidden = false;
+      box.hidden = false;
+      function cleanup(result){
+        ov.hidden = true;
+        box.hidden = true;
+        okBtn.removeEventListener('click', onOk);
+        cancelBtn.removeEventListener('click', onCancel);
+        ov.removeEventListener('click', onCancel);
+        resolve(result);
+      }
+      function onOk(){ cleanup(true); }
+      function onCancel(){ cleanup(false); }
+      okBtn.addEventListener('click', onOk);
+      cancelBtn.addEventListener('click', onCancel);
+      ov.addEventListener('click', onCancel);
+    });
+  }
+
+  function askInput(message, defaultValue){
+    return new Promise((resolve) => {
+      const ov = document.getElementById('ojConfirmOverlay');
+      const box = document.getElementById('ojConfirmBox');
+      const msgEl = document.getElementById('ojConfirmMsg');
+      const okBtn = document.getElementById('ojConfirmOkBtn');
+      const cancelBtn = document.getElementById('ojConfirmCancelBtn');
+      if(!ov || !box || !msgEl || !okBtn || !cancelBtn){
+        const v = window_prompt_fallback(message, defaultValue);
+        resolve(v);
+        return;
+      }
+      let inputEl = document.getElementById('ojConfirmInput');
+      if(!inputEl){
+        inputEl = document.createElement('input');
+        inputEl.type = 'text';
+        inputEl.id = 'ojConfirmInput';
+        inputEl.className = 'oj-confirm-input';
+        msgEl.insertAdjacentElement('afterend', inputEl);
+      }
+      inputEl.style.display = '';
+      inputEl.value = defaultValue || '';
+      msgEl.textContent = message;
+      okBtn.textContent = 'Создать';
+      ov.hidden = false;
+      box.hidden = false;
+      setTimeout(() => { inputEl.focus(); inputEl.select(); }, 30);
+      function cleanup(result){
+        ov.hidden = true;
+        box.hidden = true;
+        inputEl.style.display = 'none';
+        okBtn.removeEventListener('click', onOk);
+        cancelBtn.removeEventListener('click', onCancel);
+        ov.removeEventListener('click', onCancel);
+        inputEl.removeEventListener('keydown', onKey);
+        resolve(result);
+      }
+      function onOk(){ cleanup(inputEl.value.trim() || defaultValue || ''); }
+      function onCancel(){ cleanup(null); }
+      function onKey(e){ if(e.key === 'Enter'){ onOk(); } if(e.key === 'Escape'){ onCancel(); } }
+      okBtn.addEventListener('click', onOk);
+      cancelBtn.addEventListener('click', onCancel);
+      ov.addEventListener('click', onCancel);
+      inputEl.addEventListener('keydown', onKey);
+    });
+  }
+  function window_prompt_fallback(message, defaultValue){
+    try{ return prompt(message, defaultValue); }catch(e){ return null; }
+  }
+  function window_confirm_fallback(message){
+    try{ return confirm(message); }catch(e){ return false; }
+  }
+
+  let exportInfo = null;
+  function showExportModal(title, content, filename, mime, extraHint){
+    exportInfo = {filename, mime, content};
+    $('#ojExportTitle').textContent = title;
+    $('#ojExportTextarea').value = content;
+    const hintEl = $('#ojExportHint');
+    hintEl.textContent = extraHint
+      ? extraHint
+      : 'Скачивание файла может не работать в этой среде — надёжнее всего скопировать текст и вставить в Excel, Google Таблицы или обычный файл.';
+    $('#ojExportOverlay').hidden = false;
+    $('#ojExportBox').hidden = false;
+    setTimeout(() => {
+      const ta = $('#ojExportTextarea');
+      ta.focus();
+      ta.select();
+    }, 30);
+  }
+  function closeExportModal(){
+    $('#ojExportOverlay').hidden = true;
+    $('#ojExportBox').hidden = true;
+  }
+  on($('#ojExportCloseBtn'), 'click', closeExportModal);
+  on($('#ojExportOverlay'), 'click', closeExportModal);
+  on($('#ojExportCopyBtn'), 'click', async () => {
+    const ta = $('#ojExportTextarea');
+    ta.focus();
+    ta.select();
+    let copied = false;
+    try{
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        await navigator.clipboard.writeText(ta.value);
+        copied = true;
+      }
+    }catch(e){ /* попробуем запасной способ ниже */ }
+    if(!copied){
+      try{ copied = document.execCommand('copy'); }catch(e){ /* см. ниже */ }
+    }
+    if(copied){
+      showToast('Скопировано в буфер обмена');
+    }else{
+      showToast('Не удалось скопировать автоматически — текст уже выделен, нажмите Ctrl+C (Cmd+C на Mac).', true);
+    }
+  });
+  on($('#ojExportDownloadBtn'), 'click', () => {
+    if(!exportInfo) return;
+    try{
+      const blob = new Blob([exportInfo.content], {type: exportInfo.mime});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = exportInfo.filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('Если файл не начал скачиваться — используйте «Скопировать» и вставьте текст вручную.');
+    }catch(e){
+      console.error('Download error', e);
+      showToast('Скачивание недоступно в этой среде — используйте «Скопировать».', true);
+    }
+  });
+  const listEl = $('#ojList');
+  const legendEl = $('#ojLegend');
+  const loadingEl = $('#ojLoading');
+  const emptyEl = $('#ojEmpty');
+  const filterTypeEl = $('#ojFilterType');
+
+  function stageIndex(key){ return STAGES.findIndex(s => s.key === key); }
+  function fmtDate(iso){
+    if(!iso) return '—';
+    const d = new Date(iso + 'T00:00:00');
+    if(isNaN(d)) return iso;
+    return d.toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric'});
+  }
+  function todayISO(){ return new Date().toISOString().slice(0,10); }
+  function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+  function esc(s){ return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  function docRowHtml(key, label, docs, dates, notes, showNotes){
+    return `<div class="oj-doc-block">
+      <div class="oj-doc-row">
+        <label class="oj-doc"><input type="checkbox" data-doc="${key}"${docs[key]?' checked':''}> ${label}</label>
+        <input type="date" class="oj-doc-date" data-doc-date="${key}" value="${dates[key]||''}" title="Дата сдачи">
+      </div>
+      ${showNotes ? `<input type="text" class="oj-doc-note" data-doc-note="${key}" placeholder="Примечание…" value="${esc((notes||{})[key]||'')}">` : ``}
+    </div>`;
+  }
+
+  const RETIRED_STAGES = { review: 'office', delivered: 'office' };
+  async function loadObjects(){
+    try{
+      const res = await window.storage.get(STORAGE_KEY, false);
+      if(res && res.value){ objects = JSON.parse(res.value); }
+      else{ objects = []; }
+    }catch(e){
+      objects = [];
+    }
+    let migrated = false;
+    objects.forEach(o => {
+      if(RETIRED_STAGES[o.status]){
+        o.status = RETIRED_STAGES[o.status];
+        migrated = true;
+      }
+      (o.log || []).forEach(e => {
+        if(e.status && RETIRED_STAGES[e.status]){
+          e.status = RETIRED_STAGES[e.status];
+          migrated = true;
+        }
+      });
+    });
+    if(migrated) await saveObjects();
+  }
+  async function saveObjects(){
+    const maxRetries = 2;
+    for(let attempt = 0; attempt <= maxRetries; attempt++){
+      try{
+        const res = await window.storage.set(STORAGE_KEY, JSON.stringify(objects), false);
+        if(res) return true;
+        throw new Error('пустой ответ от хранилища');
+      }catch(e){
+        console.error('Storage error (попытка ' + (attempt+1) + ')', e);
+        if(attempt < maxRetries){
+          await new Promise(r => setTimeout(r, 500 * (attempt + 1)));
+          continue;
+        }
+        showToast('Не удалось сохранить после нескольких попыток: ' + (e && e.message ? e.message : e) + '. Похоже на временный сбой сервиса — попробуйте сохранить ещё раз через минуту.', true);
+        return false;
+      }
+    }
+  }
+
+  async function loadEmployees(){
+    try{
+      const res = await window.storage.get(EMP_STORAGE_KEY, false);
+      if(res && res.value){ employees = JSON.parse(res.value); return; }
+    }catch(e){ /* первый запуск — это нормально */ }
+    employees = SEED_EMPLOYEES.slice();
+    try{ await window.storage.set(EMP_STORAGE_KEY, JSON.stringify(employees), false); }catch(e){ /* сохраним при первом реальном изменении */ }
+  }
+  async function saveEmployees(){
+    const maxRetries = 2;
+    for(let attempt = 0; attempt <= maxRetries; attempt++){
+      try{
+        const res = await window.storage.set(EMP_STORAGE_KEY, JSON.stringify(employees), false);
+        if(res) return true;
+        throw new Error('пустой ответ от хранилища');
+      }catch(e){
+        console.error('Storage error (сотрудники, попытка ' + (attempt+1) + ')', e);
+        if(attempt < maxRetries){
+          await new Promise(r => setTimeout(r, 500 * (attempt + 1)));
+          continue;
+        }
+        showToast('Не удалось сохранить сотрудников: ' + (e && e.message ? e.message : e), true);
+        return false;
+      }
+    }
+  }
+
+  async function loadVehicles(){
+    try{
+      const res = await window.storage.get(VEH_STORAGE_KEY, false);
+      if(res && res.value){ vehicles = JSON.parse(res.value); return; }
+    }catch(e){ /* первый запуск — это нормально */ }
+    vehicles = SEED_VEHICLES.slice();
+    try{ await window.storage.set(VEH_STORAGE_KEY, JSON.stringify(vehicles), false); }catch(e){ /* сохраним при первом реальном изменении */ }
+  }
+  async function saveVehicles(){
+    const maxRetries = 2;
+    for(let attempt = 0; attempt <= maxRetries; attempt++){
+      try{
+        const res = await window.storage.set(VEH_STORAGE_KEY, JSON.stringify(vehicles), false);
+        if(res) return true;
+        throw new Error('пустой ответ от хранилища');
+      }catch(e){
+        console.error('Storage error (автомобили, попытка ' + (attempt+1) + ')', e);
+        if(attempt < maxRetries){
+          await new Promise(r => setTimeout(r, 500 * (attempt + 1)));
+          continue;
+        }
+        showToast('Не удалось сохранить автомобили: ' + (e && e.message ? e.message : e), true);
+        return false;
+      }
+    }
+  }
+
+  function buildStatusOptions(select){
+    select.innerHTML = STAGES.map(s => `<option value="${s.key}">${s.label}</option>`).join('');
+  }
+  function buildWorkTypeChecks(){
+    const wrap = $('#fWorkTypes');
+    wrap.innerHTML = WORK_TYPES.map(t => `
+      <label><input type="checkbox" value="${t}" class="wtCheck"> ${t}</label>
+    `).join('');
+  }
+  function buildTypeFilter(){
+    filterTypeEl.innerHTML = '<option value="">Все виды работ</option>' +
+      WORK_TYPES.map(t => `<option value="${t}">${t}</option>`).join('');
+  }
+
+  function buildEmpFilters(){
+    $('#empFilterCompany').innerHTML = '<option value="">Все компании</option>' +
+      COMPANIES.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join('');
+    $('#empFilterDept').innerHTML = '<option value="">Все подразделения</option>' +
+      DEPARTMENTS.map(d => `<option value="${esc(d)}">${esc(d)}</option>`).join('');
+    $('#empFilterStatus').innerHTML = '<option value="">Любой статус</option>' +
+      Object.values(EMP_STATUS_META).map(s => `<option value="${s.key}">${s.label}</option>`).join('');
+  }
+  function buildEmpFormSelects(){
+    $('#empFCompany').innerHTML = COMPANIES.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join('');
+    $('#empFDept').innerHTML = DEPARTMENTS.map(d => `<option value="${esc(d)}">${esc(d)}</option>`).join('');
+    $('#empFStatus').innerHTML = Object.values(EMP_STATUS_META).map(s => `<option value="${s.key}">${s.label}</option>`).join('');
+  }
+  function buildEmpObjectSelects(){
+    const opts = '<option value="">Не назначен</option>' +
+      objects.slice().sort((a,b) => (a.name||'').localeCompare(b.name||'','ru')).map(o => `<option value="${o.id}">${esc(o.name)}</option>`).join('');
+    const formSel = $('#empFObject');
+    if(formSel) formSel.innerHTML = opts;
+  }
+
+  function renderLegend(){
+    const pool = objects.filter(o => showArchived ? o.archived : !o.archived);
+    const counts = STAGES.map(s => pool.filter(o => o.status === s.key).length);
+    legendEl.innerHTML = STAGES.map((s,i) => `
+      <div class="oj-legend-item ${filterStatus===s.key?'active':''}" data-status="${s.key}" style="border-bottom-color:${s.color}">
+        <div class="oj-legend-count">${counts[i]}</div>
+        <div class="oj-legend-label">${s.label}</div>
+      </div>
+    `).join('');
+    legendEl.querySelectorAll('.oj-legend-item').forEach(el => {
+      on(el, 'click', () => {
+        const st = el.dataset.status;
+        filterStatus = (filterStatus === st) ? '' : st;
+        renderAll();
+      });
+    });
+  }
+
+  function coreHtml(currentKey){
+    const idx = stageIndex(currentKey);
+    return '<div class="oj-core">' + STAGES.map((s,i) => {
+      const filled = i <= idx;
+      return `<div class="oj-core-seg" style="${filled ? `background:${s.color};border-color:${s.color}` : ''}"></div>`;
+    }).join('') + '</div>';
+  }
+
+  function renderGanttChart(phases, objId){
+    if(!phases.length){
+      return '<div style="color:var(--ink-faint);font-size:12.5px;padding:6px 0 2px;">Этапов пока нет — добавьте первый выше, чтобы построить график.</div>';
+    }
+    const dated = phases.filter(p => p.start && p.end);
+    const allDates = dated.flatMap(p => [p.start, p.end]);
+    const base = allDates.length ? allDates : [todayISO()];
+    const minRaw = base.reduce((a,b) => a < b ? a : b);
+    const maxRaw = base.reduce((a,b) => a > b ? a : b);
+    const minD = new Date(minRaw); minD.setDate(minD.getDate() - 3);
+    const maxD = new Date(maxRaw); maxD.setDate(maxD.getDate() + 3);
+    const totalMs = Math.max(maxD - minD, 86400000);
+    const pct = (d) => ((new Date(d) - minD) / totalMs) * 100;
+
+    const monthTicks = [];
+    const cursor = new Date(minD.getFullYear(), minD.getMonth(), 1);
+    while(cursor <= maxD){
+      monthTicks.push({label: MONTH_NAMES_RU[cursor.getMonth()] + ' ' + cursor.getFullYear(), pct: pct(cursor.toISOString().slice(0,10))});
+      cursor.setMonth(cursor.getMonth() + 1);
+    }
+    const weekTicks = [];
+    const wcursor = new Date(minD);
+    const dow = wcursor.getDay();
+    wcursor.setDate(wcursor.getDate() + (dow === 0 ? -6 : 1 - dow)); // выравниваем на понедельник
+    while(wcursor <= maxD){
+      const p = pct(wcursor.toISOString().slice(0,10));
+      if(p >= 0 && p <= 100) weekTicks.push({pct: p, day: wcursor.getDate()});
+      wcursor.setDate(wcursor.getDate() + 7);
+    }
+    const weekGrid = weekTicks.map(t => `<div class="oj-gantt-weekline" style="left:${t.pct}%;"></div>`).join('');
+    const todayPct = pct(todayISO());
+    const showToday = todayPct >= 0 && todayPct <= 100;
+
+    const scaleRow = `
+      <div class="oj-gantt-row oj-gantt-scale-row">
+        <div class="oj-gantt-label"></div>
+        <div class="oj-gantt-track">
+          ${weekGrid}
+          ${weekTicks.map(t => `<div class="oj-gantt-weeknum" style="left:${t.pct}%;">${t.day}</div>`).join('')}
+          ${monthTicks.map(t => `<div class="oj-gantt-tick" style="left:${t.pct}%;">${t.label}</div>`).join('')}
+          ${showToday ? `<div class="oj-gantt-today" style="left:${todayPct}%;"></div>` : ''}
+        </div>
+        <div class="oj-gantt-dates"></div>
+        <div></div>
+      </div>`;
+
+    const rows = phases.map((p, idx) => {
+      const hasBar = !!(p.start && p.end);
+      const left = hasBar ? pct(p.start) : 0;
+      const width = hasBar ? Math.max(pct(p.end) - left, 1) : 0;
+      return `
+      <div class="oj-gantt-row">
+        <div class="oj-gantt-label" title="${esc(p.name)}">${esc(p.name)}</div>
+        <div class="oj-gantt-track">
+          ${weekGrid}
+          ${hasBar ? `<div class="oj-gantt-bar" style="left:${left}%;width:${width}%;" title="${esc(p.name)}: ${fmtDate(p.start)} — ${fmtDate(p.end)}"></div>` : `<span style="font-size:11px;color:var(--ink-faint);">без дат</span>`}
+          ${showToday ? `<div class="oj-gantt-today" style="left:${todayPct}%;"></div>` : ''}
+        </div>
+        <div class="oj-gantt-dates">${p.start?fmtDate(p.start):'—'} – ${p.end?fmtDate(p.end):'—'}</div>
+        <div class="oj-gantt-rowactions">
+          <button type="button" class="oj-staff-icon-btn schedUpBtn" data-obj-id="${objId}" data-phase-id="${p.id}" title="Переместить выше" ${idx===0?'disabled':''}>↑</button>
+          <button type="button" class="oj-staff-icon-btn schedDownBtn" data-obj-id="${objId}" data-phase-id="${p.id}" title="Переместить ниже" ${idx===phases.length-1?'disabled':''}>↓</button>
+          <button type="button" class="oj-staff-icon-btn danger schedDelBtn" data-obj-id="${objId}" data-phase-id="${p.id}" title="Удалить этап">✕</button>
+        </div>
+      </div>`;
+    }).join('');
+
+    return `<div class="oj-gantt-wrap">${scaleRow}${rows}</div>`;
+  }
+
+  function sortValue(o, field){
+    if(field === 'deadline') return o.deadline || '';
+    if(field === 'name') return o.name || '';
+    if(field === 'customer') return o.customer || '';
+    if(field === 'responsible') return o.responsible || '';
+    return '';
+  }
+  function isMiscObj(o){ return (o.workTypes||[]).includes('Разное'); }
+  function compareObjects(a, b){
+    const aMisc = isMiscObj(a), bMisc = isMiscObj(b);
+    if(aMisc !== bMisc) return aMisc ? -1 : 1;
+    const av = sortValue(a, sortField);
+    const bv = sortValue(b, sortField);
+    const aEmpty = !av, bEmpty = !bv;
+    if(aEmpty && bEmpty) return 0;
+    if(aEmpty) return 1;
+    if(bEmpty) return -1;
+    const cmp = (sortField === 'deadline') ? av.localeCompare(bv) : av.localeCompare(bv, 'ru');
+    return sortDir === 'asc' ? cmp : -cmp;
+  }
+
+  function getFiltered(){
+    return objects.filter(o => {
+      if(showArchived){ if(!o.archived) return false; }
+      else{ if(o.archived) return false; }
+      if(filterType && !(o.workTypes||[]).includes(filterType)) return false;
+      if(filterStatus && o.status !== filterStatus) return false;
+      if(filterPriority === 'none'){ if(o.priority) return false; }
+      else if(filterPriority && o.priority !== filterPriority) return false;
+      if(searchTerm){
+        const hay = [o.name,o.customer,o.address,o.contract,o.responsible].join(' ').toLowerCase();
+        if(!hay.includes(searchTerm.toLowerCase())) return false;
+      }
+      return true;
+    }).sort(compareObjects);
+  }
+
+  function renderList(){
+    const archivedCount = objects.filter(o => o.archived).length;
+    const toggleBtn = $('#ojArchiveToggleBtn');
+    if(toggleBtn) toggleBtn.textContent = showArchived ? '← Активные объекты' : 'В архиве (' + archivedCount + ')';
+    const items = getFiltered();
+    if(objects.length === 0){
+      listEl.style.display = 'none';
+      emptyEl.hidden = false;
+      return;
+    }
+    emptyEl.hidden = true;
+    listEl.style.display = 'flex';
+
+    if(items.length === 0){
+      listEl.innerHTML = '<div class="oj-empty">Ничего не найдено по заданным фильтрам.</div>';
+      return;
+    }
+
+    listEl.innerHTML = items.map(o => rowHtml(o)).join('');
+
+    listEl.querySelectorAll('[data-priority-toggle]').forEach(el => {
+      on(el, 'click', async (ev) => {
+        ev.stopPropagation();
+        const id = el.dataset.priorityToggle;
+        const o = objects.find(x => x.id === id);
+        if(!o) return;
+        o.priority = nextPriority(o.priority);
+        o.updatedAt = todayISO();
+        await saveObjects();
+        renderList();
+        showToast(priorityLabel(o.priority));
+      });
+    });
+    listEl.querySelectorAll('.oj-row-head').forEach(el => {
+      on(el, 'click', () => {
+        const id = el.closest('.oj-row').dataset.id;
+        if(allExpanded){
+          allExpanded = false;
+          expandedId = id;
+          $('#ojExpandAllBtn').textContent = 'Развернуть все';
+          $('#ojExpandAllBtn').classList.remove('oj-btn-primary');
+          $('#ojExpandAllBtn').classList.add('oj-btn-ghost');
+        }else{
+          expandedId = (expandedId === id) ? null : id;
+        }
+        editingLogEntry = null;
+        renderList();
+      });
+    });
+    listEl.querySelectorAll('[data-action]').forEach(el => {
+      on(el, 'click', async (ev) => {
+        ev.stopPropagation();
+        await handleAction(el.dataset.action, el.closest('.oj-row').dataset.id, el);
+      });
+    });
+    listEl.querySelectorAll('.oj-doc input').forEach(el => {
+      on(el, 'click', ev => ev.stopPropagation());
+      on(el, 'change', () => {
+        const id = el.closest('.oj-row').dataset.id;
+        const docKey = el.dataset.doc;
+        toggleDoc(id, docKey, el.checked);
+      });
+    });
+    listEl.querySelectorAll('[data-toggle-log]').forEach(el => {
+      on(el, 'click', (ev) => {
+        ev.stopPropagation();
+        const id = el.dataset.toggleLog;
+        if(collapsedLogIds.has(id)) collapsedLogIds.delete(id); else collapsedLogIds.add(id);
+        renderList();
+      });
+    });
+    listEl.querySelectorAll('.oj-log-task-check').forEach(el => {
+      on(el, 'click', ev => ev.stopPropagation());
+      on(el, 'change', async (ev) => {
+        const objId = el.closest('.oj-row').dataset.id;
+        const idx = parseInt(el.dataset.logIdx, 10);
+        const o = objects.find(x => x.id === objId);
+        if(!o || !o.log || !o.log[idx]) return;
+        o.log[idx].done = el.checked;
+        o.updatedAt = todayISO();
+        await saveObjects();
+        renderAll();
+        showToast(el.checked ? 'Задача отмечена выполненной' : 'Задача возвращена в работу');
+      });
+    });
+    listEl.querySelectorAll('.oj-log-edit-btn').forEach(el => {
+      on(el, 'click', (ev) => {
+        ev.stopPropagation();
+        const objId = el.closest('.oj-row').dataset.id;
+        const idx = parseInt(el.dataset.logIdx, 10);
+        editingLogEntry = {objId, idx};
+        renderList();
+      });
+    });
+    listEl.querySelectorAll('.oj-log-del-btn').forEach(el => {
+      on(el, 'click', async (ev) => {
+        ev.stopPropagation();
+        const objId = el.closest('.oj-row').dataset.id;
+        const idx = parseInt(el.dataset.logIdx, 10);
+        const o = objects.find(x => x.id === objId);
+        if(!o || !o.log || !o.log[idx]) return;
+        const ok = await askConfirm('Удалить запись «' + o.log[idx].text + '»? Это действие нельзя отменить.');
+        if(!ok) return;
+        o.log.splice(idx, 1);
+        o.updatedAt = todayISO();
+        await saveObjects();
+        renderAll();
+        showToast('Запись удалена');
+      });
+    });
+    listEl.querySelectorAll('.logEditCancel').forEach(el => {
+      on(el, 'click', (ev) => {
+        ev.stopPropagation();
+        editingLogEntry = null;
+        renderList();
+      });
+    });
+    listEl.querySelectorAll('.logEditSave').forEach(el => {
+      on(el, 'click', async (ev) => {
+        ev.stopPropagation();
+        const wrap = el.closest('.oj-log-entry-edit');
+        const objId = el.closest('.oj-row').dataset.id;
+        const idx = parseInt(wrap.dataset.logIdx, 10);
+        const o = objects.find(x => x.id === objId);
+        if(!o || !o.log || !o.log[idx]){
+          showToast('Не удалось найти запись — возможно, она была удалена.', true);
+          editingLogEntry = null;
+          renderList();
+          return;
+        }
+        const date = wrap.querySelector('.logEditDate').value || todayISO();
+        const type = wrap.querySelector('.logEditType') ? wrap.querySelector('.logEditType').value : 'note';
+        const text = wrap.querySelector('.logEditText').value.trim();
+        const status = wrap.querySelector('.logEditStatus').value;
+        const dueDate = wrap.querySelector('.logEditDue') ? wrap.querySelector('.logEditDue').value : '';
+        const done = wrap.querySelector('.logEditDone') ? wrap.querySelector('.logEditDone').checked : false;
+        if(!text){
+          showToast('Текст записи не может быть пустым.', true);
+          return;
+        }
+        const entry = {date, text, status: status || undefined, type: type === 'task' ? 'task' : 'note'};
+        if(type === 'task'){
+          entry.dueDate = dueDate || undefined;
+          entry.done = done;
+        }
+        o.log[idx] = entry;
+        o.updatedAt = todayISO();
+        editingLogEntry = null;
+        await saveObjects();
+        renderAll();
+        showToast('Запись обновлена');
+      });
+    });
+    const entryForm = listEl.querySelector('.oj-entryform');
+    if(entryForm){
+      const addBtn = entryForm.querySelector('.entryAddBtn');
+      on(addBtn, 'click', (ev) => {
+        ev.stopPropagation();
+        const id = entryForm.closest('.oj-row').dataset.id;
+        submitLogEntry(id, entryForm);
+      });
+    }
+    const schedAddBtn = listEl.querySelector('.schedAddBtn');
+    if(schedAddBtn){
+      on(schedAddBtn, 'click', async (ev) => {
+        ev.stopPropagation();
+        const row = schedAddBtn.closest('.oj-row');
+        const objId = row.dataset.id;
+        const nameInput = row.querySelector('.schedPhaseInput');
+        const startInput = row.querySelector('.schedStartInput');
+        const endInput = row.querySelector('.schedEndInput');
+        const name = nameInput.value.trim();
+        const start = startInput.value;
+        const end = endInput.value;
+        if(!name){ showToast('Введите название этапа.', true); return; }
+        if(start && end && end < start){ showToast('Дата окончания раньше даты начала.', true); return; }
+        const o = objects.find(x => x.id === objId);
+        if(!o) return;
+        o.schedule = o.schedule || [];
+        o.schedule.push({id: uid(), name, start, end});
+        o.updatedAt = todayISO();
+        await saveObjects();
+        renderAll();
+        showToast('Этап добавлен');
+      });
+    }
+    listEl.querySelectorAll('.schedDelBtn').forEach(btn => {
+      on(btn, 'click', async (ev) => {
+        ev.stopPropagation();
+        const o = objects.find(x => x.id === btn.dataset.objId);
+        if(!o || !o.schedule) return;
+        o.schedule = o.schedule.filter(p => p.id !== btn.dataset.phaseId);
+        o.updatedAt = todayISO();
+        await saveObjects();
+        renderAll();
+        showToast('Этап удалён');
+      });
+    });
+    function moveSchedPhase(objId, phaseId, dir){
+      const o = objects.find(x => x.id === objId);
+      if(!o || !o.schedule) return;
+      const idx = o.schedule.findIndex(p => p.id === phaseId);
+      const swapWith = idx + dir;
+      if(idx === -1 || swapWith < 0 || swapWith >= o.schedule.length) return;
+      [o.schedule[idx], o.schedule[swapWith]] = [o.schedule[swapWith], o.schedule[idx]];
+      o.updatedAt = todayISO();
+      saveObjects().then(() => renderAll());
+    }
+    listEl.querySelectorAll('.schedUpBtn').forEach(btn => {
+      on(btn, 'click', (ev) => {
+        ev.stopPropagation();
+        moveSchedPhase(btn.dataset.objId, btn.dataset.phaseId, -1);
+      });
+    });
+    listEl.querySelectorAll('.schedDownBtn').forEach(btn => {
+      on(btn, 'click', (ev) => {
+        ev.stopPropagation();
+        moveSchedPhase(btn.dataset.objId, btn.dataset.phaseId, 1);
+      });
+    });
+    const empAddBtn = listEl.querySelector('.employeeAddBtn');
+    if(empAddBtn){
+      on(empAddBtn, 'click', async (ev) => {
+        ev.stopPropagation();
+        const row = empAddBtn.closest('.oj-row');
+        const input = row.querySelector('.employeeInput');
+        const id = row.dataset.id;
+        const o = objects.find(x => x.id === id);
+        if(!o) return;
+        const name = input.value.trim();
+        if(!name){
+          showToast('Введите имя сотрудника.', true);
+          return;
+        }
+        o.employees = o.employees || [];
+        o.employees.push(name);
+        o.updatedAt = todayISO();
+        await saveObjects();
+        renderAll();
+        showToast('Сотрудник добавлен');
+      });
+    }
+    listEl.querySelectorAll('.oj-employee-remove').forEach(el => {
+      on(el, 'click', async (ev) => {
+        ev.stopPropagation();
+        const id = el.closest('.oj-row').dataset.id;
+        const idx = parseInt(el.dataset.empIdx, 10);
+        const o = objects.find(x => x.id === id);
+        if(!o || !o.employees) return;
+        o.employees.splice(idx, 1);
+        o.updatedAt = todayISO();
+        await saveObjects();
+        renderAll();
+        showToast('Сотрудник удалён');
+      });
+    });
+    const assignedEmpAddBtn = listEl.querySelector('.assignedEmpAddBtn');
+    if(assignedEmpAddBtn){
+      on(assignedEmpAddBtn, 'click', async (ev) => {
+        ev.stopPropagation();
+        const row = assignedEmpAddBtn.closest('.oj-row');
+        const select = row.querySelector('.assignedEmpSelect');
+        const objId = row.dataset.id;
+        const ids = Array.from(select.selectedOptions).map(opt => opt.value).filter(Boolean);
+        if(ids.length === 0){
+          showToast('Выберите хотя бы одного сотрудника из списка.', true);
+          return;
+        }
+        const names = [];
+        ids.forEach(empId => {
+          const emp = employees.find(x => x.id === empId);
+          if(emp){ emp.objectId = objId; names.push(emp.fullName); }
+        });
+        await saveEmployees();
+        renderAll();
+        showToast(names.length === 1 ? '«' + names[0] + '» назначен на объект' : 'Назначено сотрудников: ' + names.length);
+      });
+    }
+    const assignedEmpFilter = listEl.querySelector('.assignedEmpFilter');
+    if(assignedEmpFilter){
+      on(assignedEmpFilter, 'input', () => {
+        const row = assignedEmpFilter.closest('.oj-row');
+        const select = row.querySelector('.assignedEmpSelect');
+        const q = assignedEmpFilter.value.trim().toLowerCase();
+        Array.from(select.options).forEach(opt => {
+          opt.hidden = q && !opt.textContent.toLowerCase().includes(q);
+        });
+      });
+    }
+    listEl.querySelectorAll('.assignedEmpRemoveBtn').forEach(el => {
+      on(el, 'click', async (ev) => {
+        ev.stopPropagation();
+        const empId = el.dataset.empId;
+        const emp = employees.find(x => x.id === empId);
+        if(!emp) return;
+        emp.objectId = '';
+        await saveEmployees();
+        renderAll();
+        showToast('«' + emp.fullName + '» снят с объекта');
+      });
+    });
+    listEl.querySelectorAll('[data-toggle-docnotes]').forEach(el => {
+      on(el, 'click', (ev) => {
+        ev.stopPropagation();
+        const id = el.dataset.toggleDocnotes;
+        if(docNotesVisible.has(id)) docNotesVisible.delete(id); else docNotesVisible.add(id);
+        renderList();
+      });
+    });
+    listEl.querySelectorAll('.oj-doc-note').forEach(el => {
+      on(el, 'click', ev => ev.stopPropagation());
+      on(el, 'change', () => {
+        const id = el.closest('.oj-row').dataset.id;
+        const key = el.dataset.docNote;
+        setDocNote(id, key, el.value.trim());
+      });
+    });
+    listEl.querySelectorAll('.oj-doc-date').forEach(el => {
+      on(el, 'click', ev => ev.stopPropagation());
+      on(el, 'change', () => {
+        const id = el.closest('.oj-row').dataset.id;
+        const docKey = el.dataset.docDate;
+        setDocDate(id, docKey, el.value);
+      });
+    });
+    listEl.querySelectorAll('.workTypeNoteInput').forEach(el => {
+      on(el, 'click', ev => ev.stopPropagation());
+      on(el, 'change', () => {
+        const id = el.closest('.oj-row').dataset.id;
+        const wt = el.dataset.wt;
+        setWorkTypeNote(id, wt, el.value.trim());
+      });
+    });
+    const linkInput = listEl.querySelector('.commsLinkInput');
+    if(linkInput){
+      on(linkInput, 'click', ev => ev.stopPropagation());
+      on(linkInput, 'change', async () => {
+        const id = linkInput.closest('.oj-row').dataset.id;
+        const o = objects.find(x => x.id === id);
+        if(!o) return;
+        o.commsLink = linkInput.value.trim();
+        o.updatedAt = todayISO();
+        await saveObjects();
+        renderAll();
+        showToast('Ссылка сохранена');
+      });
+    }
+    const commsDeadlineInput = listEl.querySelector('.commsDeadlineInput');
+    if(commsDeadlineInput){
+      on(commsDeadlineInput, 'click', ev => ev.stopPropagation());
+      on(commsDeadlineInput, 'change', async () => {
+        const id = commsDeadlineInput.closest('.oj-row').dataset.id;
+        const o = objects.find(x => x.id === id);
+        if(!o) return;
+        o.commsDeadline = commsDeadlineInput.value;
+        o.updatedAt = todayISO();
+        await saveObjects();
+        showToast('Срок сохранён');
+      });
+    }
+    const contractAmountInput = listEl.querySelector('.contractAmountInput');
+    if(contractAmountInput){
+      on(contractAmountInput, 'click', ev => ev.stopPropagation());
+      on(contractAmountInput, 'change', async () => {
+        const id = contractAmountInput.closest('.oj-row').dataset.id;
+        const o = objects.find(x => x.id === id);
+        if(!o) return;
+        o.contractAmount = contractAmountInput.value.trim();
+        o.updatedAt = todayISO();
+        await saveObjects();
+        showToast('Сумма сохранена');
+      });
+    }
+  }
+
+  function priorityLabel(p){
+    if(p === 'active') return 'Активный — включаться каждый день';
+    if(p === 'passive') return 'Пассивный — контроль периодически';
+    return 'Режим не задан — нажмите, чтобы выбрать';
+  }
+  function nextPriority(p){
+    if(p === 'active') return 'passive';
+    if(p === 'passive') return '';
+    return 'active';
+  }
+
+  function rowHtml(o){
+    const stage = STAGES[stageIndex(o.status)] || STAGES[0];
+    const isOpen = allExpanded || expandedId === o.id;
+    const late = o.deadline && o.deadline < todayISO() && o.status !== 'office';
+    const priorityClass = o.priority ? ' oj-row-' + o.priority : '';
+    const misc = isMiscObj(o);
+    return `
+    <div class="oj-row${isOpen?' open':''}${priorityClass}${o.archived?' archived':''}${misc?' misc':''}" data-id="${o.id}">
+      <div class="oj-row-head">
+        <button type="button" class="oj-priority-dot ${o.priority ? 'oj-priority-'+o.priority : 'oj-priority-none'}" data-priority-toggle="${o.id}" title="${priorityLabel(o.priority)}"></button>
+        ${coreHtml(o.status)}
+        <div class="oj-row-main">
+          <div class="oj-row-name">${esc(o.name)}${misc ? ' <span class="oj-priority-tag" style="background:#EFE4F3;color:#7A3D8A;">разное</span>' : ''}${o.archived ? ' <span class="oj-priority-tag" style="background:var(--surface-2);color:var(--ink-faint);">в архиве</span>' : ''}${o.priority === 'active' ? ' <span class="oj-priority-tag oj-priority-tag-active">активный</span>' : ''}${o.priority === 'passive' ? ' <span class="oj-priority-tag oj-priority-tag-passive">пассивный</span>' : ''}</div>
+          <div class="oj-row-sub">${esc(o.customer||'—')}${o.responsible?' · Отв.: '+esc(o.responsible):''}${o.contract?' · № '+esc(o.contract):''}${o.address?' · '+esc(o.address):''}</div>
+        </div>
+        <div class="oj-row-meta">
+          <span class="oj-badge" style="background:${stage.color}22;color:${stage.color}">${stage.label}</span>
+          <span class="oj-deadline ${late?'late':''}">${o.deadline ? fmtDate(o.deadline) + (late?' · просрочен':'') : 'без срока'}</span>
+        </div>
+        <span class="oj-chevron">▶</span>
+      </div>
+      ${isOpen ? detailHtml(o) : ''}
+    </div>`;
+  }
+
+  function detailHtml(o){
+    const docs = o.docs || {};
+    const dates = o.docDates || {};
+    const notes = o.docNotes || {};
+    const showNotes = docNotesVisible.has(o.id);
+    const isTopo = (o.workTypes||[]).includes('Топосъёмка');
+    const isGeoNet = (o.workTypes||[]).includes('Геодезическая сеть');
+    const isSupervision = (o.workTypes||[]).includes('Технический надзор');
+    const isSeasonal = (o.workTypes||[]).includes('Сезонное определение');
+    const isPTO = (o.workTypes||[]).includes('ПТО') || (o.workTypes||[]).includes('Геодезическое сопровождение');
+    const isMisc = (o.workTypes||[]).includes('Разное');
+    const compactMode = allExpanded;
+    const showPoints = isTopo || isGeoNet;
+    const showAgreements = isTopo;
+    const assignedEmployees = employees.filter(e => e.objectId === o.id);
+    const availableEmployees = employees.filter(e => e.objectId !== o.id);
+    return `
+    <div class="oj-row-body">
+      ${isMisc ? `
+      <div style="color:var(--ink-faint);font-size:12.5px;font-style:italic;margin-bottom:14px;">
+        Объект «Разное» — без чек-листа геодезических работ. Используйте журнал ниже для заметок и разовых задач.
+      </div>
+      ` : ``}
+      <div class="oj-row-columns${isMisc ? ' misc-full' : ''}">
+      <div class="oj-row-col-left">
+      ${!isMisc ? `
+      <div class="oj-detail-grid">
+        <div class="oj-detail-field"><label>Ответственный</label><div>${esc(o.responsible)||'—'}</div></div>
+        <div class="oj-detail-field"><label>Ответственный от заказчика</label><div>${esc(o.customerResponsible)||'—'}</div></div>
+        <div class="oj-detail-field"><label>Создан</label><div>${fmtDate(o.createdAt)}</div></div>
+        <div class="oj-detail-field" style="grid-column:1/-1">
+          <label>Вид работ</label>
+          <div class="oj-worktype-notes">
+            ${(o.workTypes||[]).length ? (o.workTypes||[]).map(t => `
+              <div class="oj-worktype-note-row">
+                <span class="oj-worktype-tag">${esc(t)}</span>
+                <input type="text" class="workTypeNoteInput" data-wt="${esc(t)}" placeholder="Примечание…" value="${esc((o.workTypeNotes||{})[t]||'')}">
+              </div>
+            `).join('') : '<span style="color:var(--ink-faint);font-family:var(--font-mono);font-size:12px;">не указано</span>'}
+          </div>
+        </div>
+      </div>
+      ` : ``}
+
+      ${(!isMisc && !compactMode) ? `
+      <div class="oj-docs">
+        <div class="oj-doc-group-title" style="margin-top:0;">Назначенные сотрудники</div>
+        <div class="oj-employees-list">
+          ${assignedEmployees.length ? assignedEmployees.map(e => `
+            <div class="oj-employee-row">
+              <span>${esc(e.fullName)}${e.position ? ' — ' + esc(e.position) : ''}</span>
+              <button type="button" class="assignedEmpRemoveBtn" data-emp-id="${e.id}" title="Снять с объекта">×</button>
+            </div>
+          `).join('') : '<div style="color:var(--ink-faint);font-size:12px;">Никто из сотрудников пока не назначен</div>'}
+        </div>
+        <div class="oj-linkrow" style="flex-direction:column;align-items:stretch;gap:6px;">
+          <input type="text" class="assignedEmpFilter" placeholder="Поиск сотрудника для добавления…" data-obj-id="${o.id}">
+          <select class="assignedEmpSelect" multiple size="6">
+            ${availableEmployees.map(e => `<option value="${e.id}">${esc(e.fullName)}${e.objectId ? ' (сейчас: ' + esc((objects.find(x=>x.id===e.objectId)||{}).name||'') + ')' : ''}</option>`).join('')}
+          </select>
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+            <span style="font-size:11px;color:var(--ink-faint);">Ctrl/Cmd + клик — выбрать нескольких</span>
+            <button type="button" class="oj-btn oj-btn-ghost assignedEmpAddBtn">Добавить выбранных</button>
+          </div>
+        </div>
+      </div>
+      ` : ``}
+
+      ${!isMisc ? `
+      <div class="oj-docs">
+        <div class="oj-docs-notes-toggle" data-toggle-docnotes="${o.id}">${showNotes ? '▾ скрыть примечания' : '▸ показать примечания'}</div>
+        <div class="oj-doc-group-title" style="margin-top:0;">Договорная часть</div>
+        ${docRowHtml('contractSigned', 'Договор', docs, dates, notes, showNotes)}
+        ${isPTO ? `
+        <div class="oj-doc-row" style="margin-top:4px;">
+          <label class="oj-doc" style="flex:1;color:var(--ink-soft);">Сумма контракта</label>
+          <input type="text" class="oj-doc-date contractAmountInput" style="width:150px;" placeholder="₽" value="${esc(o.contractAmount||'')}">
+        </div>
+        ` : ``}
+        ${(!isSupervision && !isPTO) ? `
+        ${docRowHtml('advance', 'Аванс', docs, dates, notes, showNotes)}
+        ${!isSeasonal ? docRowHtml('actOfWork', 'Акт выполненных работ', docs, dates, notes, showNotes) : ``}
+        ${docRowHtml('balance', 'Остаток', docs, dates, notes, showNotes)}
+        ` : ``}
+
+        ${(!isSupervision && !isSeasonal && !isPTO) ? `
+        <div class="oj-doc-group-title">ТЗ</div>
+        ${docRowHtml('tz', 'ТЗ получено', docs, dates, notes, showNotes)}
+        ` : ``}
+
+        ${(!isSupervision && !isSeasonal && !isPTO) ? `
+        <div class="oj-doc-group-title">Программа работ</div>
+        ${docRowHtml('programSent', 'Отправлена', docs, dates, notes, showNotes)}
+        ${docRowHtml('programApproved', 'Согласована', docs, dates, notes, showNotes)}
+        ` : ``}
+
+        ${showPoints ? `
+          <div class="oj-doc-group-title">Определение пунктов</div>
+          ${showAgreements ? docRowHtml('pointsAgreed', 'Согласование мест установки пунктов', docs, dates, notes, showNotes) : ``}
+          ${docRowHtml('pointsInstalled', 'Установка пунктов', docs, dates, notes, showNotes)}
+          ${docRowHtml('leveling', 'Нивелировка', docs, dates, notes, showNotes)}
+          ${docRowHtml('gnss', 'ГНСС-измерения', docs, dates, notes, showNotes)}
+        ` : ``}
+
+        ${showAgreements ? `
+        <div class="oj-doc-group-title">Согласование коммуникаций</div>
+        <div class="oj-linkrow">
+          <input type="url" class="commsLinkInput" placeholder="Ссылка на Google Таблицу…" value="${esc(o.commsLink||'')}">
+          ${o.commsLink ? `<a href="${esc(o.commsLink)}" target="_blank" rel="noopener" class="oj-linkopen">Открыть ↗</a>` : ''}
+        </div>
+        <div class="oj-doc-row" style="margin-top:4px;">
+          <label class="oj-doc" style="flex:1;color:var(--ink-soft);">Срок согласования</label>
+          <input type="date" class="oj-doc-date commsDeadlineInput" value="${esc(o.commsDeadline||'')}" title="Срок согласования коммуникаций">
+        </div>
+        ` : ``}
+
+        ${(!isSupervision && !isPTO) ? `
+        <div class="oj-doc-group-title">Отчёт и сдача</div>
+        ${docRowHtml('reportSent', 'Отчёт направлен', docs, dates, notes, showNotes)}
+        ${docRowHtml('reportApproved', 'Отчёт согласован', docs, dates, notes, showNotes)}
+        ${docRowHtml('act', 'Акт подписан', docs, dates, notes, showNotes)}
+        ` : ``}
+      </div>
+      ` : ``}
+
+      ${isSupervision ? `
+      <div class="oj-docs">
+        <div class="oj-doc-group-title" style="margin-top:0;">Сотрудники на объекте</div>
+        <div class="oj-employees-list">
+          ${(o.employees||[]).length ? (o.employees||[]).map((emp, idx) => `
+            <div class="oj-employee-row">
+              <span>${esc(emp)}</span>
+              <button type="button" class="oj-employee-remove" data-emp-idx="${idx}" title="Удалить">×</button>
+            </div>
+          `).join('') : '<div style="color:var(--ink-faint);font-size:12px;">Пока никто не назначен</div>'}
+        </div>
+        <div class="oj-linkrow">
+          <input type="text" class="employeeInput" placeholder="Имя сотрудника…">
+          <button type="button" class="oj-btn oj-btn-ghost employeeAddBtn">Добавить</button>
+        </div>
+      </div>
+      ` : ``}
+      </div>
+
+      <div class="oj-row-col-right">
+      <div class="oj-log">
+        <div class="oj-log-title" data-toggle-log="${o.id}">
+          <span>История · ${(o.log||[]).length} записей${(() => {
+            const open = (o.log||[]).filter(e => e.type === 'task' && !e.done).length;
+            return open ? ` · ${open} задач${open === 1 ? 'а' : (open < 5 ? 'и' : '')} в работе` : '';
+          })()}</span>
+          <span class="oj-log-toggle-icon">${collapsedLogIds.has(o.id) ? '▸ показать' : '▾ скрыть'}</span>
+        </div>
+        ${!collapsedLogIds.has(o.id) ? `
+        <div class="oj-log-entries">
+          ${(o.log||[]).length ? (o.log||[]).map((e, idx) => idx).map(idx => {
+            const e = o.log[idx];
+            const isEditing = editingLogEntry && editingLogEntry.objId === o.id && editingLogEntry.idx === idx;
+            if(isEditing){
+              return `
+              <div class="oj-log-entry-edit" data-log-idx="${idx}">
+                <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                  <input type="date" class="logEditDate" value="${e.date || todayISO()}">
+                  <select class="logEditType">
+                    <option value="note" ${e.type !== 'task' ? 'selected' : ''}>Заметка</option>
+                    <option value="task" ${e.type === 'task' ? 'selected' : ''}>Задача</option>
+                  </select>
+                  <input type="date" class="logEditDue" value="${e.dueDate || ''}" title="Срок (для задачи)" placeholder="Срок">
+                  <label style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--ink-soft);">
+                    <input type="checkbox" class="logEditDone" ${e.done ? 'checked' : ''}> выполнено
+                  </label>
+                </div>
+                <input type="text" class="logEditText" value="${esc(e.text)}">
+                <select class="logEditStatus">
+                  <option value="">Без смены статуса</option>
+                  ${STAGES.map(s=>`<option value="${s.key}" ${s.key===e.status?'selected':''}>→ ${s.label}</option>`).join('')}
+                </select>
+                <div class="oj-log-edit-actions">
+                  <button type="button" class="oj-btn oj-btn-ghost logEditCancel">Отмена</button>
+                  <button type="button" class="oj-btn oj-btn-primary logEditSave" data-log-idx="${idx}">Сохранить</button>
+                </div>
+              </div>`;
+            }
+            return `
+              <div class="oj-log-entry${e.type === 'task' ? ' is-task' : ''}">
+                <div class="oj-log-date">${fmtDate(e.date)}</div>
+                ${e.type === 'task' ? `<input type="checkbox" class="oj-log-task-check" data-log-idx="${idx}" ${e.done ? 'checked' : ''} title="Отметить выполненной">` : ``}
+                <div class="oj-log-text${e.type === 'task' && e.done ? ' done' : ''}">${esc(e.text)}${e.status ? ` <span class="oj-log-status">→ ${STAGES[stageIndex(e.status)]?.label||''}</span>`:''}</div>
+                ${e.type === 'task' && e.dueDate ? `<div class="oj-log-due${!e.done && e.dueDate < todayISO() ? ' late' : ''}${!e.done && e.dueDate === todayISO() ? ' today' : ''}">до ${fmtDate(e.dueDate)}</div>` : ``}
+                <button type="button" class="oj-log-edit-btn" data-log-idx="${idx}" title="Изменить запись">✎</button>
+                <button type="button" class="oj-log-del-btn" data-log-idx="${idx}" title="Удалить запись">✕</button>
+              </div>`;
+          }).join('') : '<div style="color:var(--ink-faint);font-size:12.5px;">Записей пока нет</div>'}
+        </div>
+        ` : ``}
+      </div>
+
+      <div class="oj-entryform">
+        <input type="date" class="entryDate" value="${todayISO()}">
+        <select class="entryType">
+          <option value="note">Заметка</option>
+          <option value="task">Задача</option>
+        </select>
+        <input type="text" class="entryText" placeholder="Новая запись…">
+        <input type="date" class="entryDue" title="Срок (для задачи)" placeholder="Срок">
+        <select class="entryStatus">
+          <option value="">Без смены статуса</option>
+          ${STAGES.map(s=>`<option value="${s.key}" ${s.key===o.status?'selected':''}>→ ${s.label}</option>`).join('')}
+        </select>
+        <label class="oj-entrydone-label" title="Отметить задачу сразу выполненной">
+          <input type="checkbox" class="entryDone"> выполнено
+        </label>
+        <button type="button" class="oj-btn oj-btn-ghost entryAddBtn">Добавить</button>
+      </div>
+      </div>
+      </div>
+
+      <div class="oj-schedule-section">
+        <div class="oj-doc-group-title" style="margin-top:0;">График работ по объекту</div>
+        <div class="oj-schedule-addrow">
+          <input type="text" class="schedPhaseInput" placeholder="Название этапа…">
+          <input type="date" class="schedStartInput" title="Начало">
+          <input type="date" class="schedEndInput" title="Окончание">
+          <button type="button" class="oj-btn oj-btn-ghost schedAddBtn">Добавить этап</button>
+        </div>
+        ${renderGanttChart(o.schedule || [], o.id)}
+      </div>
+
+      <div class="oj-detail-actions">
+        <button class="oj-btn oj-btn-danger" data-action="delete">Удалить объект</button>
+        <button class="oj-btn oj-btn-ghost" data-action="duplicate">Дублировать</button>
+        <button class="oj-btn oj-btn-ghost" data-action="edit">Изменить данные</button>
+        <button class="oj-btn oj-btn-ghost" data-action="archive">${o.archived ? 'Вернуть из архива' : 'В архив'}</button>
+      </div>
+    </div>`;
+  }
+
+  async function toggleDoc(id, docKey, checked){
+    const o = objects.find(x => x.id === id);
+    if(!o) return;
+    o.docs = o.docs || {};
+    o.docs[docKey] = checked;
+    o.docDates = o.docDates || {};
+    if(checked && !o.docDates[docKey]){
+      o.docDates[docKey] = todayISO();
+    }
+    if(docKey === 'programApproved' && checked){
+      o.docs.programSent = true;
+      if(!o.docDates.programSent) o.docDates.programSent = todayISO();
+    }
+    if(docKey === 'programSent' && !checked){
+      o.docs.programApproved = false;
+    }
+    if(docKey === 'reportApproved' && checked){
+      o.docs.reportSent = true;
+      if(!o.docDates.reportSent) o.docDates.reportSent = todayISO();
+    }
+    if(docKey === 'reportSent' && !checked){
+      o.docs.reportApproved = false;
+    }
+    o.updatedAt = todayISO();
+    await saveObjects();
+    renderList();
+  }
+
+  async function setDocDate(id, docKey, value){
+    const o = objects.find(x => x.id === id);
+    if(!o) return;
+    o.docDates = o.docDates || {};
+    o.docDates[docKey] = value;
+    o.updatedAt = todayISO();
+    await saveObjects();
+  }
+
+  async function setDocNote(id, docKey, value){
+    const o = objects.find(x => x.id === id);
+    if(!o) return;
+    o.docNotes = o.docNotes || {};
+    o.docNotes[docKey] = value;
+    o.updatedAt = todayISO();
+    await saveObjects();
+  }
+
+  async function setWorkTypeNote(id, wt, value){
+    const o = objects.find(x => x.id === id);
+    if(!o) return;
+    o.workTypeNotes = o.workTypeNotes || {};
+    o.workTypeNotes[wt] = value;
+    o.updatedAt = todayISO();
+    await saveObjects();
+  }
+
+  async function submitLogEntry(id, formEl){
+    try{
+      const o = objects.find(x => x.id === id);
+      if(!o) return;
+      const date = formEl.querySelector('.entryDate').value || todayISO();
+      const type = formEl.querySelector('.entryType') ? formEl.querySelector('.entryType').value : 'note';
+      const text = formEl.querySelector('.entryText').value.trim();
+      const dueDate = formEl.querySelector('.entryDue') ? formEl.querySelector('.entryDue').value : '';
+      const status = formEl.querySelector('.entryStatus').value;
+      const doneChecked = formEl.querySelector('.entryDone') ? formEl.querySelector('.entryDone').checked : false;
+      if(!text){
+        showToast('Введите текст записи.', true);
+        return;
+      }
+      o.log = o.log || [];
+      const entry = {date, text, status: status || undefined, type: type === 'task' ? 'task' : 'note'};
+      if(type === 'task'){
+        entry.dueDate = dueDate || undefined;
+        entry.done = doneChecked;
+      }
+      o.log.push(entry);
+      if(status) o.status = status;
+      o.updatedAt = todayISO();
+      await saveObjects();
+      renderAll();
+      showToast(type === 'task' ? 'Задача добавлена' : 'Запись добавлена');
+    }catch(e){
+      console.error('Log entry error', e);
+      showToast('Не удалось добавить запись: ' + (e && e.message ? e.message : e), true);
+    }
+  }
+
+  async function handleAction(action, id){
+    if(action === 'delete'){
+      const ok = await askConfirm('Удалить объект и всю историю по нему без возможности восстановления?', 'Удалить');
+      if(ok){
+        objects = objects.filter(o => o.id !== id);
+        await saveObjects();
+        expandedId = null;
+        renderAll();
+        showToast('Объект удалён');
+      }
+    }else if(action === 'edit'){
+      openForm(id);
+    }else if(action === 'archive'){
+      const o = objects.find(x => x.id === id);
+      if(!o) return;
+      o.archived = !o.archived;
+      o.updatedAt = todayISO();
+      expandedId = null;
+      await saveObjects();
+      renderAll();
+      showToast(o.archived ? '«' + o.name + '» отправлен в архив' : '«' + o.name + '» возвращён из архива');
+    }else if(action === 'duplicate'){
+      const src = objects.find(x => x.id === id);
+      if(!src) return;
+      const newName = await askInput('Название нового объекта:', src.name + ' (копия)');
+      if(newName === null) return;
+      const now = todayISO();
+      const copy = {
+        id: uid(),
+        name: newName,
+        address: '',
+        customer: src.customer || '',
+        contract: '',
+        responsible: src.responsible || '',
+        customerResponsible: src.customerResponsible || '',
+        deadline: '',
+        workTypes: (src.workTypes || []).slice(),
+        status: 'contract',
+        docs: {},
+        commsLink: '',
+        employees: [],
+        createdAt: now,
+        updatedAt: now,
+        log: [{date: now, text: `Создан на основе объекта «${src.name}».`, status: 'contract'}],
+      };
+      objects.push(copy);
+      await saveObjects();
+      expandedId = copy.id;
+      editingLogEntry = null;
+      renderAll();
+      showToast(`Объект «${newName}» создан`);
+    }
+  }
+
+  const MONTH_NAMES_RU = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
+  function renderSummary(){
+    const wrap = document.getElementById('ojSummaryCharts');
+    if(!wrap) return;
+    const activeObjects = objects.filter(o => !o.archived);
+
+    const openTasks = [];
+    activeObjects.forEach(o => {
+      (o.log||[]).forEach((e, idx) => {
+        if(e.type === 'task' && !e.done){
+          openTasks.push({objId: o.id, objName: o.name, logIdx: idx, text: e.text, dueDate: e.dueDate || ''});
+        }
+      });
+    });
+    openTasks.sort((a,b) => {
+      const objCmp = a.objName.localeCompare(b.objName, 'ru', {numeric:true, sensitivity:'base'});
+      if(objCmp !== 0) return objCmp;
+      if(!a.dueDate && !b.dueDate) return 0;
+      if(!a.dueDate) return 1;
+      if(!b.dueDate) return -1;
+      return a.dueDate < b.dueDate ? -1 : (a.dueDate > b.dueDate ? 1 : 0);
+    });
+    const today = todayISO();
+    const tasksBlock = `
+      <div class="oj-chart-block">
+        <div class="oj-chart-title">Открытые задачи по всем объектам (${openTasks.length})</div>
+        ${openTasks.length ? `<div class="oj-tasks-summary-list">
+          ${openTasks.map(t => `
+            <div class="oj-tasks-summary-row" data-jump-obj="${t.objId}">
+              <input type="checkbox" class="oj-tasks-summary-check" data-obj-id="${t.objId}" data-log-idx="${t.logIdx}" title="Отметить выполненной">
+              <div class="oj-tasks-summary-obj">${esc(t.objName)}</div>
+              <div class="oj-tasks-summary-text">${esc(t.text)}</div>
+              <div class="oj-log-due${t.dueDate && t.dueDate < today ? ' late' : ''}${t.dueDate === today ? ' today' : ''}" style="flex:0 0 auto;">${t.dueDate ? fmtDate(t.dueDate) : 'без срока'}</div>
+            </div>
+          `).join('')}
+        </div>` : '<div style="color:var(--ink-faint);font-size:12px;">Открытых задач нет</div>'}
+      </div>`;
+
+    wrap.innerHTML = tasksBlock;
+    wrap.querySelectorAll('.oj-tasks-summary-check').forEach(el => {
+      on(el, 'click', ev => ev.stopPropagation());
+      on(el, 'change', async () => {
+        const o = objects.find(x => x.id === el.dataset.objId);
+        const idx = parseInt(el.dataset.logIdx, 10);
+        if(!o || !o.log || !o.log[idx]) return;
+        o.log[idx].done = true;
+        o.updatedAt = todayISO();
+        await saveObjects();
+        renderAll();
+        showToast('Задача отмечена выполненной');
+      });
+    });
+    wrap.querySelectorAll('[data-jump-obj]').forEach(el => {
+      on(el, 'click', () => {
+        expandedId = el.dataset.jumpObj;
+        renderAll();
+        setTimeout(() => {
+          const rowEl = document.querySelector('.oj-row[data-id="' + CSS.escape(expandedId) + '"]');
+          if(rowEl) rowEl.scrollIntoView({behavior:'smooth', block:'start'});
+        }, 50);
+      });
+    });
+  }
+
+  function exportSummaryCsv(){
+    const activeObjects = objects.filter(o => !o.archived);
+    const csvEsc = v => `"${(v||'').toString().replace(/"/g,'""')}"`;
+    const rows = [];
+
+    rows.push([csvEsc('Сводка по журналу объектов'), '', '']);
+    rows.push([csvEsc('Экспортировано: ' + fmtDate(todayISO())), '', '']);
+    rows.push(['', '', '']);
+
+    rows.push([csvEsc('Открытые задачи по всем объектам'), '', '']);
+    rows.push([csvEsc('Объект'), csvEsc('Задача'), csvEsc('Срок')]);
+    const openTasks = [];
+    activeObjects.forEach(o => {
+      (o.log||[]).forEach(e => {
+        if(e.type === 'task' && !e.done){
+          openTasks.push({objName: o.name, text: e.text, dueDate: e.dueDate || ''});
+        }
+      });
+    });
+    openTasks.sort((a,b) => {
+      const objCmp = a.objName.localeCompare(b.objName, 'ru', {numeric:true, sensitivity:'base'});
+      if(objCmp !== 0) return objCmp;
+      if(!a.dueDate && !b.dueDate) return 0;
+      if(!a.dueDate) return 1;
+      if(!b.dueDate) return -1;
+      return a.dueDate < b.dueDate ? -1 : (a.dueDate > b.dueDate ? 1 : 0);
+    });
+    if(openTasks.length){
+      openTasks.forEach(t => {
+        rows.push([csvEsc(t.objName), csvEsc(t.text), csvEsc(t.dueDate ? fmtDate(t.dueDate) : 'без срока')]);
+      });
+    }else{
+      rows.push([csvEsc('Открытых задач нет'), '', '']);
+    }
+
+    const csv = rows.map(r => r.join(';')).join('\n');
+    showExportModal(
+      'Экспорт сводки (для Excel)',
+      '\uFEFF' + csv,
+      'svodka-' + todayISO() + '.csv',
+      'text/csv;charset=utf-8;',
+      'Это CSV-файл (с разделителем «;»), Excel откроет его напрямую — двойным кликом или через «Открыть» в самом Excel. Если скачивание не сработает — скопируйте текст и вставьте в новый лист Excel: данные разойдутся по столбцам сами.'
+    );
+  }
+  on($('#ojSummaryExportBtn'), 'click', exportSummaryCsv);
+
+  function renderAll(){
+    renderLegend();
+    renderList();
+    if(!$('#ojSummary').hidden) renderSummary();
+    if(mainView === 'staff') renderStaff();
+    if(mainView === 'vehicles') renderVehicles();
+  }
+
+  /* --- Сотрудники: рендер --- */
+  function empSortValue(e, field){
+    if(field === 'fullName') return e.fullName || '';
+    if(field === 'company') return e.company || '';
+    if(field === 'department') return e.department || '';
+    if(field === 'position') return e.position || '';
+    if(field === 'objectName'){ const o = objects.find(x => x.id === e.objectId); return o ? o.name : ''; }
+    if(field === 'hireDate') return e.hireDate || '';
+    if(field === 'rate') return Number(e.rate) || 0;
+    if(field === 'status') return (EMP_STATUS_META[e.status] || {}).label || e.status || '';
+    return '';
+  }
+  function compareEmployees(a, b){
+    const av = empSortValue(a, empSortField);
+    const bv = empSortValue(b, empSortField);
+    const aEmpty = av === '' || av === null || av === undefined;
+    const bEmpty = bv === '' || bv === null || bv === undefined;
+    if(aEmpty && bEmpty) return 0;
+    if(aEmpty) return 1;
+    if(bEmpty) return -1;
+    let cmp;
+    if(typeof av === 'number' && typeof bv === 'number') cmp = av - bv;
+    else cmp = String(av).localeCompare(String(bv), 'ru', {numeric:true, sensitivity:'base'});
+    return empSortDir === 'asc' ? cmp : -cmp;
+  }
+  function getFilteredEmployees(){
+    return employees.filter(e => {
+      if(empFilterCompany && e.company !== empFilterCompany) return false;
+      if(empFilterDept && e.department !== empFilterDept) return false;
+      if(empFilterStatus && e.status !== empFilterStatus) return false;
+      if(empSearchTerm){
+        const hay = [e.fullName, e.position].join(' ').toLowerCase();
+        if(!hay.includes(empSearchTerm.toLowerCase())) return false;
+      }
+      return true;
+    }).sort(compareEmployees);
+  }
+  function renderEmpStats(){
+    const wrap = $('#empStats');
+    if(!wrap) return;
+    const counts = {active:0, vacation:0, decree:0, sick:0, fired:0};
+    employees.forEach(e => { counts[e.status] = (counts[e.status]||0) + 1; });
+    wrap.innerHTML = `
+      <div class="oj-staff-stat"><div class="oj-staff-stat-label">Всего сотрудников</div><div class="oj-staff-stat-value">${employees.length}</div></div>
+      <div class="oj-staff-stat"><div class="oj-staff-stat-label">Работает</div><div class="oj-staff-stat-value">${counts.active||0}</div></div>
+      <div class="oj-staff-stat"><div class="oj-staff-stat-label">Отпуск / больничный / декрет</div><div class="oj-staff-stat-value">${(counts.vacation||0)+(counts.sick||0)+(counts.decree||0)}</div></div>
+      <div class="oj-staff-stat"><div class="oj-staff-stat-label">Уволено</div><div class="oj-staff-stat-value">${counts.fired||0}</div></div>
+    `;
+  }
+  function updateEmpSortIndicators(){
+    document.querySelectorAll('#empTable th[data-sort]').forEach(th => {
+      const arrow = th.querySelector('.empSortArrow');
+      if(th.dataset.sort === empSortField){
+        th.classList.add('sorted');
+        if(arrow) arrow.textContent = empSortDir === 'asc' ? ' ▲' : ' ▼';
+      }else{
+        th.classList.remove('sorted');
+        if(arrow) arrow.textContent = '';
+      }
+    });
+    const sel = $('#empSortField');
+    if(sel) sel.value = empSortField;
+    const dirBtn = $('#empSortDir');
+    if(dirBtn) dirBtn.textContent = empSortDir === 'asc' ? '↑ по возрастанию' : '↓ по убыванию';
+  }
+  function renderStaff(){
+    buildEmpObjectSelects();
+    renderEmpStats();
+    updateEmpSortIndicators();
+    const items = getFilteredEmployees();
+    const body = $('#empTableBody');
+    const table = $('#empTable');
+    const empty = $('#empEmpty');
+    if(!body) return;
+    if(items.length === 0){
+      body.innerHTML = '';
+      table.style.display = 'none';
+      empty.hidden = false;
+      empty.textContent = employees.length ? 'Никого не найдено по заданным фильтрам.' : 'Список сотрудников пуст.';
+      return;
+    }
+    empty.hidden = true;
+    table.style.display = 'table';
+    body.innerHTML = items.map(e => {
+      const o = objects.find(x => x.id === e.objectId);
+      const st = EMP_STATUS_META[e.status] || {label: e.status, css:''};
+      return `
+        <tr data-id="${e.id}">
+          <td class="oj-staff-name">${esc(e.fullName)}</td>
+          <td>${esc(e.company)||'—'}</td>
+          <td>${esc(e.position)||'—'}</td>
+          <td>
+            <select class="empObjectInlineSelect" data-emp-id="${e.id}">
+              <option value="">Не назначен</option>
+              ${objects.slice().sort((a,b) => (a.name||'').localeCompare(b.name||'','ru')).map(ob => `<option value="${ob.id}" ${ob.id===e.objectId?'selected':''}>${esc(ob.name)}</option>`).join('')}
+            </select>
+          </td>
+          <td class="oj-staff-mono">${e.hireDate ? fmtDate(e.hireDate) : '—'}</td>
+          <td><span class="oj-staff-pill ${st.css}">${st.label}</span></td>
+          <td>
+            <div class="oj-staff-actions">
+              <button type="button" class="oj-staff-icon-btn empEditBtn" data-id="${e.id}" title="Изменить">✎</button>
+              <button type="button" class="oj-staff-icon-btn danger empDelBtn" data-id="${e.id}" title="Удалить">✕</button>
+            </div>
+          </td>
+        </tr>`;
+    }).join('');
+    body.querySelectorAll('.empEditBtn').forEach(btn => {
+      on(btn, 'click', () => openEmpForm(btn.dataset.id));
+    });
+    body.querySelectorAll('.empDelBtn').forEach(btn => {
+      on(btn, 'click', async () => {
+        const emp = employees.find(x => x.id === btn.dataset.id);
+        if(!emp) return;
+        const ok = await askConfirm('Удалить сотрудника «' + emp.fullName + '»? Это действие нельзя отменить.');
+        if(!ok) return;
+        employees = employees.filter(x => x.id !== emp.id);
+        await saveEmployees();
+        renderStaff();
+        showToast('Сотрудник удалён');
+      });
+    });
+    body.querySelectorAll('.empObjectInlineSelect').forEach(sel => {
+      on(sel, 'change', async () => {
+        const emp = employees.find(x => x.id === sel.dataset.empId);
+        if(!emp) return;
+        emp.objectId = sel.value || '';
+        await saveEmployees();
+        const o = objects.find(x => x.id === emp.objectId);
+        showToast(o ? '«' + emp.fullName + '» назначен на «' + o.name + '»' : '«' + emp.fullName + '» снят с объекта');
+      });
+    });
+  }
+
+  /* --- Сотрудники: панель добавления/редактирования --- */
+  const empOverlay = $('#ojEmpOverlay');
+  const empPanel = $('#ojEmpPanel');
+  function openEmpForm(id){
+    empEditingId = id || null;
+    const e = id ? employees.find(x => x.id === id) : null;
+    $('#ojEmpPanelTitle').textContent = e ? 'Изменить сотрудника' : 'Новый сотрудник';
+    buildEmpFormSelects();
+    buildEmpObjectSelects();
+    $('#empFName').value = e ? e.fullName : '';
+    $('#empFCompany').value = e ? e.company : COMPANIES[0];
+    $('#empFPosition').value = e ? e.position : '';
+    $('#empFDept').value = e ? e.department : DEPARTMENTS[0];
+    $('#empFObject').value = e ? (e.objectId || '') : '';
+    $('#empFHireDate').value = e ? (e.hireDate || '') : '';
+    $('#empFRate').value = e ? (e.rate || '') : '';
+    $('#empFPhone').value = e ? (e.phone || '') : '';
+    $('#empFStatus').value = e ? e.status : 'active';
+    $('#empFNotes').value = e ? (e.notes || '') : '';
+    empOverlay.hidden = false;
+    empPanel.hidden = false;
+  }
+  function closeEmpForm(){
+    empOverlay.hidden = true;
+    empPanel.hidden = true;
+    empEditingId = null;
+  }
+  async function saveEmpForm(){
+    const fullName = $('#empFName').value.trim();
+    if(!fullName){
+      showToast('Укажите ФИО сотрудника.', true);
+      return;
+    }
+    const data = {
+      id: empEditingId || uid(),
+      fullName,
+      company: $('#empFCompany').value,
+      position: $('#empFPosition').value.trim(),
+      department: $('#empFDept').value,
+      objectId: $('#empFObject').value || '',
+      hireDate: $('#empFHireDate').value || '',
+      rate: $('#empFRate').value ? Number($('#empFRate').value) : '',
+      phone: $('#empFPhone').value.trim(),
+      status: $('#empFStatus').value,
+      notes: $('#empFNotes').value.trim(),
+    };
+    if(empEditingId){
+      employees = employees.map(x => x.id === empEditingId ? data : x);
+    }else{
+      employees.push(data);
+    }
+    await saveEmployees();
+    closeEmpForm();
+    renderStaff();
+    showToast(empEditingId ? 'Сотрудник обновлён' : 'Сотрудник добавлен');
+  }
+  on($('#empAddBtn'), 'click', () => openEmpForm(null));
+  on($('#empCancelBtn'), 'click', closeEmpForm);
+  on(empOverlay, 'click', closeEmpForm);
+  on($('#empSaveBtn'), 'click', saveEmpForm);
+
+  on($('#empSearch'), 'input', () => { empSearchTerm = $('#empSearch').value; renderStaff(); });
+  on($('#empFilterCompany'), 'change', () => { empFilterCompany = $('#empFilterCompany').value; renderStaff(); });
+  on($('#empFilterDept'), 'change', () => { empFilterDept = $('#empFilterDept').value; renderStaff(); });
+  on($('#empFilterStatus'), 'change', () => { empFilterStatus = $('#empFilterStatus').value; renderStaff(); });
+  on($('#empSortField'), 'change', () => { empSortField = $('#empSortField').value; renderStaff(); });
+  on($('#empSortDir'), 'click', () => {
+    empSortDir = empSortDir === 'asc' ? 'desc' : 'asc';
+    $('#empSortDir').textContent = empSortDir === 'asc' ? '↑ по возрастанию' : '↓ по убыванию';
+    renderStaff();
+  });
+  document.querySelectorAll('#empTable th[data-sort]').forEach(th => {
+    on(th, 'click', () => {
+      const field = th.dataset.sort;
+      if(empSortField === field){
+        empSortDir = empSortDir === 'asc' ? 'desc' : 'asc';
+      }else{
+        empSortField = field;
+        empSortDir = 'asc';
+      }
+      renderStaff();
+    });
+  });
+
+  /* --- Автомобили: рендер --- */
+  const VEH_COLUMNS = [
+    {key:'brandModel', label:'Марка / модель'},
+    {key:'year', label:'Год'},
+    {key:'plate', label:'Гос.номер'},
+    {key:'location', label:'Город/объект'},
+    {key:'owner', label:'Собственник'},
+    {key:'driver', label:'Водитель'},
+    {key:'mileage', label:'Пробег'},
+    {key:'osagoUntil', label:'ОСАГО до'},
+    {key:'inspectionUntil', label:'ТО до'},
+  ];
+  function vehSortValue(v, key){
+    if(key === 'brandModel') return ((v.brand||'') + ' ' + (v.model||'')).trim().toLowerCase();
+    if(key === 'osagoUntil' || key === 'inspectionUntil') return v[key] ? new Date(v[key]).getTime() : null;
+    if(key === 'year' || key === 'mileage'){
+      const n = Number(v[key]);
+      return v[key] !== '' && v[key] != null && !Number.isNaN(n) ? n : null;
+    }
+    return (v[key] || '').toString().toLowerCase();
+  }
+  function compareVehicles(a, b){
+    if(!vehSortKey) return 0;
+    const av = vehSortValue(a, vehSortKey);
+    const bv = vehSortValue(b, vehSortKey);
+    const aEmpty = av === null || av === '';
+    const bEmpty = bv === null || bv === '';
+    if(aEmpty && bEmpty) return 0;
+    if(aEmpty) return 1;
+    if(bEmpty) return -1;
+    let cmp;
+    if(typeof av === 'number' && typeof bv === 'number') cmp = av - bv;
+    else cmp = String(av).localeCompare(String(bv), 'ru', {numeric:true, sensitivity:'base'});
+    return vehSortDir === 'asc' ? cmp : -cmp;
+  }
+  function buildVehFilters(){
+    const owners = Array.from(new Set(vehicles.map(v => v.owner).filter(Boolean))).sort((a,b) => a.localeCompare(b,'ru'));
+    $('#vehFilterOwner').innerHTML = '<option value="">Любой собственник</option>' + owners.map(o => `<option value="${esc(o)}">${esc(o)}</option>`).join('');
+    $('#vehFilterOwner').value = vehFilterOwner;
+  }
+  function getFilteredVehicles(){
+    return vehicles.filter(v => {
+      if(vehFilterOwner && v.owner !== vehFilterOwner) return false;
+      if(vehSearchTerm){
+        const hay = [(v.brand||'')+' '+(v.model||''), v.plate, v.driver, v.location].join(' ').toLowerCase();
+        if(!hay.includes(vehSearchTerm.toLowerCase())) return false;
+      }
+      return true;
+    }).sort(compareVehicles);
+  }
+  function getVehAlerts(){
+    const list = [];
+    vehicles.forEach(v => {
+      const to = daysUntil(v.inspectionUntil);
+      const ins = daysUntil(v.osagoUntil);
+      if(to !== null && to <= 30) list.push({v, type:'Техосмотр', days: to});
+      if(ins !== null && ins <= 30) list.push({v, type:'ОСАГО', days: ins});
+    });
+    return list.sort((a,b) => a.days - b.days);
+  }
+  function updateVehSortIndicators(){
+    document.querySelectorAll('#vehTable th[data-sort]').forEach(th => {
+      const arrow = th.querySelector('.vehSortArrow');
+      if(th.dataset.sort === vehSortKey){
+        th.classList.add('sorted');
+        if(arrow) arrow.textContent = vehSortDir === 'asc' ? ' ▲' : ' ▼';
+      }else{
+        th.classList.remove('sorted');
+        if(arrow) arrow.textContent = '';
+      }
+    });
+  }
+  function renderVehStats(){
+    const wrap = $('#vehStats');
+    if(!wrap) return;
+    const alerts = getVehAlerts();
+    wrap.innerHTML = `
+      <div class="oj-staff-stat"><div class="oj-staff-stat-label">Всего машин</div><div class="oj-staff-stat-value">${vehicles.length}</div></div>
+      <div class="oj-staff-stat"><div class="oj-staff-stat-label">ОСАГО/ТО ≤ 30 дней</div><div class="oj-staff-stat-value" style="color:${alerts.length?'var(--active)':'inherit'}">${alerts.length}</div></div>
+    `;
+  }
+  function renderVehAlerts(){
+    const wrap = $('#vehAlerts');
+    if(!wrap) return;
+    const alerts = getVehAlerts();
+    if(alerts.length === 0){ wrap.hidden = true; wrap.innerHTML = ''; return; }
+    wrap.hidden = false;
+    wrap.innerHTML = `
+      <div class="oj-chart-title" style="margin-bottom:8px;">Ближайшие сроки (ОСАГО / техосмотр)</div>
+      ${alerts.slice(0, 8).map(a => `
+        <div class="oj-veh-alert-row">
+          <div><b>${esc(a.v.brand)} ${esc(a.v.model)}</b> · ${esc(a.v.plate||'')} <span style="color:var(--ink-faint);">· ${a.type}</span></div>
+          <span class="oj-staff-mono ${a.days < 0 ? 'late' : 'today'}">${a.days < 0 ? 'просрочено на ' + (-a.days) + ' дн.' : a.days === 0 ? 'сегодня' : 'через ' + a.days + ' дн.'}</span>
+        </div>
+      `).join('')}
+    `;
+  }
+  function renderVehicles(){
+    buildVehFilters();
+    renderVehStats();
+    renderVehAlerts();
+    updateVehSortIndicators();
+    const items = getFilteredVehicles();
+    const body = $('#vehTableBody');
+    const table = $('#vehTable');
+    const empty = $('#vehEmpty');
+    if(!body) return;
+    if(items.length === 0){
+      body.innerHTML = '';
+      table.style.display = 'none';
+      empty.hidden = false;
+      empty.textContent = vehicles.length ? 'Ничего не найдено по заданным фильтрам.' : 'Список техники пуст.';
+      return;
+    }
+    empty.hidden = true;
+    table.style.display = 'table';
+    body.innerHTML = items.map(v => `
+      <tr data-id="${v.id}">
+        <td class="oj-staff-name">${esc(v.brand)} ${esc(v.model)}</td>
+        <td class="oj-staff-mono">${esc(v.year)||'—'}</td>
+        <td class="oj-staff-mono">${esc(v.plate)||'—'}</td>
+        <td>${esc(v.location)||'—'}</td>
+        <td>${esc(v.owner)||'—'}</td>
+        <td>${esc(v.driver)||'—'}</td>
+        <td class="oj-staff-mono">${v.mileage ? Number(v.mileage).toLocaleString('ru-RU') + ' км' : '—'}</td>
+        <td class="oj-staff-mono ${dateWarnClass(v.osagoUntil)}">${v.osagoUntil ? fmtDate(v.osagoUntil) : '—'}</td>
+        <td class="oj-staff-mono ${dateWarnClass(v.inspectionUntil)}">${v.inspectionUntil ? fmtDate(v.inspectionUntil) : '—'}</td>
+        <td>
+          <div class="oj-staff-actions">
+            <button type="button" class="oj-staff-icon-btn vehLogBtn" data-id="${v.id}" title="Журнал ТО и расходов">☰</button>
+            <button type="button" class="oj-staff-icon-btn vehEditBtn" data-id="${v.id}" title="Изменить">✎</button>
+            <button type="button" class="oj-staff-icon-btn danger vehDelBtn" data-id="${v.id}" title="Удалить">✕</button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
+    body.querySelectorAll('.vehEditBtn').forEach(btn => on(btn, 'click', () => openVehForm(btn.dataset.id)));
+    body.querySelectorAll('.vehLogBtn').forEach(btn => on(btn, 'click', () => openVehLog(btn.dataset.id)));
+    body.querySelectorAll('.vehDelBtn').forEach(btn => {
+      on(btn, 'click', async () => {
+        const v = vehicles.find(x => x.id === btn.dataset.id);
+        if(!v) return;
+        const ok = await askConfirm('Удалить «' + v.brand + ' ' + v.model + ' (' + (v.plate||'без номера') + ')»? Это действие нельзя отменить.');
+        if(!ok) return;
+        vehicles = vehicles.filter(x => x.id !== v.id);
+        await saveVehicles();
+        renderVehicles();
+        showToast('Машина удалена');
+      });
+    });
+  }
+
+  /* --- Автомобили: панель добавления/редактирования --- */
+  const vehOverlay = $('#ojVehOverlay');
+  const vehPanel = $('#ojVehPanel');
+  function openVehForm(id){
+    vehEditingId = id || null;
+    const v = id ? vehicles.find(x => x.id === id) : null;
+    $('#ojVehPanelTitle').textContent = v ? 'Редактировать транспорт' : 'Новая машина';
+    $('#vehFBrand').value = v ? v.brand||'' : '';
+    $('#vehFYear').value = v ? v.year||'' : '';
+    $('#vehFModel').value = v ? v.model||'' : '';
+    $('#vehFPlate').value = v ? v.plate||'' : '';
+    $('#vehFVin').value = v ? v.vin||'' : '';
+    $('#vehFSts').value = v ? v.sts||'' : '';
+    $('#vehFOsagoPolicy').value = v ? v.osagoPolicy||'' : '';
+    $('#vehFOsagoUntil').value = v ? v.osagoUntil||'' : '';
+    $('#vehFInspectionUntil').value = v ? v.inspectionUntil||'' : '';
+    $('#vehFLocation').value = v ? v.location||'' : '';
+    $('#vehFOwner').value = v ? v.owner||'' : (vehicles[0]?.owner || 'Геоаспект');
+    $('#vehFDriver').value = v ? v.driver||'' : '';
+    $('#vehFMileage').value = v ? v.mileage||'' : '';
+    $('#vehFNotes').value = v ? v.notes||'' : '';
+    vehOverlay.hidden = false;
+    vehPanel.hidden = false;
+  }
+  function closeVehForm(){
+    vehOverlay.hidden = true;
+    vehPanel.hidden = true;
+    vehEditingId = null;
+  }
+  async function saveVehForm(){
+    const brand = $('#vehFBrand').value.trim();
+    if(!brand){ showToast('Укажите марку машины.', true); return; }
+    const data = {
+      id: vehEditingId || uid(),
+      brand,
+      year: $('#vehFYear').value.trim(),
+      model: $('#vehFModel').value.trim(),
+      plate: $('#vehFPlate').value.trim(),
+      vin: $('#vehFVin').value.trim(),
+      sts: $('#vehFSts').value.trim(),
+      osagoPolicy: $('#vehFOsagoPolicy').value.trim(),
+      osagoUntil: $('#vehFOsagoUntil').value || '',
+      inspectionUntil: $('#vehFInspectionUntil').value || '',
+      location: $('#vehFLocation').value.trim(),
+      owner: $('#vehFOwner').value.trim(),
+      driver: $('#vehFDriver').value.trim(),
+      mileage: $('#vehFMileage').value ? Number($('#vehFMileage').value) : '',
+      notes: $('#vehFNotes').value.trim(),
+      logs: vehEditingId ? (vehicles.find(x=>x.id===vehEditingId)||{}).logs || [] : [],
+    };
+    if(vehEditingId){
+      vehicles = vehicles.map(x => x.id === vehEditingId ? data : x);
+    }else{
+      vehicles.push(data);
+    }
+    await saveVehicles();
+    closeVehForm();
+    renderVehicles();
+    showToast(vehEditingId ? 'Машина обновлена' : 'Машина добавлена');
+  }
+  on($('#vehAddBtn'), 'click', () => openVehForm(null));
+  on($('#vehCancelBtn'), 'click', closeVehForm);
+  on(vehOverlay, 'click', closeVehForm);
+  on($('#vehSaveBtn'), 'click', saveVehForm);
+
+  on($('#vehSearch'), 'input', () => { vehSearchTerm = $('#vehSearch').value; renderVehicles(); });
+  on($('#vehFilterOwner'), 'change', () => { vehFilterOwner = $('#vehFilterOwner').value; renderVehicles(); });
+  document.querySelectorAll('#vehTable th[data-sort]').forEach(th => {
+    on(th, 'click', () => {
+      const key = th.dataset.sort;
+      if(vehSortKey === key){ vehSortDir = vehSortDir === 'asc' ? 'desc' : 'asc'; }
+      else{ vehSortKey = key; vehSortDir = 'asc'; }
+      renderVehicles();
+    });
+  });
+
+  /* --- Автомобили: журнал ТО и расходов --- */
+  const vehLogOverlay = $('#ojVehLogOverlay');
+  const vehLogPanel = $('#ojVehLogPanel');
+  function emptyVehLogEntry(){
+    return {id: uid(), date: todayISO(), type: 'ТО', description:'', cost:'', mileage:'', attachment:null};
+  }
+  function renderVehLogEntries(){
+    const v = vehicles.find(x => x.id === vehLogVehicleId);
+    const wrap = $('#vehLogEntries');
+    if(!v || !wrap) return;
+    const logs = (v.logs || []).slice().sort((a,b) => (b.date||'').localeCompare(a.date||''));
+    if(logs.length === 0){
+      wrap.innerHTML = '<div style="padding:24px 0;text-align:center;color:var(--ink-faint);font-size:13px;">Записей пока нет.</div>';
+      return;
+    }
+    wrap.innerHTML = logs.map(e => {
+      const tc = VEH_LOG_TYPE_META[e.type] || VEH_LOG_TYPE_META['Прочее'];
+      return `
+      <div class="oj-veh-log-row">
+        <div style="display:flex;gap:10px;align-items:flex-start;flex:1;min-width:0;">
+          <span class="oj-staff-pill" style="background:${tc.bg};color:${tc.color};white-space:nowrap;">${esc(e.type)}</span>
+          <div style="min-width:0;">
+            <div style="font-size:13px;font-weight:600;word-break:break-word;">${esc(e.description)||'—'}</div>
+            <div class="oj-staff-mono" style="font-size:11px;color:var(--ink-faint);margin-top:3px;">
+              ${e.date ? fmtDate(e.date) : '—'}${e.mileage ? ' · ' + Number(e.mileage).toLocaleString('ru-RU') + ' км' : ''}
+            </div>
+            ${e.attachment ? `<a href="${e.attachment.dataUrl}" download="${esc(e.attachment.name)}" style="font-size:11px;color:var(--accent);margin-top:5px;display:inline-block;">📎 ${esc(e.attachment.name)}</a>` : ''}
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;">
+          <span class="oj-staff-mono" style="font-size:13px;font-weight:700;white-space:nowrap;">${formatCost(e.cost)}</span>
+          <button type="button" class="oj-staff-icon-btn danger vehLogDelBtn" data-id="${e.id}" title="Удалить">✕</button>
+        </div>
+      </div>`;
+    }).join('');
+    wrap.querySelectorAll('.vehLogDelBtn').forEach(btn => {
+      on(btn, 'click', async () => {
+        const ok = await askConfirm('Удалить эту запись? Это действие нельзя отменить.');
+        if(!ok) return;
+        const vv = vehicles.find(x => x.id === vehLogVehicleId);
+        vv.logs = (vv.logs || []).filter(x => x.id !== btn.dataset.id);
+        await saveVehicles();
+        renderVehLogStats();
+        renderVehLogEntries();
+        showToast('Запись удалена');
+      });
+    });
+  }
+  function renderVehLogStats(){
+    const v = vehicles.find(x => x.id === vehLogVehicleId);
+    const wrap = $('#vehLogStats');
+    if(!v || !wrap) return;
+    const total = (v.logs||[]).reduce((sum,e) => sum + (Number(e.cost)||0), 0);
+    wrap.innerHTML = `
+      <div class="oj-staff-stat"><div class="oj-staff-stat-label">Всего потрачено</div><div class="oj-staff-stat-value">${formatCost(total)}</div></div>
+      <div class="oj-staff-stat"><div class="oj-staff-stat-label">Записей</div><div class="oj-staff-stat-value">${(v.logs||[]).length}</div></div>
+    `;
+  }
+  function openVehLog(id){
+    vehLogVehicleId = id;
+    vehLogNewEntry = null;
+    const v = vehicles.find(x => x.id === id);
+    if(!v) return;
+    $('#ojVehLogTitle').textContent = v.brand + ' ' + v.model;
+    $('#vehLogNewEntry').hidden = true;
+    $('#vehLogEFileErr').textContent = '';
+    renderVehLogStats();
+    renderVehLogEntries();
+    vehLogOverlay.hidden = false;
+    vehLogPanel.hidden = false;
+  }
+  function closeVehLog(){
+    vehLogOverlay.hidden = true;
+    vehLogPanel.hidden = true;
+    vehLogVehicleId = null;
+    vehLogNewEntry = null;
+  }
+  on($('#vehLogCloseBtn'), 'click', closeVehLog);
+  on(vehLogOverlay, 'click', closeVehLog);
+  on($('#vehLogAddBtn'), 'click', () => {
+    vehLogNewEntry = emptyVehLogEntry();
+    $('#vehLogEDate').value = vehLogNewEntry.date;
+    $('#vehLogEType').value = vehLogNewEntry.type;
+    $('#vehLogEDesc').value = '';
+    $('#vehLogECost').value = '';
+    $('#vehLogEMileage').value = '';
+    $('#vehLogEFile').value = '';
+    $('#vehLogEFileName').textContent = '';
+    $('#vehLogEFileErr').textContent = '';
+    $('#vehLogNewEntry').hidden = false;
+  });
+  on($('#vehLogECancelBtn'), 'click', () => {
+    vehLogNewEntry = null;
+    $('#vehLogNewEntry').hidden = true;
+  });
+  on($('#vehLogEFile'), 'change', (ev) => {
+    const file = ev.target.files && ev.target.files[0];
+    ev.target.value = '';
+    if(!file) return;
+    if(file.type !== 'application/pdf'){
+      $('#vehLogEFileErr').textContent = 'Можно прикрепить только PDF-файл.';
+      return;
+    }
+    if(file.size > 4 * 1024 * 1024){
+      $('#vehLogEFileErr').textContent = 'Файл слишком большой (максимум 4 МБ).';
+      return;
+    }
+    $('#vehLogEFileErr').textContent = '';
+    const reader = new FileReader();
+    reader.onload = () => {
+      if(vehLogNewEntry){
+        vehLogNewEntry.attachment = {name: file.name, dataUrl: reader.result};
+        $('#vehLogEFileName').textContent = '📎 ' + file.name;
+      }
+    };
+    reader.onerror = () => { $('#vehLogEFileErr').textContent = 'Не удалось прочитать файл.'; };
+    reader.readAsDataURL(file);
+  });
+  on($('#vehLogESaveBtn'), 'click', async () => {
+    const description = $('#vehLogEDesc').value.trim();
+    if(!description){ showToast('Введите описание записи.', true); return; }
+    const v = vehicles.find(x => x.id === vehLogVehicleId);
+    if(!v) return;
+    const entry = {
+      id: vehLogNewEntry ? vehLogNewEntry.id : uid(),
+      date: $('#vehLogEDate').value || todayISO(),
+      type: $('#vehLogEType').value,
+      description,
+      cost: $('#vehLogECost').value,
+      mileage: $('#vehLogEMileage').value,
+      attachment: vehLogNewEntry ? vehLogNewEntry.attachment : null,
+    };
+    v.logs = v.logs || [];
+    v.logs.push(entry);
+    await saveVehicles();
+    vehLogNewEntry = null;
+    $('#vehLogNewEntry').hidden = true;
+    renderVehLogStats();
+    renderVehLogEntries();
+    showToast('Запись добавлена');
+  });
+
+  /* --- главные вкладки --- */
+  function setMainView(view){
+    mainView = view;
+    $('#objectsView').hidden = (view !== 'objects');
+    $('#staffView').hidden = (view !== 'staff');
+    $('#vehiclesView').hidden = (view !== 'vehicles');
+    $('#ojMainTabs').querySelectorAll('.oj-maintab').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.view === view);
+    });
+    if(view === 'staff') renderStaff();
+    if(view === 'vehicles') renderVehicles();
+  }
+  $('#ojMainTabs').querySelectorAll('.oj-maintab').forEach(btn => {
+    on(btn, 'click', () => setMainView(btn.dataset.view));
+  });
+
+  /* --- form panel --- */
+  const overlay = $('#ojOverlay');
+  const panel = $('#ojPanel');
+
+  function openForm(id){
+    editingId = id || null;
+    const o = id ? objects.find(x => x.id === id) : null;
+    $('#ojPanelTitle').textContent = o ? 'Изменить объект' : 'Новый объект';
+    $('#fName').value = o ? o.name : '';
+    $('#fAddress').value = o ? (o.address||'') : '';
+    $('#fCustomer').value = o ? (o.customer||'') : '';
+    $('#fContract').value = o ? (o.contract||'') : '';
+    $('#fResponsible').value = o ? (o.responsible||'') : '';
+    $('#fCustomerResponsible').value = o ? (o.customerResponsible||'') : '';
+    $('#fDeadline').value = o ? (o.deadline||'') : '';
+    $('#fNote').value = '';
+    buildStatusOptions($('#fStatus'));
+    $('#fStatus').value = o ? o.status : 'contract';
+    document.querySelectorAll('.wtCheck').forEach(cb => {
+      cb.checked = o ? (o.workTypes||[]).includes(cb.value) : false;
+    });
+    overlay.hidden = false;
+    panel.hidden = false;
+  }
+  function closeForm(){
+    overlay.hidden = true;
+    panel.hidden = true;
+    editingId = null;
+  }
+
+  on($('#ojAddBtn'), 'click', () => openForm(null));
+  on($('#ojCancelBtn'), 'click', closeForm);
+  on(overlay, 'click', closeForm);
+
+  on($('#ojSaveBtn'), 'click', async () => {
+    const name = $('#fName').value.trim() || 'Без названия';
+    const workTypes = Array.from(document.querySelectorAll('.wtCheck:checked')).map(c => c.value);
+    const status = $('#fStatus').value;
+    const note = $('#fNote').value.trim();
+
+    if(editingId){
+      const o = objects.find(x => x.id === editingId);
+      if(!o){
+        showToast('Не удалось найти объект для редактирования — возможно, он был удалён.', true);
+        closeForm();
+        renderAll();
+        return;
+      }
+      o.name = name;
+      o.address = $('#fAddress').value.trim();
+      o.customer = $('#fCustomer').value.trim();
+      o.contract = $('#fContract').value.trim();
+      o.responsible = $('#fResponsible').value.trim();
+      o.customerResponsible = $('#fCustomerResponsible').value.trim();
+      o.deadline = $('#fDeadline').value;
+      o.workTypes = workTypes;
+      o.status = status;
+      o.updatedAt = todayISO();
+      if(note){
+        o.log = o.log || [];
+        o.log.push({date: todayISO(), text: note});
+      }
+    }else{
+      const o = {
+        id: uid(),
+        name, workTypes, status,
+        address: $('#fAddress').value.trim(),
+        customer: $('#fCustomer').value.trim(),
+        contract: $('#fContract').value.trim(),
+        responsible: $('#fResponsible').value.trim(),
+        customerResponsible: $('#fCustomerResponsible').value.trim(),
+        deadline: $('#fDeadline').value,
+        docs: {},
+        createdAt: todayISO(),
+        updatedAt: todayISO(),
+        log: [{date: todayISO(), text: note || 'Объект добавлен в журнал', status}],
+      };
+      objects.push(o);
+      expandedId = o.id;
+    }
+    await saveObjects();
+    closeForm();
+    renderAll();
+    showToast('Сохранено');
+  });
+
+  /* --- toolbar --- */
+  on($('#ojSearch'), 'input', (e) => { searchTerm = e.target.value; renderList(); });
+  on(filterTypeEl, 'change', (e) => { filterType = e.target.value; renderList(); });
+  on($('#ojFilterPriority'), 'change', (e) => { filterPriority = e.target.value; renderList(); });
+  on($('#ojSortField'), 'change', (e) => { sortField = e.target.value; renderList(); });
+  on($('#ojSortDir'), 'click', () => {
+    sortDir = (sortDir === 'asc') ? 'desc' : 'asc';
+    $('#ojSortDir').textContent = (sortDir === 'asc') ? '↑ по возрастанию' : '↓ по убыванию';
+    renderList();
+  });
+
+  on($('#ojArchiveToggleBtn'), 'click', () => {
+    showArchived = !showArchived;
+    expandedId = null;
+    allExpanded = false;
+    $('#ojExpandAllBtn').textContent = 'Развернуть все';
+    $('#ojExpandAllBtn').classList.remove('oj-btn-primary');
+    $('#ojExpandAllBtn').classList.add('oj-btn-ghost');
+    $('#ojArchiveToggleBtn').classList.toggle('oj-btn-primary', showArchived);
+    $('#ojArchiveToggleBtn').classList.toggle('oj-btn-ghost', !showArchived);
+    $('#ojAddBtn').hidden = showArchived;
+    renderAll();
+  });
+
+  on($('#ojExpandAllBtn'), 'click', () => {
+    allExpanded = !allExpanded;
+    expandedId = null;
+    $('#ojExpandAllBtn').textContent = allExpanded ? 'Свернуть все' : 'Развернуть все';
+    $('#ojExpandAllBtn').classList.toggle('oj-btn-primary', allExpanded);
+    $('#ojExpandAllBtn').classList.toggle('oj-btn-ghost', !allExpanded);
+    renderList();
+  });
+
+  on($('#ojSummaryBtn'), 'click', () => {
+    const el = $('#ojSummary');
+    const willShow = el.hidden;
+    el.hidden = !willShow;
+    $('#ojSummaryBtn').textContent = willShow ? 'Скрыть сводку' : 'Сводка';
+    if(willShow) renderSummary();
+  });
+
+  on($('#ojExportDbBtn'), 'click', () => {
+    if(objects.length === 0){
+      showToast('Журнал пуст — нечего экспортировать.', true);
+      return;
+    }
+    const payload = {
+      exportedAt: new Date().toISOString(),
+      count: objects.length,
+      objects: objects,
+    };
+    const json = JSON.stringify(payload, null, 2);
+    showExportModal('Экспорт базы (JSON)', json, 'geodesy-journal-backup-' + todayISO() + '.json', 'application/json;charset=utf-8;');
+  });
+
+  on($('#ojImportDbBtn'), 'click', () => {
+    $('#ojImportDbFile').click();
+  });
+
+  on($('#ojImportDbFile'), 'change', async () => {
+    const fileInput = $('#ojImportDbFile');
+    const file = fileInput.files && fileInput.files[0];
+    if(!file) return;
+    try{
+      const text = await file.text();
+      const parsed = JSON.parse(text);
+      const incoming = Array.isArray(parsed) ? parsed : (Array.isArray(parsed.objects) ? parsed.objects : null);
+      if(!incoming){
+        showToast('Файл не похож на выгрузку базы — не найден список объектов.', true);
+        fileInput.value = '';
+        return;
+      }
+      const invalid = incoming.some(o => !o || typeof o !== 'object' || !('name' in o));
+      if(invalid){
+        showToast('Файл повреждён или не соответствует формату журнала.', true);
+        fileInput.value = '';
+        return;
+      }
+      const ok = await askConfirm(
+        `Заменить текущую базу (${objects.length} объектов) данными из файла (${incoming.length} объектов)? Текущие данные будут удалены безвозвратно.`,
+        'Заменить'
+      );
+      fileInput.value = '';
+      if(!ok) return;
+      objects = incoming.map(o => ({...o, id: o.id || uid()}));
+      await saveObjects();
+      expandedId = null;
+      editingLogEntry = null;
+      renderAll();
+      showToast(`База восстановлена из файла (${objects.length} объектов)`);
+    }catch(e){
+      console.error('Import error', e);
+      showToast('Не удалось прочитать файл: ' + (e && e.message ? e.message : e), true);
+      fileInput.value = '';
+    }
+  });
+
+  on($('#ojResetLink'), 'click', async () => {
+    const ok = await askConfirm('Полностью очистить журнал? Это действие необратимо.', 'Очистить');
+    if(ok){
+      objects = [];
+      await saveObjects();
+      expandedId = null;
+      renderAll();
+      showToast('Журнал очищен');
+    }
+  });
+
+  /* --- init --- */
+  async function init(){
+    setDebug('запущен, строю форму…');
+    buildWorkTypeChecks();
+    buildTypeFilter();
+    buildEmpFilters();
+    setDebug('загружаю сохранённые объекты…');
+    await loadObjects();
+    await loadEmployees();
+    await loadVehicles();
+    loadingEl.style.display = 'none';
+    renderAll();
+    setDebug('готово · объектов в журнале: ' + objects.length + ' · сотрудников: ' + employees.length + ' · машин: ' + vehicles.length, 'ok');
+  }
+  let __booted = false;
+  function boot(){
+    if(__booted) return;
+    __booted = true;
+    init().catch(e => {
+      console.error('Init error', e);
+      setDebug('не удалось запустить: ' + (e && e.message ? e.message : e), 'err');
+      showToast('Не удалось загрузить журнал: ' + (e && e.message ? e.message : e), true);
+    });
+  }
+  checkAuthAndStart();
+
+  if('serviceWorker' in navigator){
+    window.addEventListener('load', () => {
+      if(PREVIEW_MODE) return;
+      navigator.serviceWorker.register('./sw.js').catch(e => console.error('SW register failed', e));
+    });
+  }
+})();
+</script>
+</body>
+</html>
+
 <title>Журнал объектов — ГЕОАСПЕКТ</title>
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
