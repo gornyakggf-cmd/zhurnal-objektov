@@ -1515,7 +1515,7 @@
       enterPreviewMode();
       return;
     }
-    const { error } = result;
+    const { data, error } = result;
     if(error){
       if(/fetch|network|failed/i.test(error.message || '')){
         enterPreviewMode();
@@ -1525,7 +1525,8 @@
       return;
     }
     showAuthGate(false);
-    boot();
+    await boot();
+    if(data && data.user) applyTabPermissions(data.user);
   }
   document.getElementById('authLoginBtn').addEventListener('click', doLogin);
   document.getElementById('authPassword').addEventListener('keydown', (ev) => { if(ev.key === 'Enter') doLogin(); });
@@ -1590,7 +1591,8 @@
       showAuthGate(false);
       const emailEl = document.getElementById('authUserEmail');
       if(emailEl) emailEl.textContent = data.session.user.email || '';
-      boot();
+      await boot();
+      applyTabPermissions(data.session.user);
     }else{
       showAuthGate(true);
     }
@@ -3788,6 +3790,7 @@
 
   /* --- главные вкладки --- */
   function setMainView(view){
+    if(allowedTabs && !allowedTabs.includes(view)) return;
     mainView = view;
     $('#objectsView').hidden = (view !== 'objects');
     $('#staffView').hidden = (view !== 'staff');
@@ -3801,6 +3804,20 @@
   $('#ojMainTabs').querySelectorAll('.oj-maintab').forEach(btn => {
     on(btn, 'click', () => setMainView(btn.dataset.view));
   });
+
+  let allowedTabs = null; // null = доступны все вкладки
+  function applyTabPermissions(user){
+    const tabs = user && user.user_metadata && Array.isArray(user.user_metadata.tabs) ? user.user_metadata.tabs : null;
+    allowedTabs = tabs;
+    if(!tabs) return; // без ограничений — ничего не скрываем
+    $('#ojMainTabs').querySelectorAll('.oj-maintab').forEach(btn => {
+      btn.hidden = !tabs.includes(btn.dataset.view);
+    });
+    if(!tabs.includes(mainView)){
+      const firstAllowed = tabs[0] || 'objects';
+      setMainView(firstAllowed);
+    }
+  }
 
   /* --- form panel --- */
   const overlay = $('#ojOverlay');
@@ -4012,9 +4029,9 @@
   }
   let __booted = false;
   function boot(){
-    if(__booted) return;
+    if(__booted) return Promise.resolve();
     __booted = true;
-    init().catch(e => {
+    return init().catch(e => {
       console.error('Init error', e);
       setDebug('не удалось запустить: ' + (e && e.message ? e.message : e), 'err');
       showToast('Не удалось загрузить журнал: ' + (e && e.message ? e.message : e), true);
