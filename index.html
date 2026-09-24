@@ -913,7 +913,17 @@
   margin-bottom:8px;
 }
 
+.oj-board-outer{
+  display:flex;
+  gap:12px;
+  align-items:flex-start;
+}
+.oj-board-pinned{
+  flex:0 0 240px;
+}
 .oj-board{
+  flex:1;
+  min-width:0;
   display:flex;
   gap:12px;
   overflow-x:auto;
@@ -1251,7 +1261,10 @@
       <div class="oj-toolbar">
         <select class="oj-select" id="boardAddColSelect"><option value="">+ Добавить объект на доску…</option></select>
       </div>
-      <div class="oj-board" id="empBoard"></div>
+      <div class="oj-board-outer">
+        <div class="oj-board-pinned" id="empBoardPinned"></div>
+        <div class="oj-board" id="empBoard"></div>
+      </div>
     </div>
   </div>
 
@@ -3377,7 +3390,6 @@
     addSel.innerHTML = '<option value="">+ Добавить объект на доску…</option>' +
       availableForAdd.map(o => `<option value="${o.id}">${esc(o.name)}</option>`).join('');
 
-    const boardEl = $('#empBoard');
     const colHtml = (objId, label, removable) => {
       const cardEmployees = filtered.filter(e => (e.objectId || '') === objId);
       return `
@@ -3400,50 +3412,58 @@
         </div>`;
     };
 
-    boardEl.innerHTML = colHtml('', 'Не назначен', false) + cols.map(o => colHtml(o.id, o.name, boardExtraCols.has(o.id))).join('');
+    function wireBoardContainer(container){
+      container.querySelectorAll('.oj-board-card').forEach(card => {
+        card.addEventListener('dragstart', (ev) => {
+          draggedEmpId = card.dataset.empId;
+          card.classList.add('dragging');
+          ev.dataTransfer.effectAllowed = 'move';
+          try{ ev.dataTransfer.setData('text/plain', card.dataset.empId); }catch(e){}
+        });
+        card.addEventListener('dragend', () => {
+          card.classList.remove('dragging');
+          draggedEmpId = null;
+        });
+      });
+      container.querySelectorAll('.oj-board-col-body').forEach(colBody => {
+        colBody.addEventListener('dragover', (ev) => {
+          ev.preventDefault();
+          ev.dataTransfer.dropEffect = 'move';
+          colBody.closest('.oj-board-col').classList.add('dragover');
+        });
+        colBody.addEventListener('dragleave', () => {
+          colBody.closest('.oj-board-col').classList.remove('dragover');
+        });
+        colBody.addEventListener('drop', async (ev) => {
+          ev.preventDefault();
+          colBody.closest('.oj-board-col').classList.remove('dragover');
+          const empId = draggedEmpId || ev.dataTransfer.getData('text/plain');
+          const emp = employees.find(x => x.id === empId);
+          if(!emp) return;
+          const targetObjId = colBody.dataset.dropObj || '';
+          if((emp.objectId || '') === targetObjId) return;
+          emp.objectId = targetObjId;
+          await saveEmployees();
+          const o = objects.find(x => x.id === targetObjId);
+          showToast(o ? '«' + emp.fullName + '» перемещён на «' + o.name + '»' : '«' + emp.fullName + '» снят с объекта');
+          renderStaffBoard();
+        });
+      });
+      container.querySelectorAll('[data-remove-col]').forEach(btn => {
+        on(btn, 'click', () => {
+          boardExtraCols.delete(btn.dataset.removeCol);
+          renderStaffBoard();
+        });
+      });
+    }
 
-    boardEl.querySelectorAll('.oj-board-card').forEach(card => {
-      card.addEventListener('dragstart', (ev) => {
-        draggedEmpId = card.dataset.empId;
-        card.classList.add('dragging');
-        ev.dataTransfer.effectAllowed = 'move';
-        try{ ev.dataTransfer.setData('text/plain', card.dataset.empId); }catch(e){}
-      });
-      card.addEventListener('dragend', () => {
-        card.classList.remove('dragging');
-        draggedEmpId = null;
-      });
-    });
-    boardEl.querySelectorAll('.oj-board-col-body').forEach(colBody => {
-      colBody.addEventListener('dragover', (ev) => {
-        ev.preventDefault();
-        ev.dataTransfer.dropEffect = 'move';
-        colBody.closest('.oj-board-col').classList.add('dragover');
-      });
-      colBody.addEventListener('dragleave', () => {
-        colBody.closest('.oj-board-col').classList.remove('dragover');
-      });
-      colBody.addEventListener('drop', async (ev) => {
-        ev.preventDefault();
-        colBody.closest('.oj-board-col').classList.remove('dragover');
-        const empId = draggedEmpId || ev.dataTransfer.getData('text/plain');
-        const emp = employees.find(x => x.id === empId);
-        if(!emp) return;
-        const targetObjId = colBody.dataset.dropObj || '';
-        if((emp.objectId || '') === targetObjId) return;
-        emp.objectId = targetObjId;
-        await saveEmployees();
-        const o = objects.find(x => x.id === targetObjId);
-        showToast(o ? '«' + emp.fullName + '» перемещён на «' + o.name + '»' : '«' + emp.fullName + '» снят с объекта');
-        renderStaffBoard();
-      });
-    });
-    boardEl.querySelectorAll('[data-remove-col]').forEach(btn => {
-      on(btn, 'click', () => {
-        boardExtraCols.delete(btn.dataset.removeCol);
-        renderStaffBoard();
-      });
-    });
+    const pinnedEl = $('#empBoardPinned');
+    pinnedEl.innerHTML = colHtml('', 'Не назначен', false);
+    wireBoardContainer(pinnedEl);
+
+    const boardEl = $('#empBoard');
+    boardEl.innerHTML = cols.map(o => colHtml(o.id, o.name, boardExtraCols.has(o.id))).join('');
+    wireBoardContainer(boardEl);
   }
   on($('#boardAddColSelect'), 'change', () => {
     const sel = $('#boardAddColSelect');
