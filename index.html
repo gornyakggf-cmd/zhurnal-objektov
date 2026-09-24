@@ -913,6 +913,66 @@
   margin-bottom:8px;
 }
 
+.oj-board{
+  display:flex;
+  gap:12px;
+  overflow-x:auto;
+  padding-bottom:10px;
+  align-items:flex-start;
+}
+.oj-board-col{
+  flex:0 0 240px;
+  background:var(--surface-2);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  display:flex;
+  flex-direction:column;
+  max-height:calc(100vh - 260px);
+}
+.oj-board-col.dragover{border-color:var(--accent);background:var(--accent-soft);}
+.oj-board-col-head{
+  padding:10px 12px;
+  border-bottom:1px solid var(--line);
+  font-family:var(--font-cond);
+  font-weight:600;
+  font-size:12.5px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:6px;
+}
+.oj-board-col-head .count{
+  font-family:var(--font-mono);
+  font-weight:400;
+  color:var(--ink-faint);
+  font-size:11px;
+}
+.oj-board-col-remove{
+  background:transparent;border:none;color:var(--ink-faint);cursor:pointer;font-size:13px;padding:0 2px;
+}
+.oj-board-col-remove:hover{color:var(--alert);}
+.oj-board-col-body{
+  flex:1;
+  overflow-y:auto;
+  padding:8px;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  min-height:60px;
+}
+.oj-board-card{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:4px;
+  padding:8px 10px;
+  font-size:12.5px;
+  cursor:grab;
+}
+.oj-board-card:active{cursor:grabbing;}
+.oj-board-card.dragging{opacity:.4;}
+.oj-board-card-name{font-weight:600;}
+.oj-board-card-pos{color:var(--ink-soft);font-size:11.5px;margin-top:2px;}
+
 .oj-toast{
   position:fixed;
   left:50%;
@@ -1143,7 +1203,11 @@
   <div id="staffView" hidden>
     <div class="oj-titlerow">
       <h1 class="oj-title">Сотрудники</h1>
-      <button class="oj-btn oj-btn-primary" id="empAddBtn">+ Сотрудник</button>
+      <div style="display:flex;gap:8px;">
+        <button class="oj-btn oj-btn-primary" id="empViewTableBtn">Таблица</button>
+        <button class="oj-btn oj-btn-ghost" id="empViewBoardBtn">Доска</button>
+        <button class="oj-btn oj-btn-primary" id="empAddBtn">+ Сотрудник</button>
+      </div>
     </div>
 
     <div class="oj-staff-stats" id="empStats"></div>
@@ -1165,7 +1229,7 @@
       <button class="oj-btn oj-btn-ghost" id="empSortDir" title="Изменить направление сортировки">↑ по возрастанию</button>
     </div>
 
-    <div class="oj-staff-table-wrap">
+    <div class="oj-staff-table-wrap" id="empTableWrap">
       <table class="oj-staff-table" id="empTable">
         <thead>
           <tr>
@@ -1182,6 +1246,13 @@
       </table>
     </div>
     <div class="oj-empty" id="empEmpty" hidden>Никого не найдено.</div>
+
+    <div id="empBoardWrap" hidden>
+      <div class="oj-toolbar">
+        <select class="oj-select" id="boardAddColSelect"><option value="">+ Добавить объект на доску…</option></select>
+      </div>
+      <div class="oj-board" id="empBoard"></div>
+    </div>
   </div>
 
   <div id="vehiclesView" hidden>
@@ -1371,7 +1442,7 @@
   <div class="oj-field"><label>Город / объект</label><input type="text" id="vehFLocation" placeholder="Москва"></div>
   <div class="oj-detail-grid">
     <div class="oj-field"><label>Собственник</label><input type="text" id="vehFOwner" placeholder="Геоаспект"></div>
-    <div class="oj-field"><label>Водитель</label><input type="text" id="vehFDriver"></div>
+    <div class="oj-field"><label>Водитель</label><select id="vehFDriver"><option value="">Не назначен</option></select></div>
   </div>
   <div class="oj-field"><label>Пробег, км</label><input type="number" id="vehFMileage"></div>
   <div class="oj-field"><label>Заметки</label><textarea id="vehFNotes"></textarea></div>
@@ -1393,11 +1464,12 @@
       <div class="oj-field"><label>Дата</label><input type="date" id="vehLogEDate"></div>
       <div class="oj-field"><label>Тип</label>
         <select id="vehLogEType">
-          <option>ТО</option><option>Ремонт</option><option>Страховка</option><option>Шины</option><option>Мойка</option><option>Штраф</option><option>Прочее</option>
+          <option>ТО</option><option>Ремонт</option><option>Страховка</option><option>Шины</option><option>Мойка</option><option>Штраф</option><option>Смена водителя</option><option>Прочее</option>
         </select>
       </div>
     </div>
-    <div class="oj-field"><label>Описание</label><input type="text" id="vehLogEDesc" placeholder="Замена масла и фильтров"></div>
+    <div class="oj-field" id="vehLogEDescField"><label>Описание</label><input type="text" id="vehLogEDesc" placeholder="Замена масла и фильтров"></div>
+    <div class="oj-field" id="vehLogEDriverField" hidden><label>Новый водитель</label><select id="vehLogEDriver"><option value="">Не назначен</option></select></div>
     <div class="oj-detail-grid">
       <div class="oj-field"><label>Стоимость, ₽</label><input type="number" id="vehLogECost" placeholder="0"></div>
       <div class="oj-field"><label>Пробег на момент, км</label><input type="number" id="vehLogEMileage"></div>
@@ -1733,7 +1805,7 @@
 
   // ---------- Автомобили ----------
   const VEH_STORAGE_KEY = 'vehicles';
-  const VEH_LOG_TYPES = ['ТО', 'Ремонт', 'Страховка', 'Шины', 'Мойка', 'Штраф', 'Прочее'];
+  const VEH_LOG_TYPES = ['ТО', 'Ремонт', 'Страховка', 'Шины', 'Мойка', 'Штраф', 'Смена водителя', 'Прочее'];
   const VEH_LOG_TYPE_META = {
     'ТО':        {bg:'#E5F0E8', color:'#2F6B45'},
     'Ремонт':    {bg:'#F7E9E4', color:'#8A3A1F'},
@@ -1741,6 +1813,7 @@
     'Шины':      {bg:'#EFEEE8', color:'#3A3A35'},
     'Мойка':     {bg:'#E3EDF3', color:'#2B5A6B'},
     'Штраф':     {bg:'#FBF3DC', color:'#8A6D1F'},
+    'Смена водителя': {bg:'#EFE4F3', color:'#7A3D8A'},
     'Прочее':    {bg:'#EFEEE8', color:'#6B6B62'},
   };
   const SEED_VEHICLES = [
@@ -1811,6 +1884,9 @@
   let empFilterStatus = '';
   let empSortField = 'fullName';
   let empSortDir = 'asc';
+  let staffViewMode = 'table';
+  let boardExtraCols = new Set();
+  let draggedEmpId = null;
 
   let vehicles = [];
   let vehSearchTerm = '';
@@ -3266,6 +3342,119 @@
     if(dirBtn) dirBtn.textContent = empSortDir === 'asc' ? '↑ по возрастанию' : '↓ по убыванию';
   }
   function renderStaff(){
+    $('#empTableWrap').hidden = (staffViewMode !== 'table');
+    $('#empBoardWrap').hidden = (staffViewMode !== 'board');
+    if(staffViewMode === 'board'){
+      renderEmpStats();
+      renderStaffBoard();
+    }else{
+      renderStaffTable();
+    }
+  }
+  function setStaffViewMode(mode){
+    staffViewMode = mode;
+    $('#empViewTableBtn').classList.toggle('oj-btn-primary', mode === 'table');
+    $('#empViewTableBtn').classList.toggle('oj-btn-ghost', mode !== 'table');
+    $('#empViewBoardBtn').classList.toggle('oj-btn-primary', mode === 'board');
+    $('#empViewBoardBtn').classList.toggle('oj-btn-ghost', mode !== 'board');
+    $('#empEmpty').hidden = true;
+    renderStaff();
+  }
+  on($('#empViewTableBtn'), 'click', () => setStaffViewMode('table'));
+  on($('#empViewBoardBtn'), 'click', () => setStaffViewMode('board'));
+
+  function renderStaffBoard(){
+    const filtered = getFilteredEmployees();
+    const usedObjIds = new Set(filtered.map(e => e.objectId).filter(Boolean));
+    boardExtraCols.forEach(id => { if(objects.some(o => o.id === id)) usedObjIds.add(id); });
+    const cols = Array.from(usedObjIds)
+      .map(id => objects.find(o => o.id === id))
+      .filter(Boolean)
+      .sort((a,b) => (a.name||'').localeCompare(b.name||'','ru'));
+
+    const addSel = $('#boardAddColSelect');
+    const availableForAdd = objects.filter(o => !o.archived && !usedObjIds.has(o.id)).sort((a,b) => (a.name||'').localeCompare(b.name||'','ru'));
+    addSel.innerHTML = '<option value="">+ Добавить объект на доску…</option>' +
+      availableForAdd.map(o => `<option value="${o.id}">${esc(o.name)}</option>`).join('');
+
+    const boardEl = $('#empBoard');
+    const colHtml = (objId, label, removable) => {
+      const cardEmployees = filtered.filter(e => (e.objectId || '') === objId);
+      return `
+        <div class="oj-board-col" data-obj-id="${objId}">
+          <div class="oj-board-col-head">
+            <span>${esc(label)}</span>
+            <span style="display:flex;align-items:center;gap:6px;">
+              <span class="count">${cardEmployees.length}</span>
+              ${removable ? `<button type="button" class="oj-board-col-remove" data-remove-col="${objId}" title="Убрать колонку с доски">✕</button>` : ''}
+            </span>
+          </div>
+          <div class="oj-board-col-body" data-drop-obj="${objId}">
+            ${cardEmployees.map(e => `
+              <div class="oj-board-card" draggable="true" data-emp-id="${e.id}">
+                <div class="oj-board-card-name">${esc(e.fullName)}</div>
+                ${e.position ? `<div class="oj-board-card-pos">${esc(e.position)}</div>` : ''}
+              </div>
+            `).join('')}
+          </div>
+        </div>`;
+    };
+
+    boardEl.innerHTML = colHtml('', 'Не назначен', false) + cols.map(o => colHtml(o.id, o.name, boardExtraCols.has(o.id))).join('');
+
+    boardEl.querySelectorAll('.oj-board-card').forEach(card => {
+      card.addEventListener('dragstart', (ev) => {
+        draggedEmpId = card.dataset.empId;
+        card.classList.add('dragging');
+        ev.dataTransfer.effectAllowed = 'move';
+        try{ ev.dataTransfer.setData('text/plain', card.dataset.empId); }catch(e){}
+      });
+      card.addEventListener('dragend', () => {
+        card.classList.remove('dragging');
+        draggedEmpId = null;
+      });
+    });
+    boardEl.querySelectorAll('.oj-board-col-body').forEach(colBody => {
+      colBody.addEventListener('dragover', (ev) => {
+        ev.preventDefault();
+        ev.dataTransfer.dropEffect = 'move';
+        colBody.closest('.oj-board-col').classList.add('dragover');
+      });
+      colBody.addEventListener('dragleave', () => {
+        colBody.closest('.oj-board-col').classList.remove('dragover');
+      });
+      colBody.addEventListener('drop', async (ev) => {
+        ev.preventDefault();
+        colBody.closest('.oj-board-col').classList.remove('dragover');
+        const empId = draggedEmpId || ev.dataTransfer.getData('text/plain');
+        const emp = employees.find(x => x.id === empId);
+        if(!emp) return;
+        const targetObjId = colBody.dataset.dropObj || '';
+        if((emp.objectId || '') === targetObjId) return;
+        emp.objectId = targetObjId;
+        await saveEmployees();
+        const o = objects.find(x => x.id === targetObjId);
+        showToast(o ? '«' + emp.fullName + '» перемещён на «' + o.name + '»' : '«' + emp.fullName + '» снят с объекта');
+        renderStaffBoard();
+      });
+    });
+    boardEl.querySelectorAll('[data-remove-col]').forEach(btn => {
+      on(btn, 'click', () => {
+        boardExtraCols.delete(btn.dataset.removeCol);
+        renderStaffBoard();
+      });
+    });
+  }
+  on($('#boardAddColSelect'), 'change', () => {
+    const sel = $('#boardAddColSelect');
+    if(sel.value){
+      boardExtraCols.add(sel.value);
+      sel.value = '';
+      renderStaffBoard();
+    }
+  });
+
+  function renderStaffTable(){
     buildEmpObjectSelects();
     renderEmpStats();
     updateEmpSortIndicators();
@@ -3573,6 +3762,10 @@
   /* --- Автомобили: панель добавления/редактирования --- */
   const vehOverlay = $('#ojVehOverlay');
   const vehPanel = $('#ojVehPanel');
+  function buildEmployeeOptionsHtml(){
+    return employees.slice().sort((a,b) => (a.fullName||'').localeCompare(b.fullName||'','ru'))
+      .map(e => `<option value="${esc(e.fullName)}">${esc(e.fullName)}${e.position ? ' — ' + esc(e.position) : ''}</option>`).join('');
+  }
   function openVehForm(id){
     vehEditingId = id || null;
     const v = id ? vehicles.find(x => x.id === id) : null;
@@ -3588,6 +3781,7 @@
     $('#vehFInspectionUntil').value = v ? v.inspectionUntil||'' : '';
     $('#vehFLocation').value = v ? v.location||'' : '';
     $('#vehFOwner').value = v ? v.owner||'' : (vehicles[0]?.owner || 'Геоаспект');
+    $('#vehFDriver').innerHTML = '<option value="">Не назначен</option>' + buildEmployeeOptionsHtml();
     $('#vehFDriver').value = v ? v.driver||'' : '';
     $('#vehFMileage').value = v ? v.mileage||'' : '';
     $('#vehFNotes').value = v ? v.notes||'' : '';
@@ -3712,6 +3906,7 @@
     $('#ojVehLogTitle').textContent = v.brand + ' ' + v.model;
     $('#vehLogNewEntry').hidden = true;
     $('#vehLogEFileErr').textContent = '';
+    $('#vehLogEDriver').innerHTML = '<option value="">Не назначен</option>' + buildEmployeeOptionsHtml();
     renderVehLogStats();
     renderVehLogEntries();
     vehLogOverlay.hidden = false;
@@ -3723,6 +3918,12 @@
     vehLogVehicleId = null;
     vehLogNewEntry = null;
   }
+  function updateVehLogTypeFields(){
+    const isDriverChange = $('#vehLogEType').value === 'Смена водителя';
+    $('#vehLogEDescField').hidden = isDriverChange;
+    $('#vehLogEDriverField').hidden = !isDriverChange;
+  }
+  on($('#vehLogEType'), 'change', updateVehLogTypeFields);
   on($('#vehLogCloseBtn'), 'click', closeVehLog);
   on(vehLogOverlay, 'click', closeVehLog);
   on($('#vehLogAddBtn'), 'click', () => {
@@ -3730,11 +3931,13 @@
     $('#vehLogEDate').value = vehLogNewEntry.date;
     $('#vehLogEType').value = vehLogNewEntry.type;
     $('#vehLogEDesc').value = '';
+    $('#vehLogEDriver').value = '';
     $('#vehLogECost').value = '';
     $('#vehLogEMileage').value = '';
     $('#vehLogEFile').value = '';
     $('#vehLogEFileName').textContent = '';
     $('#vehLogEFileErr').textContent = '';
+    updateVehLogTypeFields();
     $('#vehLogNewEntry').hidden = false;
   });
   on($('#vehLogECancelBtn'), 'click', () => {
@@ -3765,14 +3968,19 @@
     reader.readAsDataURL(file);
   });
   on($('#vehLogESaveBtn'), 'click', async () => {
-    const description = $('#vehLogEDesc').value.trim();
+    const type = $('#vehLogEType').value;
+    const isDriverChange = type === 'Смена водителя';
+    const driverName = $('#vehLogEDriver').value;
+    const description = isDriverChange
+      ? (driverName ? driverName : 'Снят с машины (без назначения)')
+      : $('#vehLogEDesc').value.trim();
     if(!description){ showToast('Введите описание записи.', true); return; }
     const v = vehicles.find(x => x.id === vehLogVehicleId);
     if(!v) return;
     const entry = {
       id: vehLogNewEntry ? vehLogNewEntry.id : uid(),
       date: $('#vehLogEDate').value || todayISO(),
-      type: $('#vehLogEType').value,
+      type,
       description,
       cost: $('#vehLogECost').value,
       mileage: $('#vehLogEMileage').value,
@@ -3780,12 +3988,16 @@
     };
     v.logs = v.logs || [];
     v.logs.push(entry);
+    if(isDriverChange){
+      v.driver = driverName;
+    }
     await saveVehicles();
     vehLogNewEntry = null;
     $('#vehLogNewEntry').hidden = true;
     renderVehLogStats();
     renderVehLogEntries();
-    showToast('Запись добавлена');
+    if(mainView === 'vehicles') renderVehicles();
+    showToast(isDriverChange ? 'Водитель обновлён' : 'Запись добавлена');
   });
 
   /* --- главные вкладки --- */
