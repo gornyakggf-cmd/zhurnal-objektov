@@ -3947,14 +3947,16 @@
   });
 
   on($('#ojExportDbBtn'), 'click', () => {
-    if(objects.length === 0){
+    if(objects.length === 0 && employees.length === 0 && vehicles.length === 0){
       showToast('Журнал пуст — нечего экспортировать.', true);
       return;
     }
     const payload = {
       exportedAt: new Date().toISOString(),
-      count: objects.length,
+      counts: { objects: objects.length, employees: employees.length, vehicles: vehicles.length },
       objects: objects,
+      employees: employees,
+      vehicles: vehicles,
     };
     const json = JSON.stringify(payload, null, 2);
     showExportModal('Экспорт базы (JSON)', json, 'geodesy-journal-backup-' + todayISO() + '.json', 'application/json;charset=utf-8;');
@@ -3971,30 +3973,46 @@
     try{
       const text = await file.text();
       const parsed = JSON.parse(text);
-      const incoming = Array.isArray(parsed) ? parsed : (Array.isArray(parsed.objects) ? parsed.objects : null);
-      if(!incoming){
+      const incomingObjects = Array.isArray(parsed) ? parsed : (Array.isArray(parsed.objects) ? parsed.objects : null);
+      if(!incomingObjects){
         showToast('Файл не похож на выгрузку базы — не найден список объектов.', true);
         fileInput.value = '';
         return;
       }
-      const invalid = incoming.some(o => !o || typeof o !== 'object' || !('name' in o));
+      const invalid = incomingObjects.some(o => !o || typeof o !== 'object' || !('name' in o));
       if(invalid){
         showToast('Файл повреждён или не соответствует формату журнала.', true);
         fileInput.value = '';
         return;
       }
+      const incomingEmployees = Array.isArray(parsed.employees) ? parsed.employees : null;
+      const incomingVehicles = Array.isArray(parsed.vehicles) ? parsed.vehicles : null;
+      const parts = [`${incomingObjects.length} объектов`];
+      if(incomingEmployees) parts.push(`${incomingEmployees.length} сотрудников`);
+      if(incomingVehicles) parts.push(`${incomingVehicles.length} машин`);
       const ok = await askConfirm(
-        `Заменить текущую базу (${objects.length} объектов) данными из файла (${incoming.length} объектов)? Текущие данные будут удалены безвозвратно.`,
+        `Заменить текущую базу данными из файла (${parts.join(', ')})? Текущие данные будут удалены безвозвратно.` +
+        (!incomingEmployees && !incomingVehicles ? ' В файле нет сотрудников/машин — они останутся как есть, заменятся только объекты.' : ''),
         'Заменить'
       );
       fileInput.value = '';
       if(!ok) return;
-      objects = incoming.map(o => ({...o, id: o.id || uid()}));
+      objects = incomingObjects.map(o => ({...o, id: o.id || uid()}));
       await saveObjects();
+      if(incomingEmployees){
+        employees = incomingEmployees.map(e => ({...e, id: e.id || uid()}));
+        await saveEmployees();
+      }
+      if(incomingVehicles){
+        vehicles = incomingVehicles.map(v => ({...v, id: v.id || uid()}));
+        await saveVehicles();
+      }
       expandedId = null;
       editingLogEntry = null;
       renderAll();
-      showToast(`База восстановлена из файла (${objects.length} объектов)`);
+      if(mainView === 'staff') renderStaff();
+      if(mainView === 'vehicles') renderVehicles();
+      showToast(`База восстановлена из файла (${parts.join(', ')})`);
     }catch(e){
       console.error('Import error', e);
       showToast('Не удалось прочитать файл: ' + (e && e.message ? e.message : e), true);
