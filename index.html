@@ -507,6 +507,70 @@
   color:var(--ink-soft);
   white-space:nowrap;
 }
+
+.oj-finance-section{
+  border-top:1px solid var(--line);
+  margin-top:18px;
+  padding-top:16px;
+}
+.oj-finance-lock{
+  font-size:11px;
+  font-weight:400;
+  color:var(--ink-faint);
+  text-transform:none;
+  margin-left:6px;
+  letter-spacing:0;
+}
+.oj-finance-summary{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  align-items:flex-end;
+  margin-bottom:14px;
+}
+.oj-finance-field{display:flex;flex-direction:column;gap:4px;min-width:160px;}
+.oj-finance-field label{font-size:11px;color:var(--ink-soft);}
+.oj-finance-field input{width:100%;}
+.oj-finance-stat{
+  background:var(--surface-2);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:8px 14px;
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+  min-width:120px;
+}
+.oj-finance-stat-label{font-size:10.5px;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-faint);}
+.oj-finance-stat-value{font-family:var(--font-mono);font-size:15px;font-weight:600;color:var(--ink);}
+.oj-finance-addrow{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-bottom:12px;
+}
+.oj-finance-addrow input[type=text]{flex:1;min-width:160px;}
+.oj-finance-addrow input[type=date]{width:150px;}
+.oj-finance-addrow input.finExpAmountInput{width:130px;flex:none;}
+.oj-finance-list{display:flex;flex-direction:column;gap:0;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;}
+.oj-finance-list > div.oj-finance-row{border-bottom:1px solid var(--line);}
+.oj-finance-list > div.oj-finance-row:last-child{border-bottom:none;}
+.oj-finance-row{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:7px 10px;
+  font-size:12.5px;
+  background:var(--surface);
+}
+.oj-finance-row-date{font-family:var(--font-mono);font-size:11px;color:var(--ink-faint);white-space:nowrap;}
+.oj-finance-row-desc{flex:1;color:var(--ink);}
+.oj-finance-row-amount{font-family:var(--font-mono);font-weight:600;color:var(--ink);white-space:nowrap;}
+.oj-finance-row-del{
+  border:none;background:none;color:var(--ink-faint);cursor:pointer;font-size:14px;line-height:1;padding:2px 4px;
+}
+.oj-finance-row-del:hover{color:var(--alert);}
+
 .oj-linkrow{display:flex;gap:8px;align-items:center;}
 .oj-linkrow input{
   flex:1;
@@ -1610,6 +1674,7 @@
       return;
     }
     showAuthGate(false);
+    if(data && data.user) applyFinancePermission(data.user);
     await boot();
     if(data && data.user) applyTabPermissions(data.user);
   }
@@ -1650,10 +1715,17 @@
       ],
     };
     __previewStore[STORAGE_KEY] = JSON.stringify([demo]);
+    __previewStore[FIN_STORAGE_KEY] = JSON.stringify({
+      [demo.id]: { contractAmount: '850000', expenses: [
+        { id: uid(), date: addDays(-10), description: 'ГСМ и суточные полевой бригады', amount: '42000' },
+        { id: uid(), date: addDays(-3), description: 'Аренда GPS-оборудования', amount: '18500' },
+      ] }
+    });
   }
   function enterPreviewMode(){
     PREVIEW_MODE = true;
     window.storage = previewStorageImpl;
+    financeAllowed = true; // в предпросмотре показываем блок «Финансы» для проверки интерфейса
     seedDemoObjectForPreview();
     showAuthGate(false);
     const emailEl = document.getElementById('authUserEmail');
@@ -1676,6 +1748,7 @@
       showAuthGate(false);
       const emailEl = document.getElementById('authUserEmail');
       if(emailEl) emailEl.textContent = data.session.user.email || '';
+      applyFinancePermission(data.session.user);
       await boot();
       applyTabPermissions(data.session.user);
     }else{
@@ -1818,6 +1891,11 @@
 
   // ---------- Автомобили ----------
   const VEH_STORAGE_KEY = 'vehicles';
+  // ---------- Финансы (сумма договора + затраты) ----------
+  // Хранятся в отдельном ключе kv_store, доступ к которому на уровне базы
+  // (RLS) разрешён только пользователям с app_metadata.finance === true.
+  // См. инструкцию по SQL для Supabase ниже в сообщении.
+  const FIN_STORAGE_KEY = 'objects-finance';
   const VEH_LOG_TYPES = ['ТО', 'Ремонт', 'Страховка', 'Шины', 'Мойка', 'Штраф', 'Смена водителя', 'Прочее'];
   const VEH_LOG_TYPE_META = {
     'ТО':        {bg:'#E5F0E8', color:'#2F6B45'},
@@ -1874,6 +1952,8 @@
   }
 
   let objects = [];
+  let financeData = {};      // { [objectId]: { contractAmount, expenses:[{id,date,description,amount}] } }
+  let financeAllowed = false; // вычисляется из app_metadata.finance пользователя — реальное разрешение проверяет ещё и RLS в базе
   let expandedId = null;
   let allExpanded = false;
   let editingId = null;
@@ -2210,6 +2290,50 @@
           continue;
         }
         showToast('Не удалось сохранить автомобили: ' + (e && e.message ? e.message : e), true);
+        return false;
+      }
+    }
+  }
+
+  function financeOf(objId){
+    return financeData[objId] || { contractAmount: '', expenses: [] };
+  }
+  async function loadFinance(){
+    if(!financeAllowed){ financeData = {}; return; }
+    try{
+      const res = await window.storage.get(FIN_STORAGE_KEY, false);
+      financeData = (res && res.value) ? JSON.parse(res.value) : {};
+    }catch(e){
+      // либо это первый запуск (ключа ещё нет), либо доступ закрыт политикой RLS —
+      // в обоих случаях просто работаем с пустыми финансовыми данными
+      financeData = {};
+    }
+    // миграция: старое поле contractAmount на самом объекте (было видно только
+    // для типа работ ПТО) переносим в отдельное защищённое хранилище один раз
+    let migrated = false;
+    objects.forEach(o => {
+      if(o.contractAmount && !(financeData[o.id] && financeData[o.id].contractAmount)){
+        financeData[o.id] = financeData[o.id] || { contractAmount: '', expenses: [] };
+        financeData[o.id].contractAmount = o.contractAmount;
+        migrated = true;
+      }
+    });
+    if(migrated){ try{ await saveFinance(); }catch(e){ /* попробуем сохранить в другой раз */ } }
+  }
+  async function saveFinance(){
+    const maxRetries = 2;
+    for(let attempt = 0; attempt <= maxRetries; attempt++){
+      try{
+        const res = await window.storage.set(FIN_STORAGE_KEY, JSON.stringify(financeData), false);
+        if(res) return true;
+        throw new Error('пустой ответ от хранилища');
+      }catch(e){
+        console.error('Storage error (финансы, попытка ' + (attempt+1) + ')', e);
+        if(attempt < maxRetries){
+          await new Promise(r => setTimeout(r, 500 * (attempt + 1)));
+          continue;
+        }
+        showToast('Не удалось сохранить финансовые данные: ' + (e && e.message ? e.message : e) + '. Если это не первое такое сообщение — проверьте, что у вашей учётной записи есть доступ к финансам.', true);
         return false;
       }
     }
@@ -2742,19 +2866,48 @@
         showToast('Срок сохранён');
       });
     }
-    const contractAmountInput = listEl.querySelector('.contractAmountInput');
-    if(contractAmountInput){
-      on(contractAmountInput, 'click', ev => ev.stopPropagation());
-      on(contractAmountInput, 'change', async () => {
-        const id = contractAmountInput.closest('.oj-row').dataset.id;
-        const o = objects.find(x => x.id === id);
-        if(!o) return;
-        o.contractAmount = contractAmountInput.value.trim();
-        o.updatedAt = todayISO();
-        await saveObjects();
-        showToast('Сумма сохранена');
+    listEl.querySelectorAll('.finContractAmountInput').forEach(inp => {
+      on(inp, 'click', ev => ev.stopPropagation());
+      on(inp, 'change', async () => {
+        const id = inp.closest('.oj-row').dataset.id;
+        financeData[id] = financeData[id] || { contractAmount: '', expenses: [] };
+        financeData[id].contractAmount = inp.value.trim();
+        const ok = await saveFinance();
+        if(ok){ showToast('Сумма договора сохранена'); renderAll(); }
       });
-    }
+    });
+    listEl.querySelectorAll('.finExpAddBtn').forEach(btn => {
+      on(btn, 'click', async (ev) => {
+        ev.stopPropagation();
+        const row = btn.closest('.oj-row');
+        const id = row.dataset.id;
+        const dateInput = row.querySelector('.finExpDateInput');
+        const descInput = row.querySelector('.finExpDescInput');
+        const amountInput = row.querySelector('.finExpAmountInput');
+        const desc = descInput.value.trim();
+        const amount = amountInput.value.trim().replace(/\s/g, '').replace(',', '.');
+        if(!desc || !amount || Number.isNaN(Number(amount))){
+          showToast('Укажите описание и сумму затраты', true);
+          return;
+        }
+        financeData[id] = financeData[id] || { contractAmount: '', expenses: [] };
+        financeData[id].expenses = financeData[id].expenses || [];
+        financeData[id].expenses.push({ id: uid(), date: dateInput.value || todayISO(), description: desc, amount });
+        const ok = await saveFinance();
+        if(ok){ showToast('Затрата добавлена'); renderAll(); }
+      });
+    });
+    listEl.querySelectorAll('.oj-finance-row-del').forEach(btn => {
+      on(btn, 'click', async (ev) => {
+        ev.stopPropagation();
+        const id = btn.closest('.oj-row').dataset.id;
+        const expId = btn.dataset.expId;
+        if(!financeData[id]) return;
+        financeData[id].expenses = (financeData[id].expenses || []).filter(e => e.id !== expId);
+        const ok = await saveFinance();
+        if(ok){ showToast('Затрата удалена'); renderAll(); }
+      });
+    });
   }
 
   function priorityLabel(p){
@@ -2809,6 +2962,10 @@
     const showAgreements = isTopo;
     const assignedEmployees = employees.filter(e => e.objectId === o.id);
     const availableEmployees = employees.filter(e => e.objectId !== o.id);
+    const fin = financeOf(o.id);
+    const finExpenses = fin.expenses || [];
+    const finTotalSpent = finExpenses.reduce((sum, e) => sum + (Number(e.amount)||0), 0);
+    const finRemaining = (Number(fin.contractAmount)||0) - finTotalSpent;
     return `
     <div class="oj-row-body">
       ${isMisc ? `
@@ -2866,12 +3023,6 @@
         <div class="oj-docs-notes-toggle" data-toggle-docnotes="${o.id}">${showNotes ? '▾ скрыть примечания' : '▸ показать примечания'}</div>
         <div class="oj-doc-group-title" style="margin-top:0;">Договорная часть</div>
         ${docRowHtml('contractSigned', 'Договор', docs, dates, notes, showNotes)}
-        ${isPTO ? `
-        <div class="oj-doc-row" style="margin-top:4px;">
-          <label class="oj-doc" style="flex:1;color:var(--ink-soft);">Сумма контракта</label>
-          <input type="text" class="oj-doc-date contractAmountInput" style="width:150px;" placeholder="₽" value="${esc(o.contractAmount||'')}">
-        </div>
-        ` : ``}
         ${(!isSupervision && !isPTO) ? `
         ${docRowHtml('advance', 'Аванс', docs, dates, notes, showNotes)}
         ${!isSeasonal ? docRowHtml('actOfWork', 'Акт выполненных работ', docs, dates, notes, showNotes) : ``}
@@ -2879,19 +3030,12 @@
         ` : ``}
 
         ${(!isSupervision && !isSeasonal && !isPTO) ? `
-        <div class="oj-doc-group-title">ТЗ</div>
-        ${docRowHtml('tz', 'ТЗ получено', docs, dates, notes, showNotes)}
-        ` : ``}
-
-        ${(!isSupervision && !isSeasonal && !isPTO) ? `
         <div class="oj-doc-group-title">Программа работ</div>
-        ${docRowHtml('programSent', 'Отправлена', docs, dates, notes, showNotes)}
         ${docRowHtml('programApproved', 'Согласована', docs, dates, notes, showNotes)}
         ` : ``}
 
         ${showPoints ? `
           <div class="oj-doc-group-title">Определение пунктов</div>
-          ${showAgreements ? docRowHtml('pointsAgreed', 'Согласование мест установки пунктов', docs, dates, notes, showNotes) : ``}
           ${docRowHtml('pointsInstalled', 'Установка пунктов', docs, dates, notes, showNotes)}
           ${docRowHtml('leveling', 'Нивелировка', docs, dates, notes, showNotes)}
           ${docRowHtml('gnss', 'ГНСС-измерения', docs, dates, notes, showNotes)}
@@ -2913,7 +3057,6 @@
         <div class="oj-doc-group-title">Отчёт и сдача</div>
         ${docRowHtml('reportSent', 'Отчёт направлен', docs, dates, notes, showNotes)}
         ${docRowHtml('reportApproved', 'Отчёт согласован', docs, dates, notes, showNotes)}
-        ${docRowHtml('act', 'Акт подписан', docs, dates, notes, showNotes)}
         ` : ``}
       </div>
       ` : ``}
@@ -3020,6 +3163,42 @@
         </div>
         ${renderGanttChart(o.schedule || [], o.id)}
       </div>
+
+      ${financeAllowed ? `
+      <div class="oj-finance-section">
+        <div class="oj-doc-group-title" style="margin-top:0;">Финансы<span class="oj-finance-lock" title="Этот блок видят только пользователи с доступом к финансам">🔒 ограниченный доступ</span></div>
+        <div class="oj-finance-summary">
+          <div class="oj-finance-field">
+            <label>Сумма договора</label>
+            <input type="text" class="finContractAmountInput" placeholder="₽" value="${esc(fin.contractAmount||'')}">
+          </div>
+          <div class="oj-finance-stat">
+            <span class="oj-finance-stat-label">Затрачено</span>
+            <span class="oj-finance-stat-value">${fmtMoney(finTotalSpent)}</span>
+          </div>
+          <div class="oj-finance-stat">
+            <span class="oj-finance-stat-label">Остаток</span>
+            <span class="oj-finance-stat-value">${fin.contractAmount ? fmtMoney(finRemaining) : '—'}</span>
+          </div>
+        </div>
+        <div class="oj-finance-addrow">
+          <input type="date" class="finExpDateInput" value="${todayISO()}">
+          <input type="text" class="finExpDescInput" placeholder="На что потрачено…">
+          <input type="text" class="finExpAmountInput" placeholder="Сумма ₽">
+          <button type="button" class="oj-btn oj-btn-ghost finExpAddBtn">Добавить затрату</button>
+        </div>
+        <div class="oj-finance-list">
+          ${finExpenses.length ? finExpenses.slice().sort((a,b) => (b.date||'').localeCompare(a.date||'')).map(e => `
+            <div class="oj-finance-row">
+              <span class="oj-finance-row-date">${fmtDate(e.date)}</span>
+              <span class="oj-finance-row-desc">${esc(e.description)}</span>
+              <span class="oj-finance-row-amount">${fmtMoney(e.amount)}</span>
+              <button type="button" class="oj-finance-row-del" data-exp-id="${e.id}" title="Удалить затрату">×</button>
+            </div>
+          `).join('') : '<div style="color:var(--ink-faint);font-size:12.5px;padding:8px 10px;">Затрат пока нет</div>'}
+        </div>
+      </div>
+      ` : ``}
 
       <div class="oj-detail-actions">
         <button class="oj-btn oj-btn-danger" data-action="delete">Удалить объект</button>
@@ -4051,6 +4230,15 @@
     }
   }
 
+  // Доступ к финансам — читаем из app_metadata (не user_metadata!), потому что
+  // app_metadata пользователь не может изменить сам себе через клиент — её
+  // можно выставить только вручную в Supabase (SQL Editor), в отличие от tabs
+  // выше. Реальную защиту данных при этом даёт политика RLS в базе на ключ
+  // 'objects-finance' — этот флаг лишь решает, показывать ли блок в интерфейсе.
+  function applyFinancePermission(user){
+    financeAllowed = !!(user && user.app_metadata && user.app_metadata.finance === true);
+  }
+
   /* --- form panel --- */
   const overlay = $('#ojOverlay');
   const panel = $('#ojPanel');
@@ -4190,6 +4378,9 @@
       employees: employees,
       vehicles: vehicles,
     };
+    if(financeAllowed){
+      payload.finance = financeData;
+    }
     const json = JSON.stringify(payload, null, 2);
     showExportModal('Экспорт базы (JSON)', json, 'geodesy-journal-backup-' + todayISO() + '.json', 'application/json;charset=utf-8;');
   });
@@ -4219,9 +4410,11 @@
       }
       const incomingEmployees = Array.isArray(parsed.employees) ? parsed.employees : null;
       const incomingVehicles = Array.isArray(parsed.vehicles) ? parsed.vehicles : null;
+      const incomingFinance = (parsed.finance && typeof parsed.finance === 'object') ? parsed.finance : null;
       const parts = [`${incomingObjects.length} объектов`];
       if(incomingEmployees) parts.push(`${incomingEmployees.length} сотрудников`);
       if(incomingVehicles) parts.push(`${incomingVehicles.length} машин`);
+      if(incomingFinance && financeAllowed) parts.push('финансы');
       const ok = await askConfirm(
         `Заменить текущую базу данными из файла (${parts.join(', ')})? Текущие данные будут удалены безвозвратно.` +
         (!incomingEmployees && !incomingVehicles ? ' В файле нет сотрудников/машин — они останутся как есть, заменятся только объекты.' : ''),
@@ -4238,6 +4431,10 @@
       if(incomingVehicles){
         vehicles = incomingVehicles.map(v => ({...v, id: v.id || uid()}));
         await saveVehicles();
+      }
+      if(incomingFinance && financeAllowed){
+        financeData = incomingFinance;
+        await saveFinance();
       }
       expandedId = null;
       editingLogEntry = null;
@@ -4273,6 +4470,7 @@
     await loadObjects();
     await loadEmployees();
     await loadVehicles();
+    await loadFinance();
     loadingEl.style.display = 'none';
     renderAll();
     setDebug('готово · объектов в журнале: ' + objects.length + ' · сотрудников: ' + employees.length + ' · машин: ' + vehicles.length, 'ok');
