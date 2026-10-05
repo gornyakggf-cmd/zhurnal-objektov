@@ -501,6 +501,7 @@
   width:0;
   border-left:1.5px dashed var(--alert);
 }
+.oj-log-author{font-size:11px;color:var(--ink-faint);margin-left:6px;white-space:nowrap;}
 .oj-gantt-dates{
   font-family:var(--font-mono);
   font-size:11px;
@@ -1674,7 +1675,7 @@
       return;
     }
     showAuthGate(false);
-    if(data && data.user) applyFinancePermission(data.user);
+    if(data && data.user){ applyFinancePermission(data.user); applyUserName(data.user); }
     await boot();
     if(data && data.user) applyTabPermissions(data.user);
   }
@@ -1725,6 +1726,7 @@
   function enterPreviewMode(){
     PREVIEW_MODE = true;
     window.storage = previewStorageImpl;
+    currentUserName = 'Предпросмотр';
     financeAllowed = true; // в предпросмотре показываем блок «Финансы» для проверки интерфейса
     seedDemoObjectForPreview();
     showAuthGate(false);
@@ -1749,6 +1751,7 @@
       const emailEl = document.getElementById('authUserEmail');
       if(emailEl) emailEl.textContent = data.session.user.email || '';
       applyFinancePermission(data.session.user);
+      applyUserName(data.session.user);
       await boot();
       applyTabPermissions(data.session.user);
     }else{
@@ -1953,6 +1956,7 @@
 
   let objects = [];
   let financeData = {};      // { [objectId]: { contractAmount, expenses:[{id,date,description,amount}] } }
+  let currentUserName = ''; // подпись автора записей: user_metadata.name или часть почты до @
   let financeAllowed = false; // вычисляется из app_metadata.finance пользователя — реальное разрешение проверяет ещё и RLS в базе
   let expandedId = null;
   let allExpanded = false;
@@ -2585,6 +2589,7 @@
         const o = objects.find(x => x.id === objId);
         if(!o || !o.log || !o.log[idx]) return;
         o.log[idx].done = el.checked;
+        o.log[idx].doneBy = el.checked ? (currentUserName || undefined) : undefined;
         o.updatedAt = todayISO();
         await saveObjects();
         renderAll();
@@ -2646,10 +2651,12 @@
           showToast('Текст записи не может быть пустым.', true);
           return;
         }
-        const entry = {date, text, status: status || undefined, type: type === 'task' ? 'task' : 'note'};
+        const oldEntry = o.log[idx] || {};
+        const entry = {date, text, status: status || undefined, type: type === 'task' ? 'task' : 'note', author: oldEntry.author};
         if(type === 'task'){
           entry.dueDate = dueDate || undefined;
           entry.done = done;
+          if(done) entry.doneBy = (oldEntry.done && oldEntry.doneBy) ? oldEntry.doneBy : (currentUserName || undefined);
         }
         o.log[idx] = entry;
         o.updatedAt = todayISO();
@@ -3123,7 +3130,7 @@
               <div class="oj-log-entry${e.type === 'task' ? ' is-task' : ''}">
                 <div class="oj-log-date">${fmtDate(e.date)}</div>
                 ${e.type === 'task' ? `<input type="checkbox" class="oj-log-task-check" data-log-idx="${idx}" ${e.done ? 'checked' : ''} title="Отметить выполненной">` : ``}
-                <div class="oj-log-text${e.type === 'task' && e.done ? ' done' : ''}">${esc(e.text)}${e.status ? ` <span class="oj-log-status">→ ${STAGES[stageIndex(e.status)]?.label||''}</span>`:''}</div>
+                <div class="oj-log-text${e.type === 'task' && e.done ? ' done' : ''}">${esc(e.text)}${e.status ? ` <span class="oj-log-status">→ ${STAGES[stageIndex(e.status)]?.label||''}</span>`:''}${e.author ? `<span class="oj-log-author">· ${esc(e.author)}</span>` : ''}${e.type === 'task' && e.done && e.doneBy ? `<span class="oj-log-author">· ✓ ${esc(e.doneBy)}</span>` : ''}</div>
                 ${e.type === 'task' && e.dueDate ? `<div class="oj-log-due${!e.done && e.dueDate < todayISO() ? ' late' : ''}${!e.done && e.dueDate === todayISO() ? ' today' : ''}">до ${fmtDate(e.dueDate)}</div>` : ``}
                 <button type="button" class="oj-log-edit-btn" data-log-idx="${idx}" title="Изменить запись">✎</button>
                 <button type="button" class="oj-log-del-btn" data-log-idx="${idx}" title="Удалить запись">✕</button>
@@ -3279,10 +3286,11 @@
         return;
       }
       o.log = o.log || [];
-      const entry = {date, text, status: status || undefined, type: type === 'task' ? 'task' : 'note'};
+      const entry = {date, text, status: status || undefined, type: type === 'task' ? 'task' : 'note', author: currentUserName || undefined};
       if(type === 'task'){
         entry.dueDate = dueDate || undefined;
         entry.done = doneChecked;
+        if(doneChecked) entry.doneBy = currentUserName || undefined;
       }
       o.log.push(entry);
       if(status) o.status = status;
@@ -3339,7 +3347,7 @@
         employees: [],
         createdAt: now,
         updatedAt: now,
-        log: [{date: now, text: `Создан на основе объекта «${src.name}».`, status: 'contract'}],
+        log: [{date: now, text: `Создан на основе объекта «${src.name}».`, status: 'contract', author: currentUserName || undefined}],
       };
       objects.push(copy);
       await saveObjects();
@@ -3396,6 +3404,7 @@
         const idx = parseInt(el.dataset.logIdx, 10);
         if(!o || !o.log || !o.log[idx]) return;
         o.log[idx].done = true;
+        o.log[idx].doneBy = currentUserName || undefined;
         o.updatedAt = todayISO();
         await saveObjects();
         renderAll();
@@ -4235,6 +4244,11 @@
   // можно выставить только вручную в Supabase (SQL Editor), в отличие от tabs
   // выше. Реальную защиту данных при этом даёт политика RLS в базе на ключ
   // 'objects-finance' — этот флаг лишь решает, показывать ли блок в интерфейсе.
+  function applyUserName(user){
+    const meta = user && user.user_metadata && typeof user.user_metadata.name === 'string' ? user.user_metadata.name.trim() : '';
+    const mail = user && user.email ? String(user.email).split('@')[0] : '';
+    currentUserName = meta || mail || '';
+  }
   function applyFinancePermission(user){
     financeAllowed = !!(user && user.app_metadata && user.app_metadata.finance === true);
   }
@@ -4299,7 +4313,7 @@
       o.updatedAt = todayISO();
       if(note){
         o.log = o.log || [];
-        o.log.push({date: todayISO(), text: note});
+        o.log.push({date: todayISO(), text: note, author: currentUserName || undefined});
       }
     }else{
       const o = {
@@ -4314,7 +4328,7 @@
         docs: {},
         createdAt: todayISO(),
         updatedAt: todayISO(),
-        log: [{date: todayISO(), text: note || 'Объект добавлен в журнал', status}],
+        log: [{date: todayISO(), text: note || 'Объект добавлен в журнал', status, author: currentUserName || undefined}],
       };
       objects.push(o);
       expandedId = o.id;
