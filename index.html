@@ -502,6 +502,18 @@
   border-left:1.5px dashed var(--alert);
 }
 .oj-log-author{font-size:11px;color:var(--ink-faint);margin-left:6px;white-space:nowrap;}
+.oj-gantt-milestone{
+  position:absolute;
+  top:50%;
+  width:12px;height:12px;
+  margin:-6px 0 0 -6px;
+  transform:rotate(45deg);
+  background:var(--accent);
+  border-radius:2px;
+}
+.oj-gantt-milestone.late{background:var(--alert);}
+.oj-gantt-milestone.today{background:var(--active);}
+.oj-gantt-milestone.done{background:#2F6B45;opacity:.75;}
 .oj-gantt-dates{
   font-family:var(--font-mono);
   font-size:11px;
@@ -1963,6 +1975,7 @@
   let editingId = null;
   let editingLogEntry = null;
   let collapsedLogIds = new Set();
+  let collapsedEmpPanelIds = new Set(); // карточки, где панель «Назначенные сотрудники» свёрнута
   let docNotesVisible = new Set();
   let filterType = '';
   let filterStatus = '';
@@ -2403,12 +2416,14 @@
     }).join('') + '</div>';
   }
 
-  function renderGanttChart(phases, objId){
-    if(!phases.length){
+  function renderGanttChart(phases, objId, logEntries){
+    // задачи из журнала, у которых указан срок, показываем на графике вехами
+    const tasks = (logEntries || []).filter(e => e && e.type === 'task' && e.dueDate);
+    if(!phases.length && !tasks.length){
       return '<div style="color:var(--ink-faint);font-size:12.5px;padding:6px 0 2px;">Этапов пока нет — добавьте первый выше, чтобы построить график.</div>';
     }
     const dated = phases.filter(p => p.start && p.end);
-    const allDates = dated.flatMap(p => [p.start, p.end]);
+    const allDates = dated.flatMap(p => [p.start, p.end]).concat(tasks.map(t => t.dueDate));
     const base = allDates.length ? allDates : [todayISO()];
     const minRaw = base.reduce((a,b) => a < b ? a : b);
     const maxRaw = base.reduce((a,b) => a > b ? a : b);
@@ -2470,7 +2485,25 @@
       </div>`;
     }).join('');
 
-    return `<div class="oj-gantt-wrap">${scaleRow}${rows}</div>`;
+    const today = todayISO();
+    const taskRows = tasks.slice().sort((a,b) => a.dueDate.localeCompare(b.dueDate)).map(t => {
+      const state = t.done ? 'done' : (t.dueDate < today ? 'late' : (t.dueDate === today ? 'today' : ''));
+      const stateLabel = t.done ? 'выполнено' : (state === 'late' ? 'просрочено' : '');
+      return `
+      <div class="oj-gantt-row">
+        <div class="oj-gantt-label" title="${esc(t.text)}">${t.done ? '✓ ' : ''}${esc(t.text)}</div>
+        <div class="oj-gantt-track">
+          ${weekGrid}
+          <div class="oj-gantt-milestone ${state}" style="left:${pct(t.dueDate)}%;" title="${esc(t.text)} — до ${fmtDate(t.dueDate)}${stateLabel ? ' (' + stateLabel + ')' : ''}"></div>
+          ${showToday ? `<div class="oj-gantt-today" style="left:${todayPct}%;"></div>` : ''}
+        </div>
+        <div class="oj-gantt-dates">до ${fmtDate(t.dueDate)}</div>
+        <div></div>
+      </div>`;
+    }).join('');
+    const taskHeader = tasks.length ? `<div class="oj-gantt-row oj-gantt-scale-row"><div class="oj-gantt-label" style="color:var(--ink-faint);font-weight:400;">Задачи со сроком</div><div></div><div></div><div></div></div>` : '';
+
+    return `<div class="oj-gantt-wrap">${scaleRow}${rows}${taskHeader}${taskRows}</div>`;
   }
 
   function sortValue(o, field){
@@ -2571,6 +2604,14 @@
         const id = el.closest('.oj-row').dataset.id;
         const docKey = el.dataset.doc;
         toggleDoc(id, docKey, el.checked);
+      });
+    });
+    listEl.querySelectorAll('[data-toggle-emppanel]').forEach(el => {
+      on(el, 'click', (ev) => {
+        ev.stopPropagation();
+        const id = el.dataset.toggleEmppanel;
+        if(collapsedEmpPanelIds.has(id)) collapsedEmpPanelIds.delete(id); else collapsedEmpPanelIds.add(id);
+        renderList();
       });
     });
     listEl.querySelectorAll('[data-toggle-log]').forEach(el => {
@@ -3003,7 +3044,11 @@
 
       ${(!isMisc && !compactMode) ? `
       <div class="oj-docs">
-        <div class="oj-doc-group-title" style="margin-top:0;">Назначенные сотрудники</div>
+        <div class="oj-log-title" data-toggle-emppanel="${o.id}" style="margin-bottom:${collapsedEmpPanelIds.has(o.id) ? '0' : '8px'};">
+          <span>Назначенные сотрудники${assignedEmployees.length ? ' · ' + assignedEmployees.length : ''}</span>
+          <span class="oj-log-toggle-icon">${collapsedEmpPanelIds.has(o.id) ? '▸ показать' : '▾ скрыть'}</span>
+        </div>
+        ${collapsedEmpPanelIds.has(o.id) ? '' : `
         <div class="oj-employees-list">
           ${assignedEmployees.length ? assignedEmployees.map(e => `
             <div class="oj-employee-row">
@@ -3022,6 +3067,7 @@
             <button type="button" class="oj-btn oj-btn-ghost assignedEmpAddBtn">Добавить выбранных</button>
           </div>
         </div>
+        `}
       </div>
       ` : ``}
 
@@ -3168,7 +3214,7 @@
           <input type="date" class="schedEndInput" title="Окончание">
           <button type="button" class="oj-btn oj-btn-ghost schedAddBtn">Добавить этап</button>
         </div>
-        ${renderGanttChart(o.schedule || [], o.id)}
+        ${renderGanttChart(o.schedule || [], o.id, o.log)}
       </div>
 
       ${financeAllowed ? `
