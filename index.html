@@ -922,9 +922,11 @@
 .ws-table td{overflow-wrap:anywhere}
 .ws-table button{white-space:normal;text-align:left}
 .ws-gantt{max-width:100%;overflow:auto;border:1px solid #d7e2d9;border-radius:6px;position:relative}
-.ws-gantt-inner{--ws-label:230px;width:calc(var(--ws-label) + var(--ws-track));min-width:100%;background:#fff}
-.ws-gantt-row{display:grid;grid-template-columns:var(--ws-label) minmax(0,1fr);min-height:48px;border-bottom:1px solid #e3e8e4}
+.ws-gantt-inner{--ws-label:230px;--ws-amount:110px;width:calc(var(--ws-label) + 2 * var(--ws-amount) + var(--ws-track));min-width:100%;background:#fff}
+.ws-gantt-row{display:grid;grid-template-columns:var(--ws-label) repeat(2,var(--ws-amount)) minmax(0,1fr);min-height:48px;border-bottom:1px solid #e3e8e4}
 .ws-gantt-label{position:sticky;left:0;z-index:2;background:#f6f8f3;padding:5px 8px;min-width:0;border-right:1px solid #d7e2d9;overflow-wrap:anywhere}
+.ws-gantt-amount{position:sticky;left:var(--ws-label);z-index:2;display:grid;align-content:center;padding:4px 6px;background:#f6f8f3;border-right:1px solid #d7e2d9;text-align:center;font-size:12px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.ws-gantt-amount.ws-done-amount{left:calc(var(--ws-label) + var(--ws-amount))}
 .ws-gantt-label small{display:block;color:#4a5d53;margin-top:2px;font-size:11px}
 .ws-gantt-label button{padding:2px 4px;border:0;white-space:normal;text-align:left;line-height:1.15}
 .ws-gantt-label button[data-ws=collapse]{margin-right:3px;min-width:20px}
@@ -953,7 +955,7 @@
 @media(max-width:560px){
   .ws-panel{padding:10px}
   .ws-fields{grid-template-columns:1fr}
-  .ws-gantt-inner{--ws-label:140px}
+  .ws-gantt-inner{--ws-label:116px;--ws-amount:70px}
   .ws-gantt-label.ws-indent{padding-left:12px}
 }
 </style>
@@ -3781,13 +3783,14 @@
     function position(stages, stage) {
       return siblings(stages,stage.parent).findIndex(s => s.id === stage.id) + 1;
     }
-    function distribute(group, target = 100) {
+    // The current Supabase schema still requires this field in saved revisions.
+    function normalizeStoredWeights(group) {
       if (!group.length) return;
       const total = group.reduce((sum, s) => sum + s.weight, 0);
       let allocated = 0;
       group.forEach((s, i) => {
-        const next = i === group.length - 1 ? Math.round(target * 100) :
-          allocated + Math.floor((total ? s.weight / total : 1 / group.length) * target * 100 + 1e-8);
+        const next = i === group.length - 1 ? 10000 :
+          allocated + Math.floor((total ? s.weight / total : 1 / group.length) * 10000 + 1e-8);
         s.weight = (next - allocated) / 100;
         allocated = next;
       });
@@ -3797,25 +3800,25 @@
       for (const [name, ...children] of groups) {
         const root = freshStage(name);
         const sub = children.map(label => freshStage(label, root.id));
-        distribute(sub);
+        normalizeStoredWeights(sub);
         stages.push(root, ...sub);
       }
-      distribute(siblings(stages, ''));
+      normalizeStoredWeights(siblings(stages, ''));
       return stages;
     }
     function legacy(object) {
       const stages = (object.schedule || []).map(old => ({
         ...freshStage(old.name), start:old.start || '', end:old.end || ''
       }));
-      distribute(stages);
+      normalizeStoredWeights(stages);
       return stages;
     }
     function validate(s) {
-      if (s.stages.some(x => !x.name.trim() || !Number.isFinite(x.weight) || x.weight < 0 || x.weight > 100 ||
+      if (s.stages.some(x => !x.name.trim() ||
         [x.start,x.end].some(date => date && !/^\d{4}-\d{2}-\d{2}$/.test(date)) ||
         (x.start && x.end && x.start > x.end) ||
         (x.method === 'volume' && (!(x.volume > 0) || !x.unit.trim())))) {
-        throw new Error('Проверьте название, диапазон дат, вес и плановый объём с единицей измерения.');
+        throw new Error('Проверьте название, диапазон дат и плановый объём с единицей измерения.');
       }
     }
 
@@ -3823,12 +3826,20 @@
       return [...journal].sort((a,b) => a.date.localeCompare(b.date) ||
         Date.parse(a.createdAt) - Date.parse(b.createdAt) || a.id.localeCompare(b.id));
     }
-    function aggregate(group, metrics, key, missingIsZero = false) {
-      const weighted = group.filter(s => s.weight > 0);
-      if (!weighted.length || weighted.every(s => metrics.get(s.id)[key] == null)) return null;
-      if (!missingIsZero && weighted.some(s => metrics.get(s.id)[key] == null)) return null;
-      const total = weighted.reduce((sum,s) => sum + s.weight * (metrics.get(s.id)[key] ?? 0), 0) /
-        weighted.reduce((sum,s) => sum + s.weight, 0);
+    function combinedVolume(items) {
+      const unit = items[0]?.volume?.unit;
+      if (!unit || !items.every(x => x.volume?.unit === unit)) return null;
+      const planned = items.reduce((sum,x) => sum + x.volume.planned,0);
+      const done = items.some(x => x.volume.done != null)
+        ? items.reduce((sum,x) => sum + (x.volume.done ?? 0),0) : null;
+      return {unit,planned,done};
+    }
+    function aggregate(items, key, volume, missingIsZero = false) {
+      if (!items.length || items.every(x => x[key] == null)) return null;
+      if (!missingIsZero && items.some(x => x[key] == null)) return null;
+      const total = volume
+        ? items.reduce((sum,x) => sum + x.volume.planned * (x[key] ?? 0),0) / volume.planned
+        : items.reduce((sum,x) => sum + (x[key] ?? 0),0) / items.length;
       return total >= 100 - 1e-8 ? 100 : total;
     }
     function planAt(stage, date) {
@@ -3845,10 +3856,10 @@
         series.get(entry.stage).push(entry);
       }
       function measure(stage, children) {
-        let start = '', end = '', fact = null, total = null;
-        if (children.length) {
-          const sub = children.map(s => metrics.get(s.id));
-          fact = aggregate(children, metrics, 'fact', true);
+        const sub = children.map(s => metrics.get(s.id));
+        let start = '', end = '', fact = null, total = null, volume = combinedVolume(sub);
+        if (sub.length) {
+          fact = aggregate(sub, 'fact', volume, true);
           start = sub.map(x => x.start).filter(Boolean).sort()[0] || '';
           end = fact >= 100 ? sub.map(x => x.end).filter(Boolean).sort().at(-1) || '' : '';
         } else {
@@ -3858,19 +3869,26 @@
             if (fact > 0) start ||= entry.date;
             end = fact >= 100 ? end || entry.date : '';
           }
+          if (stage.method === 'volume' && stage.volume > 0 && stage.unit) {
+            volume = {unit:stage.unit.trim(),planned:stage.volume,done:total};
+          }
         }
-        const plan = children.length ? aggregate(children, metrics, 'plan') : planAt(stage, date);
+        const plan = sub.length ? aggregate(sub, 'plan', volume) : planAt(stage, date);
         const status = fact >= 100 ? states[5] : stage.end && date > stage.end ? states[4] :
           (fact ?? 0) + 1e-7 < (plan ?? 0) ? states[3] : fact > 0 ? states[2] :
           stage.start && date >= stage.start ? states[1] : states[0];
-        metrics.set(stage.id, {plan, fact, start, end, total, status});
+        metrics.set(stage.id, {plan, fact, start, end, volume, status});
       }
       const current = active(stages);
-      // Archived leaf work remains visible in the journal and on archived rows.
-      for (const s of stages.filter(x => x.parent || x.archived)) measure(s, []);
+      for (const s of stages.filter(x => x.parent)) measure(s, []);
+      for (const root of stages.filter(x => !x.parent && x.archived)) {
+        measure(root,stages.filter(s => s.parent === root.id && s.archived));
+      }
       const roots = current.filter(s => !s.parent);
       for (const root of roots) measure(root, current.filter(s => s.parent === root.id));
-      return {metrics, plan:aggregate(roots, metrics, 'plan'), fact:aggregate(roots, metrics, 'fact', true)};
+      const rootMetrics = roots.map(stage => metrics.get(stage.id));
+      const volume = combinedVolume(rootMetrics);
+      return {metrics, plan:aggregate(rootMetrics,'plan',volume), fact:aggregate(rootMetrics,'fact',volume,true)};
     }
     function indicators(s, date = nowDay()) {
       const current = workMetrics(s.stages, s.journal, date);
@@ -4005,6 +4023,12 @@
           fact?.start, fact?.end || today, 'Факт']
       ];
     }
+    function amounts(metric) {
+      return metric?.volume || {planned:metric ? 100 : null,done:metric?.fact,unit:'%'};
+    }
+    function amountText(value, unit) {
+      return value == null ? '—' : number(value) + (unit === '%' ? unit : ' ' + unit);
+    }
     function gantt(rows, from, to, cellWidth, step, interactive, date = nowDay()) {
       const total = to - from + 1;
       const dayToday = day(date);
@@ -4016,6 +4040,7 @@
       }
       const content = rows.map(row => {
         const {stage, planned, fact, status, children, added} = row;
+        const quantity = amounts(fact);
         const arrows = interactive && children ?
           button('collapse', state(interactive).collapsed.has(stage.id) ? '▸' : '▾', stage.id) : '';
         const title = interactive && planned && !stage.archived ?
@@ -4028,10 +4053,13 @@
         }).join('');
         return `<div class="ws-gantt-row"><div class="ws-gantt-label ${stage.parent ? 'ws-indent' : ''}">
           ${arrows}${title}<small>${html(status)}${added ? ' · добавлен' : ''}${stage.paused ? ' · приостановлено' : ''} · ${html(percent(fact?.fact))}</small>
-        </div><div class="ws-track">${bars}${todayMark}</div></div>`;
+        </div><div class="ws-gantt-amount">${html(amountText(quantity.planned,quantity.unit))}</div>
+        <div class="ws-gantt-amount ws-done-amount">${html(amountText(quantity.done,quantity.unit))}</div>
+        <div class="ws-track">${bars}${todayMark}</div></div>`;
       }).join('');
       return `<div class="ws-gantt" tabindex="0" aria-label="Диаграмма Ганта"><div class="ws-gantt-inner" style="--ws-track:${cellWidth * total}px;--ws-grid:${100*step/total}%">
         <div class="ws-gantt-row ws-gantt-head"><div class="ws-gantt-label">Работа</div>
+        <div class="ws-gantt-amount">Всего</div><div class="ws-gantt-amount ws-done-amount">Выполнено</div>
         <div class="ws-ticks">${ticks.join('')}${todayMark}</div></div>${content}</div></div>`;
     }
     function graph(object, s, view) {
@@ -4050,7 +4078,7 @@
       const days = to-from+1;
       const tick = Math.max(zoom[1],Math.ceil(days/350));
       const density = Math.min(220000/days,Math.max(zoom[0],420/days));
-      return `<div class="ws-tools">${button('stage','Добавить этап')}${button('weights','Веса')}
+      return `<div class="ws-tools">${button('stage','Добавить этап')}
         ${s.baseline ? '<strong>Первоначальный план утверждён</strong>' : button('approve','Утвердить первоначальный план')}
         ${button('save-template','Сохранить шаблон')}${button('history','Версии и изменения')}
         ${button('export','Экспорт Excel / PDF')}</div>
@@ -4132,14 +4160,15 @@
       const root = $('#ws-summary');
       const rows = objects.filter(o => cache.has(o.id)).map(o => ({o,m:indicators(cache.get(o.id))}));
       const dated = rows.filter(({m}) => m.deadlines.length);
+      const today = nowDay();
       const shown = rows.filter(({o,m}) => (!summaryFilter.responsible || o.responsible === summaryFilter.responsible)
         && (!summaryFilter.status || m.status === summaryFilter.status)
-        && (!summaryFilter.days || (m.deadlines[0] && day(m.deadlines[0].end) - day(nowDay()) <= +summaryFilter.days)));
+        && (!summaryFilter.days || (o.deadline >= today && day(o.deadline) - day(today) <= +summaryFilter.days)));
       const people = [...new Set(rows.map(({o}) => o.responsible).filter(Boolean))].sort((a,b) => a.localeCompare(b,'ru'));
       const filters = [
         field('Ответственный',select('responsible',[['','Все'],...people.map(x => [x,x])],summaryFilter.responsible)),
         field('Состояние',select('status',[['','Все'],...states.map(x => [x,x])],summaryFilter.status)),
-        field('Срок',select('days',[['','Все'],['7','Ближайшие 7 дней'],['30','Ближайшие 30 дней']],summaryFilter.days))
+        field('Срок сдачи',select('days',[['','Все'],['7','Ближайшие 7 дней'],['30','Ближайшие 30 дней']],summaryFilter.days))
       ].join('');
       root.innerHTML = `<h2>Контроль графиков по объектам</h2><div class="ws-tools">${filters}${button('refresh','Обновить')}</div>
         ${loadError ? `<p role="status">${html(loadError)}</p>` : !loaded ? '<p>Загрузка графиков…</p>' :
@@ -4147,9 +4176,9 @@
           <span><strong>${rows.filter(({m}) => m.late.length || m.behind.length).length}</strong> с отставанием или просрочкой</span>
           <span><strong>${rows.reduce((sum,{m}) => sum + m.late.length,0)}</strong> просроченных этапов</span>
           <span><strong>${dated.flatMap(({m}) => m.deadlines.map(x => x.end)).filter(x => day(x)-day(nowDay()) <= 7).length}</strong> сроков на 7 дней</span></div>
-          ${shown.length ? table(['Объект','Ответственный',...comparisonHeaders,'Ближайший срок','Состояние'],
-            shown.map(({o,m}) => [button('open',o.name,o.id),html(o.responsible),...comparison(m).map(html),
-              html(m.deadlines[0]?.end || '—'),html(m.status)])) : '<p>По выбранным условиям графиков нет.</p>'}`}`;
+          ${shown.length ? table(['Объект','Ответственный','Срок сдачи','Состояние'],
+            shown.map(({o,m}) => [button('open',o.name,o.id),html(o.responsible),
+              html(o.deadline || '—'),html(m.status)])) : '<p>По выбранным условиям графиков нет.</p>'}`}`;
     }
     function openFromSummary(id) {
       const object = objects.find(o => o.id === id);
@@ -4214,7 +4243,6 @@
         ${field('Название',input('name',x.name,'text','required maxlength="200"'))}
         ${field('Родительский этап',select('parent',[['','Основной этап'],...(hasChildren ? [] : roots.map(r => [r.id,r.name]))],x.parent))}
         ${field('Начало',input('start',x.start,'date'))}${field('Окончание',input('end',x.end,'date'))}
-        ${field('Вес, %',input('weight',old?.weight ?? '','number','min="0" max="100" step="0.01"'))}
         ${field('Позиция в группе',input('position',old ? position(s.stages,old) : '','number','min="1" step="1"'))}
         ${field('Ответственный',input('responsible',x.responsible,'text','list="ws-people"') +
           `<datalist id="ws-people">${people.map(p => option(p,p)).join('')}</datalist>`)}
@@ -4224,15 +4252,15 @@
         ${field('Примечание',input('note',x.note))}
         ${old ? field('Причина изменения дат',input('reason','','text','maxlength="1000"')) : ''}
         <label class="ws-check"><input name="paused" type="checkbox" ${x.paused ? 'checked' : ''}> Приостановлено</label>
-        </div><p>При изменении веса остальные веса в группе пересчитываются пропорционально. Пустое поле веса даёт новому этапу равную долю в группе.</p>
+        </div>
         ${actual ? `<p>Факт ${html(percent(actual.fact))} · начало ${html(actual.start || '—')} · окончание ${html(actual.end || '—')}
-        ${actual.total != null && x.method === 'volume' ? ' · объём ' + html(number(actual.total) + ' ' + x.unit) : ''}</p>` : ''}
+        ${actual.volume?.done != null ? ' · объём ' + html(amountText(actual.volume.done,actual.volume.unit)) : ''}</p>` : ''}
         ${old ? '<button type="button" class="oj-btn oj-btn-danger" data-archive>Архивировать этап</button>' : ''}`,
       async data => {
         const value = name => String(data.get(name) || '').trim();
         const next = copy(s);
         const edited = {...x,name:value('name'),parent:value('parent'),start:value('start'),end:value('end'),
-          weight:Number(data.get('weight')),responsible:value('responsible'),method:value('method'),
+          responsible:value('responsible'),method:value('method'),
           unit:value('unit'),volume:value('volume') ? Number(value('volume')) : null,note:value('note'),paused:data.has('paused')};
         if (hasEntries && (x.method !== edited.method || (x.method === 'volume' && x.unit !== edited.unit))) {
           throw new Error('Для этапа с журналом способ учёта и единица измерения уже зафиксированы.');
@@ -4244,10 +4272,8 @@
         if (idx >= 0) next.stages[idx] = edited;
         else next.stages.push(edited);
         const peers = siblings(next.stages,edited.parent).filter(r => r.id !== edited.id);
-        if (!value('weight')) edited.weight = old?.weight ?? Math.round(10000/(peers.length+1))/100;
-        if (peers.length === 0) edited.weight = 100;
-        else if (!old || old.weight !== edited.weight || old.parent !== edited.parent) distribute(peers,100-edited.weight);
-        if (old && old.parent !== edited.parent) distribute(siblings(next.stages,old.parent));
+        if (!old || old.parent !== edited.parent) normalizeStoredWeights(siblings(next.stages,edited.parent));
+        if (old && old.parent !== edited.parent) normalizeStoredWeights(siblings(next.stages,old.parent));
         const requested = Number(value('position'));
         if (requested && peers.length && requested !== position(next.stages,edited)) {
           const target = peers[Math.min(requested-1,peers.length-1)];
@@ -4257,34 +4283,12 @@
         await save(object,next,old ? 'Изменён этап «' + old.name + '»' : 'Добавлен этап «' + edited.name + '»',value('reason'));
       });
       const archive = el.querySelector('[data-archive]');
-      if (archive) archive.onclick = () => dialog('Архивировать этап', `<p>Этап «${html(x.name)}» и его подэтапы уйдут в архив. Журнал сохранится, веса оставшихся этапов пересчитаются.</p>`, async () => {
+      if (archive) archive.onclick = () => dialog('Архивировать этап', `<p>Этап «${html(x.name)}» и его подэтапы уйдут в архив. Журнал сохранится.</p>`, async () => {
         const next = copy(s);
         for (const r of next.stages) if (r.id === x.id || r.parent === x.id) r.archived = true;
-        distribute(siblings(next.stages,x.parent));
+        normalizeStoredWeights(siblings(next.stages,x.parent));
         await save(object,next,'Архивирован этап «' + x.name + '»');
       },'Архивировать');
-    }
-    function editWeights(object,s) {
-      const stages = active(s.stages);
-      if (!stages.length) throw new Error('Добавьте этапы графика.');
-      const group = parent => siblings(stages,parent).map(x =>
-        field(x.name,input(x.id,x.weight,'number','required min="0" max="100" step="0.01"'))).join('');
-      dialog('Веса этапов', `<p>Укажите суммарно 100% в каждой группе.</p><h4>Основные этапы</h4>
-        <div class="ws-fields">${group('')}</div>${stages.filter(x => !x.parent && siblings(stages,x.id).length)
-          .map(x => `<h4>${html(x.name)}</h4><div class="ws-fields">${group(x.id)}</div>`).join('')}`,
-      async data => {
-        const next = copy(s);
-        for (const x of active(next.stages)) x.weight = Number(data.get(x.id));
-        checkWeights(next.stages);
-        await save(object,next,'Изменены веса этапов');
-      });
-    }
-    function checkWeights(stages) {
-      const groups = new Set(active(stages).map(x => x.parent));
-      for (const parent of groups) {
-        const total = siblings(stages,parent).reduce((sum,x) => sum + x.weight,0);
-        if (Math.abs(total-100) > 1e-6) throw new Error('Сумма весов в каждой группе должна составлять 100%.');
-      }
     }
     function editEntry(object,s,id,filter) {
       const old = s.journal.find(j => j.id === id);
@@ -4349,7 +4353,7 @@
             .map(x => [x.name,[before.get(x.id).start,before.get(x.id).end].join(' — '),[x.start,x.end].join(' — ')].map(html));
           if (onlyDates && !changes.length) return '';
           const stageFields = [['name','Название'],['parent','Родительский этап'],['start','Начало'],['end','Окончание'],
-            ['weight','Вес'],['method','Способ учёта'],['volume','Плановый объём'],['unit','Единица'],
+            ['method','Способ учёта'],['volume','Плановый объём'],['unit','Единица'],
             ['responsible','Ответственный'],['note','Примечание'],['paused','Приостановлен'],['archived','В архиве']];
           const differences = row.stages.flatMap(after => {
             const old = before.get(after.id);
@@ -4399,17 +4403,18 @@
 
     const stageHeaders = ['Этап','Родительский этап','Первоначальное начало','Первоначальное окончание',
       'Актуальное начало','Актуальное окончание','Фактическое начало','Фактическое окончание',
-      'Вес, %','Первоначальный вес, %','Плановый объём','Фактический объём','Единица','Ответственный',
+      'Всего','Выполнено','Единица','Ответственный',
       'Первоначальный план на дату, %','Актуальный план на дату, %','Факт на дату, %','Состояние'];
     function stageCells(s,m,rows) {
       const stages = stagesById(s.stages);
-      return rows.map(({stage,planned,baseline,fact,status,added}) => [stage.name,
-        stages.get(stage.parent)?.name,baseline?.start,baseline?.end,planned?.archived ? '' : planned?.start,
-        planned?.archived ? '' : planned?.end,fact?.start,fact?.end,planned?.weight,baseline?.weight,
-        stage.method === 'volume' ? stage.volume : null,stage.method === 'volume' ? fact?.total : null,
-        stage.method === 'volume' ? stage.unit : '%',stage.responsible,
-        m.baseline.metrics.get(stage.id)?.plan,fact?.plan,fact?.fact,
-        status + (added ? ' · добавлен' : '') + (stage.paused ? ' · приостановлено' : '')]);
+      return rows.map(({stage,planned,baseline,fact,status,added}) => {
+        const quantity = amounts(fact);
+        return [stage.name,stages.get(stage.parent)?.name,baseline?.start,baseline?.end,
+          planned?.archived ? '' : planned?.start,planned?.archived ? '' : planned?.end,fact?.start,fact?.end,
+          quantity.planned,quantity.done,quantity.unit,stage.responsible,
+          m.baseline.metrics.get(stage.id)?.plan,fact?.plan,fact?.fact,
+          status + (added ? ' · добавлен' : '') + (stage.paused ? ' · приостановлено' : '')];
+      });
     }
     function report(s, start, end) {
       const m = indicators(s,end), stages = stagesById(s.stages);
@@ -4461,16 +4466,18 @@
       for (let i = r.from; i <= r.to; i+=stride) ticks.push(i);
       const labels = {'baseline':'Первоначальный','current':'Актуальный','late':'Факт · отставание','done':'Факт · завершено','actual':'Факт'};
       const colors = {'baseline':'FF7E8C9C','current':'FF558DBA','late':'FFB85C47','done':'FF4E765D','actual':'FFC39749'};
-      const ws = sheet('Гант',['Работа','Линия',...ticks.map(iso)],[],
-        [34,24,...ticks.map(() => 12)]);
-      ws.views = [{state:'frozen',xSplit:2,ySplit:1}];
+      const ws = sheet('Гант',['Работа','Всего','Выполнено','Линия',...ticks.map(iso)],[],
+        [34,14,16,24,...ticks.map(() => 12)]);
+      ws.views = [{state:'frozen',xSplit:4,ySplit:1}];
       for (const row of r.rows) {
+        const quantity = amounts(row.fact);
         for (const [kind,start,end] of lanes(row,r.end)) {
-          const line = ws.addRow([(row.stage.parent ? '    ' : '') + row.stage.name,labels[kind]]);
+          const line = ws.addRow([(row.stage.parent ? '    ' : '') + row.stage.name,
+            amountText(quantity.planned,quantity.unit),amountText(quantity.done,quantity.unit),labels[kind]]);
           if (!start || !end) continue;
           ticks.forEach((d,i) => {
             if (day(end) >= d && day(start) <= Math.min(r.to,d+stride-1)) {
-              line.getCell(i+3).fill = {type:'pattern',pattern:'solid',fgColor:{argb:colors[kind]}};
+              line.getCell(i+5).fill = {type:'pattern',pattern:'solid',fgColor:{argb:colors[kind]}};
             }
           });
         }
@@ -4504,8 +4511,8 @@
         @page{size:A4 landscape;margin:12mm}body{font:11px Arial,sans-serif;color:#222;margin:0}
         h1{font-size:18px}h2{font-size:14px}section~section{break-before:page}
         .ws-table,.ws-gantt{overflow:visible!important}.ws-gantt-inner{width:100%!important;min-width:0!important}
-        .ws-gantt-row{grid-template-columns:190px minmax(0,1fr)!important}
-        .ws-gantt-label{position:static!important}.ws-gantt-row,tr{break-inside:avoid}
+        .ws-gantt-row{grid-template-columns:150px repeat(2,68px) minmax(0,1fr)!important}
+        .ws-gantt-label,.ws-gantt-amount{position:static!important}.ws-gantt-row,tr{break-inside:avoid}
         .ws-table table{width:100%;font-size:9px}.ws-table td,.ws-table th{padding:4px;white-space:normal;overflow-wrap:anywhere}
         thead{display:table-header-group}.ws-bar,.ws-legend span{-webkit-print-color-adjust:exact;print-color-adjust:exact}
         @media print{.ws-print-button{display:none}}
@@ -4581,7 +4588,6 @@
       if (!s.revision) return;
       switch (action) {
         case 'stage': editStage(object,s,key); break;
-        case 'weights': editWeights(object,s); break;
         case 'entry': editEntry(object,s,key,view.filter); break;
         case 'today': {
           const frame = root.querySelector('.ws-gantt');
@@ -4596,8 +4602,7 @@
           mount(); break;
         case 'approve':
           if (!active(s.stages).length) throw new Error('Добавьте этапы для утверждения.');
-          checkWeights(s.stages);
-          dialog('Утвердить первоначальный план','<p>Система зафиксирует текущую структуру, даты, объёмы и веса. Последующие изменения попадут в актуальный план.</p>',
+          dialog('Утвердить первоначальный план','<p>Система зафиксирует текущую структуру, даты и объёмы. Последующие изменения попадут в актуальный план.</p>',
             () => save(object,copy(s),'Утверждён первоначальный план','',true),'Утвердить');
           break;
         case 'save-template': saveTemplate(s); break;
