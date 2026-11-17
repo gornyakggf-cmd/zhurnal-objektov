@@ -407,183 +407,6 @@
   margin-top:6px;
 }
 
-.oj-schedule-section{
-  border-top:1px solid var(--line);
-  margin-top:18px;
-  padding-top:16px;
-}
-.oj-schedule-addrow{
-  display:flex;
-  gap:8px;
-  flex-wrap:wrap;
-  margin-bottom:16px;
-}
-.oj-schedule-addrow input[type=text]{flex:1;min-width:180px;}
-.oj-schedule-addrow input[type=date]{width:150px;}
-.oj-gantt-wrap{
-  border:1px solid var(--line);
-  border-radius:var(--radius);
-  overflow-x:auto;
-  background:var(--surface);
-}
-.oj-gantt-row{
-  display:grid;
-  grid-template-columns:170px 1fr 140px 88px;
-  gap:10px;
-  align-items:center;
-  padding:8px 12px;
-  border-bottom:1px solid var(--line);
-  min-width:660px;
-}
-.oj-gantt-row:last-child{border-bottom:none;}
-.oj-gantt-rowactions{display:flex;gap:4px;justify-content:flex-end;}
-.oj-gantt-rowactions .oj-staff-icon-btn:disabled{opacity:.3;cursor:default;}
-.oj-gantt-scale-row{
-  background:var(--surface-2);
-  padding-top:4px;
-  padding-bottom:4px;
-}
-.oj-gantt-label{
-  font-size:12.5px;
-  font-weight:600;
-  color:var(--ink);
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-.oj-gantt-track{
-  position:relative;
-  height:22px;
-  background:var(--surface-2);
-  border-radius:4px;
-}
-.oj-gantt-scale-row .oj-gantt-track{background:transparent;height:28px;}
-.oj-gantt-tick{
-  position:absolute;
-  top:13px;
-  font-family:var(--font-mono);
-  font-size:10px;
-  color:var(--ink-faint);
-  white-space:nowrap;
-  transform:translateX(-2px);
-  border-left:1px solid var(--line);
-  padding-left:4px;
-  height:15px;
-}
-.oj-gantt-weeknum{
-  position:absolute;
-  top:0;
-  font-family:var(--font-mono);
-  font-size:9px;
-  color:var(--ink-faint);
-  opacity:.75;
-  transform:translateX(2px);
-}
-.oj-gantt-weekline{
-  position:absolute;
-  top:0;
-  bottom:0;
-  width:0;
-  border-left:1px dotted var(--line);
-}
-.oj-gantt-bar{
-  position:absolute;
-  top:3px;
-  height:16px;
-  background:var(--accent);
-  border-radius:3px;
-  min-width:4px;
-}
-.oj-gantt-today{
-  position:absolute;
-  top:0;
-  bottom:0;
-  width:0;
-  border-left:1.5px dashed var(--alert);
-}
-.oj-log-author{font-size:11px;color:var(--ink-faint);margin-left:6px;white-space:nowrap;}
-.oj-gantt-milestone{
-  position:absolute;
-  top:50%;
-  width:12px;height:12px;
-  margin:-6px 0 0 -6px;
-  transform:rotate(45deg);
-  background:var(--accent);
-  border-radius:2px;
-}
-.oj-gantt-milestone.late{background:var(--alert);}
-.oj-gantt-milestone.today{background:var(--active);}
-.oj-gantt-milestone.done{background:#2F6B45;opacity:.75;}
-.oj-gantt-dates{
-  font-family:var(--font-mono);
-  font-size:11px;
-  color:var(--ink-soft);
-  white-space:nowrap;
-}
-
-.oj-finance-section{
-  border-top:1px solid var(--line);
-  margin-top:18px;
-  padding-top:16px;
-}
-.oj-finance-lock{
-  font-size:11px;
-  font-weight:400;
-  color:var(--ink-faint);
-  text-transform:none;
-  margin-left:6px;
-  letter-spacing:0;
-}
-.oj-finance-summary{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-  align-items:flex-end;
-  margin-bottom:14px;
-}
-.oj-finance-field{display:flex;flex-direction:column;gap:4px;min-width:160px;}
-.oj-finance-field label{font-size:11px;color:var(--ink-soft);}
-.oj-finance-field input{width:100%;}
-.oj-finance-stat{
-  background:var(--surface-2);
-  border:1px solid var(--line);
-  border-radius:var(--radius);
-  padding:8px 14px;
-  display:flex;
-  flex-direction:column;
-  gap:2px;
-  min-width:120px;
-}
-.oj-finance-stat-label{font-size:10.5px;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-faint);}
-.oj-finance-stat-value{font-family:var(--font-mono);font-size:15px;font-weight:600;color:var(--ink);}
-.oj-finance-addrow{
-  display:flex;
-  gap:8px;
-  flex-wrap:wrap;
-  margin-bottom:12px;
-}
-.oj-finance-addrow input[type=text]{flex:1;min-width:160px;}
-.oj-finance-addrow input[type=date]{width:150px;}
-.oj-finance-addrow input.finExpAmountInput{width:130px;flex:none;}
-.oj-finance-list{display:flex;flex-direction:column;gap:0;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;}
-.oj-finance-list > div.oj-finance-row{border-bottom:1px solid var(--line);}
-.oj-finance-list > div.oj-finance-row:last-child{border-bottom:none;}
-.oj-finance-row{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding:7px 10px;
-  font-size:12.5px;
-  background:var(--surface);
-}
-.oj-finance-row-date{font-family:var(--font-mono);font-size:11px;color:var(--ink-faint);white-space:nowrap;}
-.oj-finance-row-desc{flex:1;color:var(--ink);}
-.oj-finance-row-amount{font-family:var(--font-mono);font-weight:600;color:var(--ink);white-space:nowrap;}
-.oj-finance-row-del{
-  border:none;background:none;color:var(--ink-faint);cursor:pointer;font-size:14px;line-height:1;padding:2px 4px;
-}
-.oj-finance-row-del:hover{color:var(--alert);}
-
 .oj-linkrow{display:flex;gap:8px;align-items:center;}
 .oj-linkrow input{
   flex:1;
@@ -990,76 +813,6 @@
   margin-bottom:8px;
 }
 
-.oj-board-outer{
-  display:flex;
-  gap:12px;
-  align-items:flex-start;
-}
-.oj-board-pinned{
-  flex:0 0 240px;
-}
-.oj-board{
-  flex:1;
-  min-width:0;
-  display:flex;
-  gap:12px;
-  overflow-x:auto;
-  padding-bottom:10px;
-  align-items:flex-start;
-}
-.oj-board-col{
-  flex:0 0 240px;
-  background:var(--surface-2);
-  border:1px solid var(--line);
-  border-radius:var(--radius);
-  display:flex;
-  flex-direction:column;
-  max-height:calc(100vh - 260px);
-}
-.oj-board-col.dragover{border-color:var(--accent);background:var(--accent-soft);}
-.oj-board-col-head{
-  padding:10px 12px;
-  border-bottom:1px solid var(--line);
-  font-family:var(--font-cond);
-  font-weight:600;
-  font-size:12.5px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:6px;
-}
-.oj-board-col-head .count{
-  font-family:var(--font-mono);
-  font-weight:400;
-  color:var(--ink-faint);
-  font-size:11px;
-}
-.oj-board-col-remove{
-  background:transparent;border:none;color:var(--ink-faint);cursor:pointer;font-size:13px;padding:0 2px;
-}
-.oj-board-col-remove:hover{color:var(--alert);}
-.oj-board-col-body{
-  flex:1;
-  overflow-y:auto;
-  padding:8px;
-  display:flex;
-  flex-direction:column;
-  gap:6px;
-  min-height:60px;
-}
-.oj-board-card{
-  background:var(--surface);
-  border:1px solid var(--line);
-  border-radius:4px;
-  padding:8px 10px;
-  font-size:12.5px;
-  cursor:grab;
-}
-.oj-board-card:active{cursor:grabbing;}
-.oj-board-card.dragging{opacity:.4;}
-.oj-board-card-name{font-weight:600;}
-.oj-board-card-pos{color:var(--ink-soft);font-size:11.5px;margin-top:2px;}
-
 .oj-toast{
   position:fixed;
   left:50%;
@@ -1218,6 +971,62 @@
 }
 
 </style>
+<style id="ws-style">
+.ws-panel{margin:18px 0;padding:16px;background:#fafbf8;border:1px solid #dce3da;border-radius:12px;min-width:0;scroll-margin-top:18px}
+.ws-panel h2,.ws-panel h3{margin:0 0 12px;color:#304b40;font-size:1.05rem}
+.ws-panel p,.ws-dialog p{margin:8px 0;color:#4a5d53;line-height:1.45}
+.ws-tools,.ws-legend,.ws-kpis{display:flex;flex-wrap:wrap;align-items:end;gap:8px 12px;margin:10px 0}
+.ws-tools strong{font-size:13px;color:#2b6347;align-self:center}
+.ws-panel label,.ws-dialog label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:#405349}
+.ws-panel input,.ws-panel select,.ws-dialog input,.ws-dialog select,.ws-dialog textarea{box-sizing:border-box;max-width:100%;min-width:0;padding:6px 8px;background:#fff;color:#1d352a;border:1px solid #aebdb3;border-radius:5px;font:inherit}
+.ws-panel .ws-check,.ws-dialog .ws-check{flex-direction:row;align-items:center;align-self:center}
+.ws-panel button[aria-pressed=true]{background:#304b40;color:#fff;border-color:#304b40}
+.ws-kpis span,.ws-controls>div{background:#eff3ec;padding:8px 10px;border-radius:6px}
+.ws-kpis strong{font-variant-numeric:tabular-nums;font-size:1.1em}
+.ws-controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px;margin-top:12px}
+.ws-controls h4{margin:0 0 6px}.ws-controls ul{padding-left:18px;margin:0}
+.ws-table{max-width:100%;overflow:auto}
+.ws-table table{width:100%;border-collapse:collapse;background:white;font-size:13px}
+.ws-table th,.ws-table td{text-align:left;padding:7px 8px;border:1px solid #dee5df;vertical-align:top}
+.ws-table th{background:#edf2eb;color:#243c31}
+.ws-table td{overflow-wrap:anywhere}
+.ws-table button{white-space:normal;text-align:left}
+.ws-gantt{max-width:100%;overflow:auto;border:1px solid #d7e2d9;border-radius:6px;position:relative}
+.ws-gantt-inner{--ws-label:230px;width:calc(var(--ws-label) + var(--ws-track));min-width:100%;background:#fff}
+.ws-gantt-row{display:grid;grid-template-columns:var(--ws-label) minmax(0,1fr);min-height:48px;border-bottom:1px solid #e3e8e4}
+.ws-gantt-label{position:sticky;left:0;z-index:2;background:#f6f8f3;padding:5px 8px;min-width:0;border-right:1px solid #d7e2d9;overflow-wrap:anywhere}
+.ws-gantt-label small{display:block;color:#4a5d53;margin-top:2px;font-size:11px}
+.ws-gantt-label button{padding:2px 4px;border:0;white-space:normal;text-align:left;line-height:1.15}
+.ws-gantt-label button[data-ws=collapse]{margin-right:3px;min-width:20px}
+.ws-gantt-label.ws-indent{padding-left:24px}
+.ws-gantt-head{min-height:28px;font-weight:bold}
+.ws-ticks{display:flex;position:relative;align-items:stretch;background:#edf2eb;color:#304b40;overflow:hidden}
+.ws-ticks span{min-width:0;padding:5px 2px;border-right:1px solid #d8e3da;text-align:center;font-size:10px;overflow:hidden;white-space:nowrap}
+.ws-track{position:relative;background-size:var(--ws-grid) 100%;background-image:linear-gradient(90deg,#e3eae4 1px,transparent 1px)}
+.ws-bar{position:absolute;height:7px;border-radius:2px}
+.ws-today{position:absolute;z-index:1;top:0;bottom:0;border-left:2px solid #872e38;pointer-events:none}
+.ws-legend span{font-size:11px;color:#17251e;padding:3px 6px;border-radius:3px}
+.ws-stage-table{margin-top:12px}
+.ws-stage-table summary{cursor:pointer;color:#304b40}
+.ws-stage-table .ws-table{margin-top:8px}
+.ws-baseline{background:#aebac7}.ws-current{background:#7aaccb}.ws-actual{background:#e3ba70}
+.ws-done{background:#83ad91}.ws-late{background:#de9887}
+.ws-dialog{box-sizing:border-box;width:min(740px,calc(100vw - 24px));max-height:calc(100dvh - 24px);padding:16px;border:1px solid #91a79a;border-radius:12px;background:#fcfdf9;color:#263d31;overflow:auto}
+.ws-dialog::backdrop{background:#17281c73}
+.ws-dialog h3{margin:0 0 12px;font-size:18px}
+.ws-dialog h4{margin:14px 0 6px}
+.ws-dialog details{padding:8px 0;border-bottom:1px solid #dbe3dc}
+.ws-dialog summary{cursor:pointer}
+.ws-dialog footer{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-top:12px}
+.ws-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 12px}
+.ws-dialog .ws-error{color:#912c36}
+@media(max-width:560px){
+  .ws-panel{padding:10px}
+  .ws-fields{grid-template-columns:1fr}
+  .ws-gantt-inner{--ws-label:140px}
+  .ws-gantt-label.ws-indent{padding-left:12px}
+}
+</style>
 </head>
 <body>
 
@@ -1282,6 +1091,7 @@
     <div class="oj-summary-charts" id="ojSummaryCharts"></div>
   </div>
 
+  <section id="ws-summary" class="ws-panel" aria-label="Контроль графиков"></section>
   <div class="oj-loading" id="ojLoading">Загрузка журнала…</div>
   <div class="oj-list" id="ojList" style="display:none;"></div>
   <div class="oj-empty" id="ojEmpty" hidden>Пока нет ни одного объекта.<br>Нажмите «+ Объект», чтобы добавить первую запись.</div>
@@ -1290,11 +1100,7 @@
   <div id="staffView" hidden>
     <div class="oj-titlerow">
       <h1 class="oj-title">Сотрудники</h1>
-      <div style="display:flex;gap:8px;">
-        <button class="oj-btn oj-btn-primary" id="empViewTableBtn">Таблица</button>
-        <button class="oj-btn oj-btn-ghost" id="empViewBoardBtn">Доска</button>
-        <button class="oj-btn oj-btn-primary" id="empAddBtn">+ Сотрудник</button>
-      </div>
+      <button class="oj-btn oj-btn-primary" id="empAddBtn">+ Сотрудник</button>
     </div>
 
     <div class="oj-staff-stats" id="empStats"></div>
@@ -1316,7 +1122,7 @@
       <button class="oj-btn oj-btn-ghost" id="empSortDir" title="Изменить направление сортировки">↑ по возрастанию</button>
     </div>
 
-    <div class="oj-staff-table-wrap" id="empTableWrap">
+    <div class="oj-staff-table-wrap">
       <table class="oj-staff-table" id="empTable">
         <thead>
           <tr>
@@ -1333,16 +1139,6 @@
       </table>
     </div>
     <div class="oj-empty" id="empEmpty" hidden>Никого не найдено.</div>
-
-    <div id="empBoardWrap" hidden>
-      <div class="oj-toolbar">
-        <select class="oj-select" id="boardAddColSelect"><option value="">+ Добавить объект на доску…</option></select>
-      </div>
-      <div class="oj-board-outer">
-        <div class="oj-board-pinned" id="empBoardPinned"></div>
-        <div class="oj-board" id="empBoard"></div>
-      </div>
-    </div>
   </div>
 
   <div id="vehiclesView" hidden>
@@ -1532,7 +1328,7 @@
   <div class="oj-field"><label>Город / объект</label><input type="text" id="vehFLocation" placeholder="Москва"></div>
   <div class="oj-detail-grid">
     <div class="oj-field"><label>Собственник</label><input type="text" id="vehFOwner" placeholder="Геоаспект"></div>
-    <div class="oj-field"><label>Водитель</label><select id="vehFDriver"><option value="">Не назначен</option></select></div>
+    <div class="oj-field"><label>Водитель</label><input type="text" id="vehFDriver"></div>
   </div>
   <div class="oj-field"><label>Пробег, км</label><input type="number" id="vehFMileage"></div>
   <div class="oj-field"><label>Заметки</label><textarea id="vehFNotes"></textarea></div>
@@ -1554,12 +1350,11 @@
       <div class="oj-field"><label>Дата</label><input type="date" id="vehLogEDate"></div>
       <div class="oj-field"><label>Тип</label>
         <select id="vehLogEType">
-          <option>ТО</option><option>Ремонт</option><option>Страховка</option><option>Шины</option><option>Мойка</option><option>Штраф</option><option>Смена водителя</option><option>Прочее</option>
+          <option>ТО</option><option>Ремонт</option><option>Страховка</option><option>Шины</option><option>Мойка</option><option>Штраф</option><option>Прочее</option>
         </select>
       </div>
     </div>
-    <div class="oj-field" id="vehLogEDescField"><label>Описание</label><input type="text" id="vehLogEDesc" placeholder="Замена масла и фильтров"></div>
-    <div class="oj-field" id="vehLogEDriverField" hidden><label>Новый водитель</label><select id="vehLogEDriver"><option value="">Не назначен</option></select></div>
+    <div class="oj-field"><label>Описание</label><input type="text" id="vehLogEDesc" placeholder="Замена масла и фильтров"></div>
     <div class="oj-detail-grid">
       <div class="oj-field"><label>Стоимость, ₽</label><input type="number" id="vehLogECost" placeholder="0"></div>
       <div class="oj-field"><label>Пробег на момент, км</label><input type="number" id="vehLogEMileage"></div>
@@ -1687,7 +1482,6 @@
       return;
     }
     showAuthGate(false);
-    if(data && data.user){ applyFinancePermission(data.user); applyUserName(data.user); }
     await boot();
     if(data && data.user) applyTabPermissions(data.user);
   }
@@ -1728,18 +1522,10 @@
       ],
     };
     __previewStore[STORAGE_KEY] = JSON.stringify([demo]);
-    __previewStore[FIN_STORAGE_KEY] = JSON.stringify({
-      [demo.id]: { contractAmount: '850000', expenses: [
-        { id: uid(), date: addDays(-10), description: 'ГСМ и суточные полевой бригады', amount: '42000' },
-        { id: uid(), date: addDays(-3), description: 'Аренда GPS-оборудования', amount: '18500' },
-      ] }
-    });
   }
   function enterPreviewMode(){
     PREVIEW_MODE = true;
     window.storage = previewStorageImpl;
-    currentUserName = 'Предпросмотр';
-    financeAllowed = true; // в предпросмотре показываем блок «Финансы» для проверки интерфейса
     seedDemoObjectForPreview();
     showAuthGate(false);
     const emailEl = document.getElementById('authUserEmail');
@@ -1762,8 +1548,6 @@
       showAuthGate(false);
       const emailEl = document.getElementById('authUserEmail');
       if(emailEl) emailEl.textContent = data.session.user.email || '';
-      applyFinancePermission(data.session.user);
-      applyUserName(data.session.user);
       await boot();
       applyTabPermissions(data.session.user);
     }else{
@@ -1906,12 +1690,7 @@
 
   // ---------- Автомобили ----------
   const VEH_STORAGE_KEY = 'vehicles';
-  // ---------- Финансы (сумма договора + затраты) ----------
-  // Хранятся в отдельном ключе kv_store, доступ к которому на уровне базы
-  // (RLS) разрешён только пользователям с app_metadata.finance === true.
-  // См. инструкцию по SQL для Supabase ниже в сообщении.
-  const FIN_STORAGE_KEY = 'objects-finance';
-  const VEH_LOG_TYPES = ['ТО', 'Ремонт', 'Страховка', 'Шины', 'Мойка', 'Штраф', 'Смена водителя', 'Прочее'];
+  const VEH_LOG_TYPES = ['ТО', 'Ремонт', 'Страховка', 'Шины', 'Мойка', 'Штраф', 'Прочее'];
   const VEH_LOG_TYPE_META = {
     'ТО':        {bg:'#E5F0E8', color:'#2F6B45'},
     'Ремонт':    {bg:'#F7E9E4', color:'#8A3A1F'},
@@ -1919,7 +1698,6 @@
     'Шины':      {bg:'#EFEEE8', color:'#3A3A35'},
     'Мойка':     {bg:'#E3EDF3', color:'#2B5A6B'},
     'Штраф':     {bg:'#FBF3DC', color:'#8A6D1F'},
-    'Смена водителя': {bg:'#EFE4F3', color:'#7A3D8A'},
     'Прочее':    {bg:'#EFEEE8', color:'#6B6B62'},
   };
   const SEED_VEHICLES = [
@@ -1967,15 +1745,11 @@
   }
 
   let objects = [];
-  let financeData = {};      // { [objectId]: { contractAmount, expenses:[{id,date,description,amount}] } }
-  let currentUserName = ''; // подпись автора записей: user_metadata.name или часть почты до @
-  let financeAllowed = false; // вычисляется из app_metadata.finance пользователя — реальное разрешение проверяет ещё и RLS в базе
   let expandedId = null;
   let allExpanded = false;
   let editingId = null;
   let editingLogEntry = null;
   let collapsedLogIds = new Set();
-  let collapsedEmpPanelIds = new Set(); // карточки, где панель «Назначенные сотрудники» свёрнута
   let docNotesVisible = new Set();
   let filterType = '';
   let filterStatus = '';
@@ -1994,9 +1768,6 @@
   let empFilterStatus = '';
   let empSortField = 'fullName';
   let empSortDir = 'asc';
-  let staffViewMode = 'table';
-  let boardExtraCols = new Set();
-  let draggedEmpId = null;
 
   let vehicles = [];
   let vehSearchTerm = '';
@@ -2312,50 +2083,6 @@
     }
   }
 
-  function financeOf(objId){
-    return financeData[objId] || { contractAmount: '', expenses: [] };
-  }
-  async function loadFinance(){
-    if(!financeAllowed){ financeData = {}; return; }
-    try{
-      const res = await window.storage.get(FIN_STORAGE_KEY, false);
-      financeData = (res && res.value) ? JSON.parse(res.value) : {};
-    }catch(e){
-      // либо это первый запуск (ключа ещё нет), либо доступ закрыт политикой RLS —
-      // в обоих случаях просто работаем с пустыми финансовыми данными
-      financeData = {};
-    }
-    // миграция: старое поле contractAmount на самом объекте (было видно только
-    // для типа работ ПТО) переносим в отдельное защищённое хранилище один раз
-    let migrated = false;
-    objects.forEach(o => {
-      if(o.contractAmount && !(financeData[o.id] && financeData[o.id].contractAmount)){
-        financeData[o.id] = financeData[o.id] || { contractAmount: '', expenses: [] };
-        financeData[o.id].contractAmount = o.contractAmount;
-        migrated = true;
-      }
-    });
-    if(migrated){ try{ await saveFinance(); }catch(e){ /* попробуем сохранить в другой раз */ } }
-  }
-  async function saveFinance(){
-    const maxRetries = 2;
-    for(let attempt = 0; attempt <= maxRetries; attempt++){
-      try{
-        const res = await window.storage.set(FIN_STORAGE_KEY, JSON.stringify(financeData), false);
-        if(res) return true;
-        throw new Error('пустой ответ от хранилища');
-      }catch(e){
-        console.error('Storage error (финансы, попытка ' + (attempt+1) + ')', e);
-        if(attempt < maxRetries){
-          await new Promise(r => setTimeout(r, 500 * (attempt + 1)));
-          continue;
-        }
-        showToast('Не удалось сохранить финансовые данные: ' + (e && e.message ? e.message : e) + '. Если это не первое такое сообщение — проверьте, что у вашей учётной записи есть доступ к финансам.', true);
-        return false;
-      }
-    }
-  }
-
   function buildStatusOptions(select){
     select.innerHTML = STAGES.map(s => `<option value="${s.key}">${s.label}</option>`).join('');
   }
@@ -2416,95 +2143,6 @@
     }).join('') + '</div>';
   }
 
-  function renderGanttChart(phases, objId, logEntries){
-    // задачи из журнала, у которых указан срок, показываем на графике вехами
-    const tasks = (logEntries || []).filter(e => e && e.type === 'task' && e.dueDate);
-    if(!phases.length && !tasks.length){
-      return '<div style="color:var(--ink-faint);font-size:12.5px;padding:6px 0 2px;">Этапов пока нет — добавьте первый выше, чтобы построить график.</div>';
-    }
-    const dated = phases.filter(p => p.start && p.end);
-    const allDates = dated.flatMap(p => [p.start, p.end]).concat(tasks.map(t => t.dueDate));
-    const base = allDates.length ? allDates : [todayISO()];
-    const minRaw = base.reduce((a,b) => a < b ? a : b);
-    const maxRaw = base.reduce((a,b) => a > b ? a : b);
-    const minD = new Date(minRaw); minD.setDate(minD.getDate() - 3);
-    const maxD = new Date(maxRaw); maxD.setDate(maxD.getDate() + 3);
-    const totalMs = Math.max(maxD - minD, 86400000);
-    const pct = (d) => ((new Date(d) - minD) / totalMs) * 100;
-
-    const monthTicks = [];
-    const cursor = new Date(minD.getFullYear(), minD.getMonth(), 1);
-    while(cursor <= maxD){
-      monthTicks.push({label: MONTH_NAMES_RU[cursor.getMonth()] + ' ' + cursor.getFullYear(), pct: pct(cursor.toISOString().slice(0,10))});
-      cursor.setMonth(cursor.getMonth() + 1);
-    }
-    const weekTicks = [];
-    const wcursor = new Date(minD);
-    const dow = wcursor.getDay();
-    wcursor.setDate(wcursor.getDate() + (dow === 0 ? -6 : 1 - dow)); // выравниваем на понедельник
-    while(wcursor <= maxD){
-      const p = pct(wcursor.toISOString().slice(0,10));
-      if(p >= 0 && p <= 100) weekTicks.push({pct: p, day: wcursor.getDate()});
-      wcursor.setDate(wcursor.getDate() + 7);
-    }
-    const weekGrid = weekTicks.map(t => `<div class="oj-gantt-weekline" style="left:${t.pct}%;"></div>`).join('');
-    const todayPct = pct(todayISO());
-    const showToday = todayPct >= 0 && todayPct <= 100;
-
-    const scaleRow = `
-      <div class="oj-gantt-row oj-gantt-scale-row">
-        <div class="oj-gantt-label"></div>
-        <div class="oj-gantt-track">
-          ${weekGrid}
-          ${weekTicks.map(t => `<div class="oj-gantt-weeknum" style="left:${t.pct}%;">${t.day}</div>`).join('')}
-          ${monthTicks.map(t => `<div class="oj-gantt-tick" style="left:${t.pct}%;">${t.label}</div>`).join('')}
-          ${showToday ? `<div class="oj-gantt-today" style="left:${todayPct}%;"></div>` : ''}
-        </div>
-        <div class="oj-gantt-dates"></div>
-        <div></div>
-      </div>`;
-
-    const rows = phases.map((p, idx) => {
-      const hasBar = !!(p.start && p.end);
-      const left = hasBar ? pct(p.start) : 0;
-      const width = hasBar ? Math.max(pct(p.end) - left, 1) : 0;
-      return `
-      <div class="oj-gantt-row">
-        <div class="oj-gantt-label" title="${esc(p.name)}">${esc(p.name)}</div>
-        <div class="oj-gantt-track">
-          ${weekGrid}
-          ${hasBar ? `<div class="oj-gantt-bar" style="left:${left}%;width:${width}%;" title="${esc(p.name)}: ${fmtDate(p.start)} — ${fmtDate(p.end)}"></div>` : `<span style="font-size:11px;color:var(--ink-faint);">без дат</span>`}
-          ${showToday ? `<div class="oj-gantt-today" style="left:${todayPct}%;"></div>` : ''}
-        </div>
-        <div class="oj-gantt-dates">${p.start?fmtDate(p.start):'—'} – ${p.end?fmtDate(p.end):'—'}</div>
-        <div class="oj-gantt-rowactions">
-          <button type="button" class="oj-staff-icon-btn schedUpBtn" data-obj-id="${objId}" data-phase-id="${p.id}" title="Переместить выше" ${idx===0?'disabled':''}>↑</button>
-          <button type="button" class="oj-staff-icon-btn schedDownBtn" data-obj-id="${objId}" data-phase-id="${p.id}" title="Переместить ниже" ${idx===phases.length-1?'disabled':''}>↓</button>
-          <button type="button" class="oj-staff-icon-btn danger schedDelBtn" data-obj-id="${objId}" data-phase-id="${p.id}" title="Удалить этап">✕</button>
-        </div>
-      </div>`;
-    }).join('');
-
-    const today = todayISO();
-    const taskRows = tasks.slice().sort((a,b) => a.dueDate.localeCompare(b.dueDate)).map(t => {
-      const state = t.done ? 'done' : (t.dueDate < today ? 'late' : (t.dueDate === today ? 'today' : ''));
-      const stateLabel = t.done ? 'выполнено' : (state === 'late' ? 'просрочено' : '');
-      return `
-      <div class="oj-gantt-row">
-        <div class="oj-gantt-label" title="${esc(t.text)}">${t.done ? '✓ ' : ''}${esc(t.text)}</div>
-        <div class="oj-gantt-track">
-          ${weekGrid}
-          <div class="oj-gantt-milestone ${state}" style="left:${pct(t.dueDate)}%;" title="${esc(t.text)} — до ${fmtDate(t.dueDate)}${stateLabel ? ' (' + stateLabel + ')' : ''}"></div>
-          ${showToday ? `<div class="oj-gantt-today" style="left:${todayPct}%;"></div>` : ''}
-        </div>
-        <div class="oj-gantt-dates">до ${fmtDate(t.dueDate)}</div>
-        <div></div>
-      </div>`;
-    }).join('');
-    const taskHeader = tasks.length ? `<div class="oj-gantt-row oj-gantt-scale-row"><div class="oj-gantt-label" style="color:var(--ink-faint);font-weight:400;">Задачи со сроком</div><div></div><div></div><div></div></div>` : '';
-
-    return `<div class="oj-gantt-wrap">${scaleRow}${rows}${taskHeader}${taskRows}</div>`;
-  }
 
   function sortValue(o, field){
     if(field === 'deadline') return o.deadline || '';
@@ -2562,6 +2200,7 @@
     }
 
     listEl.innerHTML = items.map(o => rowHtml(o)).join('');
+    workSchedule.mount();
 
     listEl.querySelectorAll('[data-priority-toggle]').forEach(el => {
       on(el, 'click', async (ev) => {
@@ -2606,14 +2245,6 @@
         toggleDoc(id, docKey, el.checked);
       });
     });
-    listEl.querySelectorAll('[data-toggle-emppanel]').forEach(el => {
-      on(el, 'click', (ev) => {
-        ev.stopPropagation();
-        const id = el.dataset.toggleEmppanel;
-        if(collapsedEmpPanelIds.has(id)) collapsedEmpPanelIds.delete(id); else collapsedEmpPanelIds.add(id);
-        renderList();
-      });
-    });
     listEl.querySelectorAll('[data-toggle-log]').forEach(el => {
       on(el, 'click', (ev) => {
         ev.stopPropagation();
@@ -2630,7 +2261,6 @@
         const o = objects.find(x => x.id === objId);
         if(!o || !o.log || !o.log[idx]) return;
         o.log[idx].done = el.checked;
-        o.log[idx].doneBy = el.checked ? (currentUserName || undefined) : undefined;
         o.updatedAt = todayISO();
         await saveObjects();
         renderAll();
@@ -2692,12 +2322,10 @@
           showToast('Текст записи не может быть пустым.', true);
           return;
         }
-        const oldEntry = o.log[idx] || {};
-        const entry = {date, text, status: status || undefined, type: type === 'task' ? 'task' : 'note', author: oldEntry.author};
+        const entry = {date, text, status: status || undefined, type: type === 'task' ? 'task' : 'note'};
         if(type === 'task'){
           entry.dueDate = dueDate || undefined;
           entry.done = done;
-          if(done) entry.doneBy = (oldEntry.done && oldEntry.doneBy) ? oldEntry.doneBy : (currentUserName || undefined);
         }
         o.log[idx] = entry;
         o.updatedAt = todayISO();
@@ -2716,64 +2344,6 @@
         submitLogEntry(id, entryForm);
       });
     }
-    const schedAddBtn = listEl.querySelector('.schedAddBtn');
-    if(schedAddBtn){
-      on(schedAddBtn, 'click', async (ev) => {
-        ev.stopPropagation();
-        const row = schedAddBtn.closest('.oj-row');
-        const objId = row.dataset.id;
-        const nameInput = row.querySelector('.schedPhaseInput');
-        const startInput = row.querySelector('.schedStartInput');
-        const endInput = row.querySelector('.schedEndInput');
-        const name = nameInput.value.trim();
-        const start = startInput.value;
-        const end = endInput.value;
-        if(!name){ showToast('Введите название этапа.', true); return; }
-        if(start && end && end < start){ showToast('Дата окончания раньше даты начала.', true); return; }
-        const o = objects.find(x => x.id === objId);
-        if(!o) return;
-        o.schedule = o.schedule || [];
-        o.schedule.push({id: uid(), name, start, end});
-        o.updatedAt = todayISO();
-        await saveObjects();
-        renderAll();
-        showToast('Этап добавлен');
-      });
-    }
-    listEl.querySelectorAll('.schedDelBtn').forEach(btn => {
-      on(btn, 'click', async (ev) => {
-        ev.stopPropagation();
-        const o = objects.find(x => x.id === btn.dataset.objId);
-        if(!o || !o.schedule) return;
-        o.schedule = o.schedule.filter(p => p.id !== btn.dataset.phaseId);
-        o.updatedAt = todayISO();
-        await saveObjects();
-        renderAll();
-        showToast('Этап удалён');
-      });
-    });
-    function moveSchedPhase(objId, phaseId, dir){
-      const o = objects.find(x => x.id === objId);
-      if(!o || !o.schedule) return;
-      const idx = o.schedule.findIndex(p => p.id === phaseId);
-      const swapWith = idx + dir;
-      if(idx === -1 || swapWith < 0 || swapWith >= o.schedule.length) return;
-      [o.schedule[idx], o.schedule[swapWith]] = [o.schedule[swapWith], o.schedule[idx]];
-      o.updatedAt = todayISO();
-      saveObjects().then(() => renderAll());
-    }
-    listEl.querySelectorAll('.schedUpBtn').forEach(btn => {
-      on(btn, 'click', (ev) => {
-        ev.stopPropagation();
-        moveSchedPhase(btn.dataset.objId, btn.dataset.phaseId, -1);
-      });
-    });
-    listEl.querySelectorAll('.schedDownBtn').forEach(btn => {
-      on(btn, 'click', (ev) => {
-        ev.stopPropagation();
-        moveSchedPhase(btn.dataset.objId, btn.dataset.phaseId, 1);
-      });
-    });
     const empAddBtn = listEl.querySelector('.employeeAddBtn');
     if(empAddBtn){
       on(empAddBtn, 'click', async (ev) => {
@@ -2914,48 +2484,19 @@
         showToast('Срок сохранён');
       });
     }
-    listEl.querySelectorAll('.finContractAmountInput').forEach(inp => {
-      on(inp, 'click', ev => ev.stopPropagation());
-      on(inp, 'change', async () => {
-        const id = inp.closest('.oj-row').dataset.id;
-        financeData[id] = financeData[id] || { contractAmount: '', expenses: [] };
-        financeData[id].contractAmount = inp.value.trim();
-        const ok = await saveFinance();
-        if(ok){ showToast('Сумма договора сохранена'); renderAll(); }
+    const contractAmountInput = listEl.querySelector('.contractAmountInput');
+    if(contractAmountInput){
+      on(contractAmountInput, 'click', ev => ev.stopPropagation());
+      on(contractAmountInput, 'change', async () => {
+        const id = contractAmountInput.closest('.oj-row').dataset.id;
+        const o = objects.find(x => x.id === id);
+        if(!o) return;
+        o.contractAmount = contractAmountInput.value.trim();
+        o.updatedAt = todayISO();
+        await saveObjects();
+        showToast('Сумма сохранена');
       });
-    });
-    listEl.querySelectorAll('.finExpAddBtn').forEach(btn => {
-      on(btn, 'click', async (ev) => {
-        ev.stopPropagation();
-        const row = btn.closest('.oj-row');
-        const id = row.dataset.id;
-        const dateInput = row.querySelector('.finExpDateInput');
-        const descInput = row.querySelector('.finExpDescInput');
-        const amountInput = row.querySelector('.finExpAmountInput');
-        const desc = descInput.value.trim();
-        const amount = amountInput.value.trim().replace(/\s/g, '').replace(',', '.');
-        if(!desc || !amount || Number.isNaN(Number(amount))){
-          showToast('Укажите описание и сумму затраты', true);
-          return;
-        }
-        financeData[id] = financeData[id] || { contractAmount: '', expenses: [] };
-        financeData[id].expenses = financeData[id].expenses || [];
-        financeData[id].expenses.push({ id: uid(), date: dateInput.value || todayISO(), description: desc, amount });
-        const ok = await saveFinance();
-        if(ok){ showToast('Затрата добавлена'); renderAll(); }
-      });
-    });
-    listEl.querySelectorAll('.oj-finance-row-del').forEach(btn => {
-      on(btn, 'click', async (ev) => {
-        ev.stopPropagation();
-        const id = btn.closest('.oj-row').dataset.id;
-        const expId = btn.dataset.expId;
-        if(!financeData[id]) return;
-        financeData[id].expenses = (financeData[id].expenses || []).filter(e => e.id !== expId);
-        const ok = await saveFinance();
-        if(ok){ showToast('Затрата удалена'); renderAll(); }
-      });
-    });
+    }
   }
 
   function priorityLabel(p){
@@ -3010,10 +2551,6 @@
     const showAgreements = isTopo;
     const assignedEmployees = employees.filter(e => e.objectId === o.id);
     const availableEmployees = employees.filter(e => e.objectId !== o.id);
-    const fin = financeOf(o.id);
-    const finExpenses = fin.expenses || [];
-    const finTotalSpent = finExpenses.reduce((sum, e) => sum + (Number(e.amount)||0), 0);
-    const finRemaining = (Number(fin.contractAmount)||0) - finTotalSpent;
     return `
     <div class="oj-row-body">
       ${isMisc ? `
@@ -3044,11 +2581,7 @@
 
       ${(!isMisc && !compactMode) ? `
       <div class="oj-docs">
-        <div class="oj-log-title" data-toggle-emppanel="${o.id}" style="margin-bottom:${collapsedEmpPanelIds.has(o.id) ? '0' : '8px'};">
-          <span>Назначенные сотрудники${assignedEmployees.length ? ' · ' + assignedEmployees.length : ''}</span>
-          <span class="oj-log-toggle-icon">${collapsedEmpPanelIds.has(o.id) ? '▸ показать' : '▾ скрыть'}</span>
-        </div>
-        ${collapsedEmpPanelIds.has(o.id) ? '' : `
+        <div class="oj-doc-group-title" style="margin-top:0;">Назначенные сотрудники</div>
         <div class="oj-employees-list">
           ${assignedEmployees.length ? assignedEmployees.map(e => `
             <div class="oj-employee-row">
@@ -3067,7 +2600,6 @@
             <button type="button" class="oj-btn oj-btn-ghost assignedEmpAddBtn">Добавить выбранных</button>
           </div>
         </div>
-        `}
       </div>
       ` : ``}
 
@@ -3076,6 +2608,12 @@
         <div class="oj-docs-notes-toggle" data-toggle-docnotes="${o.id}">${showNotes ? '▾ скрыть примечания' : '▸ показать примечания'}</div>
         <div class="oj-doc-group-title" style="margin-top:0;">Договорная часть</div>
         ${docRowHtml('contractSigned', 'Договор', docs, dates, notes, showNotes)}
+        ${isPTO ? `
+        <div class="oj-doc-row" style="margin-top:4px;">
+          <label class="oj-doc" style="flex:1;color:var(--ink-soft);">Сумма контракта</label>
+          <input type="text" class="oj-doc-date contractAmountInput" style="width:150px;" placeholder="₽" value="${esc(o.contractAmount||'')}">
+        </div>
+        ` : ``}
         ${(!isSupervision && !isPTO) ? `
         ${docRowHtml('advance', 'Аванс', docs, dates, notes, showNotes)}
         ${!isSeasonal ? docRowHtml('actOfWork', 'Акт выполненных работ', docs, dates, notes, showNotes) : ``}
@@ -3083,12 +2621,19 @@
         ` : ``}
 
         ${(!isSupervision && !isSeasonal && !isPTO) ? `
+        <div class="oj-doc-group-title">ТЗ</div>
+        ${docRowHtml('tz', 'ТЗ получено', docs, dates, notes, showNotes)}
+        ` : ``}
+
+        ${(!isSupervision && !isSeasonal && !isPTO) ? `
         <div class="oj-doc-group-title">Программа работ</div>
+        ${docRowHtml('programSent', 'Отправлена', docs, dates, notes, showNotes)}
         ${docRowHtml('programApproved', 'Согласована', docs, dates, notes, showNotes)}
         ` : ``}
 
         ${showPoints ? `
           <div class="oj-doc-group-title">Определение пунктов</div>
+          ${showAgreements ? docRowHtml('pointsAgreed', 'Согласование мест установки пунктов', docs, dates, notes, showNotes) : ``}
           ${docRowHtml('pointsInstalled', 'Установка пунктов', docs, dates, notes, showNotes)}
           ${docRowHtml('leveling', 'Нивелировка', docs, dates, notes, showNotes)}
           ${docRowHtml('gnss', 'ГНСС-измерения', docs, dates, notes, showNotes)}
@@ -3110,6 +2655,7 @@
         <div class="oj-doc-group-title">Отчёт и сдача</div>
         ${docRowHtml('reportSent', 'Отчёт направлен', docs, dates, notes, showNotes)}
         ${docRowHtml('reportApproved', 'Отчёт согласован', docs, dates, notes, showNotes)}
+        ${docRowHtml('act', 'Акт подписан', docs, dates, notes, showNotes)}
         ` : ``}
       </div>
       ` : ``}
@@ -3176,7 +2722,7 @@
               <div class="oj-log-entry${e.type === 'task' ? ' is-task' : ''}">
                 <div class="oj-log-date">${fmtDate(e.date)}</div>
                 ${e.type === 'task' ? `<input type="checkbox" class="oj-log-task-check" data-log-idx="${idx}" ${e.done ? 'checked' : ''} title="Отметить выполненной">` : ``}
-                <div class="oj-log-text${e.type === 'task' && e.done ? ' done' : ''}">${esc(e.text)}${e.status ? ` <span class="oj-log-status">→ ${STAGES[stageIndex(e.status)]?.label||''}</span>`:''}${e.author ? `<span class="oj-log-author">· ${esc(e.author)}</span>` : ''}${e.type === 'task' && e.done && e.doneBy ? `<span class="oj-log-author">· ✓ ${esc(e.doneBy)}</span>` : ''}</div>
+                <div class="oj-log-text${e.type === 'task' && e.done ? ' done' : ''}">${esc(e.text)}${e.status ? ` <span class="oj-log-status">→ ${STAGES[stageIndex(e.status)]?.label||''}</span>`:''}</div>
                 ${e.type === 'task' && e.dueDate ? `<div class="oj-log-due${!e.done && e.dueDate < todayISO() ? ' late' : ''}${!e.done && e.dueDate === todayISO() ? ' today' : ''}">до ${fmtDate(e.dueDate)}</div>` : ``}
                 <button type="button" class="oj-log-edit-btn" data-log-idx="${idx}" title="Изменить запись">✎</button>
                 <button type="button" class="oj-log-del-btn" data-log-idx="${idx}" title="Удалить запись">✕</button>
@@ -3206,52 +2752,7 @@
       </div>
       </div>
 
-      <div class="oj-schedule-section">
-        <div class="oj-doc-group-title" style="margin-top:0;">График работ по объекту</div>
-        <div class="oj-schedule-addrow">
-          <input type="text" class="schedPhaseInput" placeholder="Название этапа…">
-          <input type="date" class="schedStartInput" title="Начало">
-          <input type="date" class="schedEndInput" title="Окончание">
-          <button type="button" class="oj-btn oj-btn-ghost schedAddBtn">Добавить этап</button>
-        </div>
-        ${renderGanttChart(o.schedule || [], o.id, o.log)}
-      </div>
-
-      ${financeAllowed ? `
-      <div class="oj-finance-section">
-        <div class="oj-doc-group-title" style="margin-top:0;">Финансы<span class="oj-finance-lock" title="Этот блок видят только пользователи с доступом к финансам">🔒 ограниченный доступ</span></div>
-        <div class="oj-finance-summary">
-          <div class="oj-finance-field">
-            <label>Сумма договора</label>
-            <input type="text" class="finContractAmountInput" placeholder="₽" value="${esc(fin.contractAmount||'')}">
-          </div>
-          <div class="oj-finance-stat">
-            <span class="oj-finance-stat-label">Затрачено</span>
-            <span class="oj-finance-stat-value">${fmtMoney(finTotalSpent)}</span>
-          </div>
-          <div class="oj-finance-stat">
-            <span class="oj-finance-stat-label">Остаток</span>
-            <span class="oj-finance-stat-value">${fin.contractAmount ? fmtMoney(finRemaining) : '—'}</span>
-          </div>
-        </div>
-        <div class="oj-finance-addrow">
-          <input type="date" class="finExpDateInput" value="${todayISO()}">
-          <input type="text" class="finExpDescInput" placeholder="На что потрачено…">
-          <input type="text" class="finExpAmountInput" placeholder="Сумма ₽">
-          <button type="button" class="oj-btn oj-btn-ghost finExpAddBtn">Добавить затрату</button>
-        </div>
-        <div class="oj-finance-list">
-          ${finExpenses.length ? finExpenses.slice().sort((a,b) => (b.date||'').localeCompare(a.date||'')).map(e => `
-            <div class="oj-finance-row">
-              <span class="oj-finance-row-date">${fmtDate(e.date)}</span>
-              <span class="oj-finance-row-desc">${esc(e.description)}</span>
-              <span class="oj-finance-row-amount">${fmtMoney(e.amount)}</span>
-              <button type="button" class="oj-finance-row-del" data-exp-id="${e.id}" title="Удалить затрату">×</button>
-            </div>
-          `).join('') : '<div style="color:var(--ink-faint);font-size:12.5px;padding:8px 10px;">Затрат пока нет</div>'}
-        </div>
-      </div>
-      ` : ``}
+      ${workSchedule.card(o)}
 
       <div class="oj-detail-actions">
         <button class="oj-btn oj-btn-danger" data-action="delete">Удалить объект</button>
@@ -3332,11 +2833,10 @@
         return;
       }
       o.log = o.log || [];
-      const entry = {date, text, status: status || undefined, type: type === 'task' ? 'task' : 'note', author: currentUserName || undefined};
+      const entry = {date, text, status: status || undefined, type: type === 'task' ? 'task' : 'note'};
       if(type === 'task'){
         entry.dueDate = dueDate || undefined;
         entry.done = doneChecked;
-        if(doneChecked) entry.doneBy = currentUserName || undefined;
       }
       o.log.push(entry);
       if(status) o.status = status;
@@ -3393,7 +2893,7 @@
         employees: [],
         createdAt: now,
         updatedAt: now,
-        log: [{date: now, text: `Создан на основе объекта «${src.name}».`, status: 'contract', author: currentUserName || undefined}],
+        log: [{date: now, text: `Создан на основе объекта «${src.name}».`, status: 'contract'}],
       };
       objects.push(copy);
       await saveObjects();
@@ -3450,7 +2950,6 @@
         const idx = parseInt(el.dataset.logIdx, 10);
         if(!o || !o.log || !o.log[idx]) return;
         o.log[idx].done = true;
-        o.log[idx].doneBy = currentUserName || undefined;
         o.updatedAt = todayISO();
         await saveObjects();
         renderAll();
@@ -3517,6 +3016,7 @@
 
   function renderAll(){
     renderLegend();
+    workSchedule.summary();
     renderList();
     if(!$('#ojSummary').hidden) renderSummary();
     if(mainView === 'staff') renderStaff();
@@ -3589,126 +3089,6 @@
     if(dirBtn) dirBtn.textContent = empSortDir === 'asc' ? '↑ по возрастанию' : '↓ по убыванию';
   }
   function renderStaff(){
-    $('#empTableWrap').hidden = (staffViewMode !== 'table');
-    $('#empBoardWrap').hidden = (staffViewMode !== 'board');
-    if(staffViewMode === 'board'){
-      renderEmpStats();
-      renderStaffBoard();
-    }else{
-      renderStaffTable();
-    }
-  }
-  function setStaffViewMode(mode){
-    staffViewMode = mode;
-    $('#empViewTableBtn').classList.toggle('oj-btn-primary', mode === 'table');
-    $('#empViewTableBtn').classList.toggle('oj-btn-ghost', mode !== 'table');
-    $('#empViewBoardBtn').classList.toggle('oj-btn-primary', mode === 'board');
-    $('#empViewBoardBtn').classList.toggle('oj-btn-ghost', mode !== 'board');
-    $('#empEmpty').hidden = true;
-    renderStaff();
-  }
-  on($('#empViewTableBtn'), 'click', () => setStaffViewMode('table'));
-  on($('#empViewBoardBtn'), 'click', () => setStaffViewMode('board'));
-
-  function renderStaffBoard(){
-    const filtered = getFilteredEmployees();
-    const usedObjIds = new Set(filtered.map(e => e.objectId).filter(Boolean));
-    boardExtraCols.forEach(id => { if(objects.some(o => o.id === id)) usedObjIds.add(id); });
-    const cols = Array.from(usedObjIds)
-      .map(id => objects.find(o => o.id === id))
-      .filter(Boolean)
-      .sort((a,b) => (a.name||'').localeCompare(b.name||'','ru'));
-
-    const addSel = $('#boardAddColSelect');
-    const availableForAdd = objects.filter(o => !o.archived && !usedObjIds.has(o.id)).sort((a,b) => (a.name||'').localeCompare(b.name||'','ru'));
-    addSel.innerHTML = '<option value="">+ Добавить объект на доску…</option>' +
-      availableForAdd.map(o => `<option value="${o.id}">${esc(o.name)}</option>`).join('');
-
-    const colHtml = (objId, label, removable) => {
-      const cardEmployees = filtered.filter(e => (e.objectId || '') === objId);
-      return `
-        <div class="oj-board-col" data-obj-id="${objId}">
-          <div class="oj-board-col-head">
-            <span>${esc(label)}</span>
-            <span style="display:flex;align-items:center;gap:6px;">
-              <span class="count">${cardEmployees.length}</span>
-              ${removable ? `<button type="button" class="oj-board-col-remove" data-remove-col="${objId}" title="Убрать колонку с доски">✕</button>` : ''}
-            </span>
-          </div>
-          <div class="oj-board-col-body" data-drop-obj="${objId}">
-            ${cardEmployees.map(e => `
-              <div class="oj-board-card" draggable="true" data-emp-id="${e.id}">
-                <div class="oj-board-card-name">${esc(e.fullName)}</div>
-                ${e.position ? `<div class="oj-board-card-pos">${esc(e.position)}</div>` : ''}
-              </div>
-            `).join('')}
-          </div>
-        </div>`;
-    };
-
-    function wireBoardContainer(container){
-      container.querySelectorAll('.oj-board-card').forEach(card => {
-        card.addEventListener('dragstart', (ev) => {
-          draggedEmpId = card.dataset.empId;
-          card.classList.add('dragging');
-          ev.dataTransfer.effectAllowed = 'move';
-          try{ ev.dataTransfer.setData('text/plain', card.dataset.empId); }catch(e){}
-        });
-        card.addEventListener('dragend', () => {
-          card.classList.remove('dragging');
-          draggedEmpId = null;
-        });
-      });
-      container.querySelectorAll('.oj-board-col-body').forEach(colBody => {
-        colBody.addEventListener('dragover', (ev) => {
-          ev.preventDefault();
-          ev.dataTransfer.dropEffect = 'move';
-          colBody.closest('.oj-board-col').classList.add('dragover');
-        });
-        colBody.addEventListener('dragleave', () => {
-          colBody.closest('.oj-board-col').classList.remove('dragover');
-        });
-        colBody.addEventListener('drop', async (ev) => {
-          ev.preventDefault();
-          colBody.closest('.oj-board-col').classList.remove('dragover');
-          const empId = draggedEmpId || ev.dataTransfer.getData('text/plain');
-          const emp = employees.find(x => x.id === empId);
-          if(!emp) return;
-          const targetObjId = colBody.dataset.dropObj || '';
-          if((emp.objectId || '') === targetObjId) return;
-          emp.objectId = targetObjId;
-          await saveEmployees();
-          const o = objects.find(x => x.id === targetObjId);
-          showToast(o ? '«' + emp.fullName + '» перемещён на «' + o.name + '»' : '«' + emp.fullName + '» снят с объекта');
-          renderStaffBoard();
-        });
-      });
-      container.querySelectorAll('[data-remove-col]').forEach(btn => {
-        on(btn, 'click', () => {
-          boardExtraCols.delete(btn.dataset.removeCol);
-          renderStaffBoard();
-        });
-      });
-    }
-
-    const pinnedEl = $('#empBoardPinned');
-    pinnedEl.innerHTML = colHtml('', 'Не назначен', false);
-    wireBoardContainer(pinnedEl);
-
-    const boardEl = $('#empBoard');
-    boardEl.innerHTML = cols.map(o => colHtml(o.id, o.name, boardExtraCols.has(o.id))).join('');
-    wireBoardContainer(boardEl);
-  }
-  on($('#boardAddColSelect'), 'change', () => {
-    const sel = $('#boardAddColSelect');
-    if(sel.value){
-      boardExtraCols.add(sel.value);
-      sel.value = '';
-      renderStaffBoard();
-    }
-  });
-
-  function renderStaffTable(){
     buildEmpObjectSelects();
     renderEmpStats();
     updateEmpSortIndicators();
@@ -4016,10 +3396,6 @@
   /* --- Автомобили: панель добавления/редактирования --- */
   const vehOverlay = $('#ojVehOverlay');
   const vehPanel = $('#ojVehPanel');
-  function buildEmployeeOptionsHtml(){
-    return employees.slice().sort((a,b) => (a.fullName||'').localeCompare(b.fullName||'','ru'))
-      .map(e => `<option value="${esc(e.fullName)}">${esc(e.fullName)}${e.position ? ' — ' + esc(e.position) : ''}</option>`).join('');
-  }
   function openVehForm(id){
     vehEditingId = id || null;
     const v = id ? vehicles.find(x => x.id === id) : null;
@@ -4035,7 +3411,6 @@
     $('#vehFInspectionUntil').value = v ? v.inspectionUntil||'' : '';
     $('#vehFLocation').value = v ? v.location||'' : '';
     $('#vehFOwner').value = v ? v.owner||'' : (vehicles[0]?.owner || 'Геоаспект');
-    $('#vehFDriver').innerHTML = '<option value="">Не назначен</option>' + buildEmployeeOptionsHtml();
     $('#vehFDriver').value = v ? v.driver||'' : '';
     $('#vehFMileage').value = v ? v.mileage||'' : '';
     $('#vehFNotes').value = v ? v.notes||'' : '';
@@ -4160,7 +3535,6 @@
     $('#ojVehLogTitle').textContent = v.brand + ' ' + v.model;
     $('#vehLogNewEntry').hidden = true;
     $('#vehLogEFileErr').textContent = '';
-    $('#vehLogEDriver').innerHTML = '<option value="">Не назначен</option>' + buildEmployeeOptionsHtml();
     renderVehLogStats();
     renderVehLogEntries();
     vehLogOverlay.hidden = false;
@@ -4172,12 +3546,6 @@
     vehLogVehicleId = null;
     vehLogNewEntry = null;
   }
-  function updateVehLogTypeFields(){
-    const isDriverChange = $('#vehLogEType').value === 'Смена водителя';
-    $('#vehLogEDescField').hidden = isDriverChange;
-    $('#vehLogEDriverField').hidden = !isDriverChange;
-  }
-  on($('#vehLogEType'), 'change', updateVehLogTypeFields);
   on($('#vehLogCloseBtn'), 'click', closeVehLog);
   on(vehLogOverlay, 'click', closeVehLog);
   on($('#vehLogAddBtn'), 'click', () => {
@@ -4185,13 +3553,11 @@
     $('#vehLogEDate').value = vehLogNewEntry.date;
     $('#vehLogEType').value = vehLogNewEntry.type;
     $('#vehLogEDesc').value = '';
-    $('#vehLogEDriver').value = '';
     $('#vehLogECost').value = '';
     $('#vehLogEMileage').value = '';
     $('#vehLogEFile').value = '';
     $('#vehLogEFileName').textContent = '';
     $('#vehLogEFileErr').textContent = '';
-    updateVehLogTypeFields();
     $('#vehLogNewEntry').hidden = false;
   });
   on($('#vehLogECancelBtn'), 'click', () => {
@@ -4222,19 +3588,14 @@
     reader.readAsDataURL(file);
   });
   on($('#vehLogESaveBtn'), 'click', async () => {
-    const type = $('#vehLogEType').value;
-    const isDriverChange = type === 'Смена водителя';
-    const driverName = $('#vehLogEDriver').value;
-    const description = isDriverChange
-      ? (driverName ? driverName : 'Снят с машины (без назначения)')
-      : $('#vehLogEDesc').value.trim();
+    const description = $('#vehLogEDesc').value.trim();
     if(!description){ showToast('Введите описание записи.', true); return; }
     const v = vehicles.find(x => x.id === vehLogVehicleId);
     if(!v) return;
     const entry = {
       id: vehLogNewEntry ? vehLogNewEntry.id : uid(),
       date: $('#vehLogEDate').value || todayISO(),
-      type,
+      type: $('#vehLogEType').value,
       description,
       cost: $('#vehLogECost').value,
       mileage: $('#vehLogEMileage').value,
@@ -4242,16 +3603,12 @@
     };
     v.logs = v.logs || [];
     v.logs.push(entry);
-    if(isDriverChange){
-      v.driver = driverName;
-    }
     await saveVehicles();
     vehLogNewEntry = null;
     $('#vehLogNewEntry').hidden = true;
     renderVehLogStats();
     renderVehLogEntries();
-    if(mainView === 'vehicles') renderVehicles();
-    showToast(isDriverChange ? 'Водитель обновлён' : 'Запись добавлена');
+    showToast('Запись добавлена');
   });
 
   /* --- главные вкладки --- */
@@ -4283,20 +3640,6 @@
       const firstAllowed = tabs[0] || 'objects';
       setMainView(firstAllowed);
     }
-  }
-
-  // Доступ к финансам — читаем из app_metadata (не user_metadata!), потому что
-  // app_metadata пользователь не может изменить сам себе через клиент — её
-  // можно выставить только вручную в Supabase (SQL Editor), в отличие от tabs
-  // выше. Реальную защиту данных при этом даёт политика RLS в базе на ключ
-  // 'objects-finance' — этот флаг лишь решает, показывать ли блок в интерфейсе.
-  function applyUserName(user){
-    const meta = user && user.user_metadata && typeof user.user_metadata.name === 'string' ? user.user_metadata.name.trim() : '';
-    const mail = user && user.email ? String(user.email).split('@')[0] : '';
-    currentUserName = meta || mail || '';
-  }
-  function applyFinancePermission(user){
-    financeAllowed = !!(user && user.app_metadata && user.app_metadata.finance === true);
   }
 
   /* --- form panel --- */
@@ -4359,7 +3702,7 @@
       o.updatedAt = todayISO();
       if(note){
         o.log = o.log || [];
-        o.log.push({date: todayISO(), text: note, author: currentUserName || undefined});
+        o.log.push({date: todayISO(), text: note});
       }
     }else{
       const o = {
@@ -4374,7 +3717,7 @@
         docs: {},
         createdAt: todayISO(),
         updatedAt: todayISO(),
-        log: [{date: todayISO(), text: note || 'Объект добавлен в журнал', status, author: currentUserName || undefined}],
+        log: [{date: todayISO(), text: note || 'Объект добавлен в журнал', status}],
       };
       objects.push(o);
       expandedId = o.id;
@@ -4438,9 +3781,6 @@
       employees: employees,
       vehicles: vehicles,
     };
-    if(financeAllowed){
-      payload.finance = financeData;
-    }
     const json = JSON.stringify(payload, null, 2);
     showExportModal('Экспорт базы (JSON)', json, 'geodesy-journal-backup-' + todayISO() + '.json', 'application/json;charset=utf-8;');
   });
@@ -4470,11 +3810,9 @@
       }
       const incomingEmployees = Array.isArray(parsed.employees) ? parsed.employees : null;
       const incomingVehicles = Array.isArray(parsed.vehicles) ? parsed.vehicles : null;
-      const incomingFinance = (parsed.finance && typeof parsed.finance === 'object') ? parsed.finance : null;
       const parts = [`${incomingObjects.length} объектов`];
       if(incomingEmployees) parts.push(`${incomingEmployees.length} сотрудников`);
       if(incomingVehicles) parts.push(`${incomingVehicles.length} машин`);
-      if(incomingFinance && financeAllowed) parts.push('финансы');
       const ok = await askConfirm(
         `Заменить текущую базу данными из файла (${parts.join(', ')})? Текущие данные будут удалены безвозвратно.` +
         (!incomingEmployees && !incomingVehicles ? ' В файле нет сотрудников/машин — они останутся как есть, заменятся только объекты.' : ''),
@@ -4491,10 +3829,6 @@
       if(incomingVehicles){
         vehicles = incomingVehicles.map(v => ({...v, id: v.id || uid()}));
         await saveVehicles();
-      }
-      if(incomingFinance && financeAllowed){
-        financeData = incomingFinance;
-        await saveFinance();
       }
       expandedId = null;
       editingLogEntry = null;
@@ -4530,7 +3864,7 @@
     await loadObjects();
     await loadEmployees();
     await loadVehicles();
-    await loadFinance();
+    workSchedule.load();
     loadingEl.style.display = 'none';
     renderAll();
     setDebug('готово · объектов в журнале: ' + objects.length + ' · сотрудников: ' + employees.length + ' · машин: ' + vehicles.length, 'ok');
@@ -4545,6 +3879,921 @@
       showToast('Не удалось загрузить журнал: ' + (e && e.message ? e.message : e), true);
     });
   }
+  const workSchedule = (() => {
+    const active = stages => stages.filter(s => !s.archived);
+    const copy = value => structuredClone(value);
+    const html = value => esc(String(value ?? ''));
+    const dayMs = 86400000;
+    const day = date => Math.round(Date.parse(date + 'T00:00:00Z') / dayMs);
+    const iso = n => new Date(n * dayMs).toISOString().slice(0, 10);
+    const nowDay = () => new Intl.DateTimeFormat('sv-SE', {timeZone:'Europe/Moscow'}).format(new Date());
+    const number = value => Number(value.toFixed(2)).toLocaleString('ru-RU');
+    const percent = value => value == null ? 'Нет данных' : number(value) + '%';
+    const delta = (fact, plan) => fact == null || plan == null ? 'Нет данных' :
+      (fact > plan ? '+' : '') + number(fact - plan) + ' п.п.';
+    const empty = () => ({revision:0, stages:[], journal:[], baseline:null});
+    const stagesById = stages => new Map(stages.map(s => [s.id, s]));
+    const states = ['Не начато','Ожидает начала','В работе','Отставание','Просрочено','Завершено'];
+    const cache = new Map();
+    const mockVersions = new Map();
+    const ui = new Map();
+    const summaryFilter = {responsible:'', status:'', days:''};
+    let templates = [];
+    let loadTask;
+    let loadError = '';
+    let loaded = false;
+    let editor;
+
+    const builtIns = [
+      ['Инженерно-геодезические изыскания', [
+        ['Подготовка','Сбор исходных данных','Рекогносцировка'],
+        ['Полевые работы','Планово-высотное обоснование','Топографическая съёмка'],
+        ['Камеральные работы','Обработка измерений','Топографический план'],
+        ['Технический отчёт','Внутренний контроль','Передача заказчику']]],
+      ['Геодезический мониторинг', [
+        ['Подготовка','Программа мониторинга','Установка марок'],
+        ['Измерения','Нулевой цикл','Повторные циклы'],
+        ['Отчётность','Расчёт смещений','Заключение']]],
+      ['Геодезическое сопровождение строительства', [
+        ['Подготовка','Приёмка ГРО','Разбор рабочей документации'],
+        ['Сопровождение','Разбивка','Исполнительная съёмка'],
+        ['Сдача документации','Камеральная обработка','Исполнительные схемы']]],
+      ['Разбивочные работы', [
+        ['Подготовка','Проверка исходных данных','Подготовка разбивочных чертежей'],
+        ['Полевая разбивка','Вынос осей и отметок','Контрольные измерения'],
+        ['Сдача','Акт разбивки']]]
+    ];
+
+    function state(id) {
+      if (!ui.has(id)) ui.set(id, {tab:'График', zoom:'Месяц', collapsed:new Set(), filter:''});
+      return ui.get(id);
+    }
+    function freshStage(name, parent = '') {
+      return {id:uid(), parent, name, start:'', end:'', weight:100, method:'percent',
+        volume:null, unit:'', responsible:'', note:'', paused:false, archived:false};
+    }
+    function siblings(stages, parent) {
+      return active(stages).filter(s => s.parent === parent);
+    }
+    function position(stages, stage) {
+      return siblings(stages,stage.parent).findIndex(s => s.id === stage.id) + 1;
+    }
+    function distribute(group, target = 100) {
+      if (!group.length) return;
+      const total = group.reduce((sum, s) => sum + s.weight, 0);
+      let allocated = 0;
+      group.forEach((s, i) => {
+        const next = i === group.length - 1 ? Math.round(target * 100) :
+          allocated + Math.floor((total ? s.weight / total : 1 / group.length) * target * 100 + 1e-8);
+        s.weight = (next - allocated) / 100;
+        allocated = next;
+      });
+    }
+    function fromTemplate(groups) {
+      const stages = [];
+      for (const [name, ...children] of groups) {
+        const root = freshStage(name);
+        const sub = children.map(label => freshStage(label, root.id));
+        distribute(sub);
+        stages.push(root, ...sub);
+      }
+      distribute(siblings(stages, ''));
+      return stages;
+    }
+    function legacy(object) {
+      const stages = (object.schedule || []).map(old => ({
+        ...freshStage(old.name), start:old.start || '', end:old.end || ''
+      }));
+      distribute(stages);
+      return stages;
+    }
+    function validate(s) {
+      if (s.stages.some(x => !x.name.trim() || !Number.isFinite(x.weight) || x.weight < 0 || x.weight > 100 ||
+        [x.start,x.end].some(date => date && !/^\d{4}-\d{2}-\d{2}$/.test(date)) ||
+        (x.start && x.end && x.start > x.end) ||
+        (x.method === 'volume' && (!(x.volume > 0) || !x.unit.trim())))) {
+        throw new Error('Проверьте название, диапазон дат, вес и плановый объём с единицей измерения.');
+      }
+    }
+
+    function orderedJournal(journal) {
+      return [...journal].sort((a,b) => a.date.localeCompare(b.date) ||
+        Date.parse(a.createdAt) - Date.parse(b.createdAt) || a.id.localeCompare(b.id));
+    }
+    function aggregate(group, metrics, key, missingIsZero = false) {
+      const weighted = group.filter(s => s.weight > 0);
+      if (!weighted.length || weighted.every(s => metrics.get(s.id)[key] == null)) return null;
+      if (!missingIsZero && weighted.some(s => metrics.get(s.id)[key] == null)) return null;
+      const total = weighted.reduce((sum,s) => sum + s.weight * (metrics.get(s.id)[key] ?? 0), 0) /
+        weighted.reduce((sum,s) => sum + s.weight, 0);
+      return total >= 100 - 1e-8 ? 100 : total;
+    }
+    function planAt(stage, date) {
+      if (!stage.start || !stage.end) return null;
+      return Math.max(0, Math.min(100, 100 * (day(date) - day(stage.start) + 1) /
+        (day(stage.end) - day(stage.start) + 1)));
+    }
+    function workMetrics(stages, journal, date) {
+      const metrics = new Map();
+      const leaves = orderedJournal(journal).filter(j => j.date <= date);
+      const series = new Map();
+      for (const entry of leaves) {
+        if (!series.has(entry.stage)) series.set(entry.stage, []);
+        series.get(entry.stage).push(entry);
+      }
+      function measure(stage, children) {
+        let start = '', end = '', fact = null, total = null;
+        if (children.length) {
+          const sub = children.map(s => metrics.get(s.id));
+          fact = aggregate(children, metrics, 'fact', true);
+          start = sub.map(x => x.start).filter(Boolean).sort()[0] || '';
+          end = fact >= 100 ? sub.map(x => x.end).filter(Boolean).sort().at(-1) || '' : '';
+        } else {
+          for (const entry of series.get(stage.id) || []) {
+            total = entry.mode === 'total' ? entry.value : (total ?? 0) + entry.value;
+            fact = Math.min(100, stage.method === 'volume' ? 100 * total / stage.volume : total);
+            if (fact > 0) start ||= entry.date;
+            end = fact >= 100 ? end || entry.date : '';
+          }
+        }
+        const plan = children.length ? aggregate(children, metrics, 'plan') : planAt(stage, date);
+        const status = fact >= 100 ? states[5] : stage.end && date > stage.end ? states[4] :
+          (fact ?? 0) + 1e-7 < (plan ?? 0) ? states[3] : fact > 0 ? states[2] :
+          stage.start && date >= stage.start ? states[1] : states[0];
+        metrics.set(stage.id, {plan, fact, start, end, total, status});
+      }
+      const current = active(stages);
+      // Archived leaf work remains visible in the journal and on archived rows.
+      for (const s of stages.filter(x => x.parent || x.archived)) measure(s, []);
+      const roots = current.filter(s => !s.parent);
+      for (const root of roots) measure(root, current.filter(s => s.parent === root.id));
+      return {metrics, plan:aggregate(roots, metrics, 'plan'), fact:aggregate(roots, metrics, 'fact', true)};
+    }
+    function indicators(s, date = nowDay()) {
+      const current = workMetrics(s.stages, s.journal, date);
+      const baseline = workMetrics(s.baseline || [], [], date);
+      const stages = active(s.stages);
+      const late = stages.filter(x => current.metrics.get(x.id).status === states[4]);
+      const behind = stages.filter(x => current.metrics.get(x.id).status === states[3]);
+      const deadlines = stages.filter(x => x.end >= date && current.metrics.get(x.id).fact !== 100)
+        .sort((a,b) => a.end.localeCompare(b.end));
+      const status = late.length ? states[4] : behind.length ? states[3] :
+        current.fact >= 100 ? states[5] : current.fact > 0 ? states[2] :
+        stages.some(x => x.start && x.start <= date) ? states[1] : states[0];
+      return {...current, baseline, late, behind, deadlines, status};
+    }
+
+    async function allRows(table, columns, order) {
+      const result = [];
+      for (let offset = 0; ; offset += 500) {
+        const {data, error} = await sbClient.from(table).select(columns).order(order).range(offset, offset + 499);
+        if (error) throw error;
+        result.push(...data);
+        if (data.length < 500) return result;
+      }
+    }
+    function load(force = false) {
+      if (loadTask || (loaded && !force)) return loadTask;
+      if (PREVIEW_MODE) { loaded = true; return; }
+      loadError = '';
+      loadTask = sbClient.rpc('geo_work_schedule_has_access').then(({data,error}) => {
+        if (error) throw error;
+        if (!data) throw {code:'NO_SCHEDULE_ACCESS'};
+        return Promise.all([
+        allRows('geo_work_schedule_current', 'object_id,revision,stages,journal,baseline', 'object_id'),
+        allRows('geo_work_schedule_templates', 'id,name,stages', 'id')
+        ]);
+      }).then(([rows, savedTemplates]) => {
+        for (const row of rows) {
+          if ((cache.get(row.object_id)?.revision ?? 0) <= row.revision) cache.set(row.object_id, row);
+        }
+        templates = savedTemplates;
+      }).catch(error => {
+        loadError = error.code === 'NO_SCHEDULE_ACCESS' ?
+          'Доступ к графикам для этой учётной записи ещё не выдан.' :
+          ['PGRST202','PGRST205','42883','42P01'].includes(error.code) ?
+          'Хранилище графиков ещё не подключено. Доступен просмотр старых этапов.' :
+          'Не удалось загрузить графики из Supabase. Обновите данные и повторите попытку.';
+        console.error('График работ', error);
+      }).finally(() => {
+        loadTask = null;
+        loaded = true;
+        mount();
+        summary();
+      });
+      return loadTask;
+    }
+    async function save(object, next, action, reason = '', approve = false) {
+      validate(next);
+      if (PREVIEW_MODE) {
+        next.revision++;
+        if (approve) next.baseline = copy(active(next.stages));
+        const row = {...next, action, reason, author_email:'Предпросмотр', created_at:new Date().toISOString()};
+        const history = mockVersions.get(object.id) || [];
+        mockVersions.set(object.id, [copy(row), ...history]);
+        cache.set(object.id, row);
+      } else {
+        const {data, error} = await sbClient.rpc('geo_work_schedule_save', {
+          p_object_id:object.id, p_expected:next.revision, p_stages:next.stages,
+          p_journal:next.journal, p_action:action, p_reason:reason, p_approve:approve
+        });
+        if (error?.code === '40001') {
+          await load(true);
+          throw new Error('Другой пользователь уже сохранил изменения. Закройте окно и откройте обновлённую запись.');
+        }
+        if (error) throw error;
+        cache.set(object.id, Array.isArray(data) ? data[0] : data);
+      }
+      mount();
+      summary();
+      showToast('Изменения графика сохранены');
+    }
+
+    const button = (action, label, id = '') =>
+      `<button type="button" class="oj-btn oj-btn-ghost" data-ws="${action}" data-key="${html(id)}">${html(label)}</button>`;
+    const option = (value, title, selected) =>
+      `<option value="${html(value)}"${selected === value ? ' selected' : ''}>${html(title)}</option>`;
+    const field = (label, control) => `<label>${html(label)}${control}</label>`;
+    const input = (name, value = '', type = 'text', attrs = '') =>
+      `<input name="${name}" type="${type}" value="${html(value)}" ${attrs}>`;
+    const select = (name, options, value = '') =>
+      `<select name="${name}">${options.map(([id,label]) => option(id,label,value)).join('')}</select>`;
+    const table = (headers, rows) => `<div class="ws-table"><table><thead><tr>${headers.map(h =>
+      '<th scope="col">' + html(h) + '</th>').join('')}</tr></thead><tbody>${rows.map(row =>
+      '<tr>' + row.map(c => '<td>' + c + '</td>').join('') + '</tr>').join('')}</tbody></table></div>`;
+    const allTemplates = () => [
+      ...builtIns.map(([name],i) => ['builtin-' + i, name]),
+      ...templates.map(t => [t.id, t.name])
+    ];
+    function attachment(value) {
+      try {
+        const url = new URL(value);
+        return url.protocol === 'https:' ? url.href : '';
+      } catch { return ''; }
+    }
+    function timeline(s, metrics) {
+      const dates = [...s.stages, ...(s.baseline || []), ...metrics.values()]
+        .flatMap(x => [x.start, x.end]).filter(Boolean).concat(s.journal.map(j => j.date)).sort();
+      return [dates[0] || nowDay(), dates.at(-1) || nowDay()];
+    }
+    function chartRows(s, m, collapsed = new Set(), showArchived = false) {
+      const old = stagesById(s.baseline || []);
+      const current = stagesById(s.stages);
+      const rows = s.stages.filter(x => !x.archived || showArchived || old.has(x.id))
+        .concat((s.baseline || []).filter(x => !current.has(x.id)));
+      const rowsFor = parent => rows.filter(x => x.parent === parent);
+      return rowsFor('').flatMap(root => [root, ...(collapsed.has(root.id) ? [] : rowsFor(root.id))])
+        .map(stage => {
+          const planned = current.get(stage.id);
+          const baseline = old.get(stage.id);
+          const fact = m.metrics.get(stage.id);
+          return {stage, planned, baseline, fact,
+            children:!stage.parent && rowsFor(stage.id).length > 0,
+            status:!planned || stage.archived ? 'В архиве' : fact.status,
+            added:Boolean(s.baseline && !baseline && !stage.archived)};
+        });
+    }
+    function lanes(row, today) {
+      const {baseline, planned, fact, status} = row;
+      return [
+        ['baseline', baseline?.start, baseline?.end, 'Первоначальный план'],
+        ['current', !planned?.archived && planned?.start, planned?.end, 'Актуальный план'],
+        [status === 'Просрочено' || status === 'Отставание' ? 'late' : fact?.end ? 'done' : 'actual',
+          fact?.start, fact?.end || today, 'Факт']
+      ];
+    }
+    function gantt(rows, from, to, cellWidth, step, interactive, date = nowDay()) {
+      const total = to - from + 1;
+      const dayToday = day(date);
+      const todayMark = dayToday >= from && dayToday <= to ?
+        `<i class="ws-today" style="left:${100 * (dayToday - from + .5) / total}%"></i>` : '';
+      const ticks = [];
+      for (let d = from; d <= to; d += step) {
+        ticks.push(`<span style="flex:${Math.min(step,to-d+1)}">${html(iso(d).slice(5).split('-').reverse().join('.'))}</span>`);
+      }
+      const content = rows.map(row => {
+        const {stage, planned, fact, status, children, added} = row;
+        const arrows = interactive && children ?
+          button('collapse', state(interactive).collapsed.has(stage.id) ? '▸' : '▾', stage.id) : '';
+        const title = interactive && planned && !stage.archived ?
+          button('stage',stage.name,stage.id) : html(stage.name);
+        const bars = lanes(row,date).map(([kind,start,end,label],i) => {
+          if (!start || !end || day(end) < from || day(start) > to) return '';
+          const lo = Math.max(from,day(start)), hi = Math.min(to,day(end));
+          return `<i class="ws-bar ws-${kind}" style="left:${100*(lo-from)/total}%;width:${100*(hi-lo+1)/total}%;top:${8+i*10}px"
+            title="${html(label + ' · ' + start + ' — ' + end)}"></i>`;
+        }).join('');
+        return `<div class="ws-gantt-row"><div class="ws-gantt-label ${stage.parent ? 'ws-indent' : ''}">
+          ${arrows}${title}<small>${html(status)}${added ? ' · добавлен' : ''}${stage.paused ? ' · приостановлено' : ''} · ${html(percent(fact?.fact))}</small>
+        </div><div class="ws-track">${bars}${todayMark}</div></div>`;
+      }).join('');
+      return `<div class="ws-gantt" tabindex="0" aria-label="Диаграмма Ганта"><div class="ws-gantt-inner" style="--ws-track:${cellWidth * total}px;--ws-grid:${100*step/total}%">
+        <div class="ws-gantt-row ws-gantt-head"><div class="ws-gantt-label">Работа</div>
+        <div class="ws-ticks">${ticks.join('')}${todayMark}</div></div>${content}</div></div>`;
+    }
+    function graph(object, s, view) {
+      if (!s.revision) {
+        const migration = object.schedule?.length ?
+          button('import','Перенести прежние этапы (' + object.schedule.length + ')') : '';
+        return `<div class="ws-tools">${migration}${button('create','Создать пустой график')}
+          ${field('Шаблон', select('template',allTemplates()))}
+          ${button('template','Создать из шаблона')}</div>`;
+      }
+      const m = indicators(s), [start,end] = timeline(s,m.metrics);
+      const zoom = {'Неделя':[32,1],'Месяц':[10,7],'Квартал':[4,14],'Весь объект':[1,30]}[view.zoom];
+      const today = day(nowDay());
+      const from = Math.min(day(start),today), to = Math.max(day(end),today);
+      const rows = chartRows(s,m,view.collapsed,view.archived);
+      const days = to-from+1;
+      const tick = Math.max(zoom[1],Math.ceil(days/350));
+      const density = Math.min(220000/days,Math.max(zoom[0],420/days));
+      return `<div class="ws-tools">${button('stage','Добавить этап')}${button('weights','Веса')}
+        ${s.baseline ? '<strong>Первоначальный план утверждён</strong>' : button('approve','Утвердить первоначальный план')}
+        ${button('save-template','Сохранить шаблон')}${button('history','Версии и изменения')}
+        ${button('export','Экспорт Excel / PDF')}</div>
+        <div class="ws-tools">${field('Масштаб',select('zoom',['Неделя','Месяц','Квартал','Весь объект'].map(z => [z,z]),view.zoom))}
+        <label class="ws-check"><input type="checkbox" name="archived" ${view.archived ? 'checked' : ''}> Архивные этапы</label>
+        ${rows.length ? button('today','Сегодня') : ''}</div>
+        ${rows.length ? `<div class="ws-legend"><span class="ws-baseline">Первоначальный план</span><span class="ws-current">Актуальный план</span>
+          <span class="ws-actual">Факт</span><span class="ws-done">Завершено</span><span class="ws-late">Отставание / просрочка</span></div>
+          ${gantt(rows,from,to,density,tick,object.id)}
+          <details class="ws-stage-table" ${view.table ? 'open' : ''}><summary>Таблица этапов</summary>
+            ${table(stageHeaders,stageCells(s,m,rows).map(row => row.map(value => html(typeof value === 'number' ? number(value) : value ?? '—'))))}
+          </details>` : '<p>Добавьте первый этап.</p>'}`;
+    }
+    function journalData(s, filter = '', from = '', to = '9999-12-31') {
+      return orderedJournal(s.journal).filter(j => (!filter || j.stage === filter) && j.date >= from && j.date <= to);
+    }
+    const journalHeaders = ['Дата работ','Этап','Режим','Значение','Единица','Комментарий','Автор','Внесено','Вложение'];
+    function journalCells(j, stage) {
+      return [j.date,stage?.name || '',j.mode === 'total' ? 'Накопительно' : 'За период',
+        j.value,stage?.method === 'volume' ? stage.unit : '%',j.comment,j.author,
+        j.createdAt?.slice(0,10),attachment(j.attachment)];
+    }
+    function journalHtml(s, view) {
+      const options = [['','Все этапы'], ...s.stages.map(x => [x.id,x.name + (x.archived ? ' (архив)' : '')])];
+      const byId = stagesById(s.stages);
+      const rows = journalData(s,view.filter).reverse().map(j => {
+        const cells = journalCells(j,byId.get(j.stage));
+        return [...cells.slice(0,-1).map(html),cells.at(-1) ?
+          `<a href="${html(cells.at(-1))}" target="_blank" rel="noopener noreferrer">Открыть</a>` : '',
+          button('entry','Изменить',j.id)];
+      });
+      return `<div class="ws-tools">${button('entry','Внести выполнение')}${field('Фильтр по этапу',select('journal-filter',options,view.filter))}</div>
+        ${rows.length ? table([...journalHeaders,''],rows) : '<p>Записей о выполнении пока нет.</p>'}`;
+    }
+    function comparison(m) {
+      return [percent(m.baseline.plan),percent(m.plan),percent(m.fact),delta(m.fact,m.baseline.plan),delta(m.fact,m.plan)];
+    }
+    const comparisonHeaders = ['Первоначальный план','Актуальный план','Факт','К первоначальному','К актуальному'];
+    function control(s) {
+      const m = indicators(s), stages = active(s.stages), list = xs => xs.length ?
+        '<ul>' + xs.map(x => '<li>' + html(x.name) + (x.end ? ' · ' + html(x.end) : '') +
+          (x.paused ? ' · приостановлено' : '') + '</li>').join('') + '</ul>' : '<p>Нет</p>';
+      return `${table(comparisonHeaders,[comparison(m).map(html)])}
+        <div class="ws-controls"><div><h4>Просрочено</h4>${list(m.late)}</div><div><h4>Отставание</h4>${list(m.behind)}</div>
+        <div><h4>Ближайшие сроки</h4>${list(m.deadlines.slice(0,10))}</div>
+        <div><h4>Без полного срока</h4>${list(stages.filter(x => !x.start || !x.end))}</div>
+        <div><h4>Без записей о выполнении</h4>${list(stages.filter(x => m.metrics.get(x.id).fact == null))}</div>
+        <div><h4>Переносы сроков</h4>${button('date-history','Открыть историю и причины')}</div></div>`;
+    }
+    function card(object) {
+      return `<section class="ws-panel" data-ws-object="${html(object.id)}" aria-label="График производства работ"></section>`;
+    }
+    function mount() {
+      listEl.querySelectorAll('[data-ws-object]').forEach(root => {
+        const object = objects.find(x => x.id === root.dataset.wsObject);
+        if (!object) return;
+        const s = cache.get(object.id) || empty();
+        const view = state(object.id);
+        const tabs = ['График','Журнал','Контроль'].map(tab =>
+          `<button type="button" class="oj-btn oj-btn-ghost" data-ws="tab" data-key="${tab}" aria-pressed="${view.tab === tab}">${tab}</button>`).join('');
+        let content = '<p>Загрузка графика…</p>';
+        if (loadError) {
+          const rows = (object.schedule || []).map(x => [x.name,x.start,x.end].map(html));
+          content = `<p role="status">${html(loadError)} ${button('refresh','Повторить')}</p>${rows.length ?
+            table(['Прежний этап','Начало','Окончание'],rows) : ''}`;
+        } else if (loaded) {
+          content = view.tab === 'График' ? graph(object,s,view) :
+            !s.revision ? '<p>Сначала создайте график на вкладке «График».</p>' :
+            view.tab === 'Журнал' ? journalHtml(s,view) : control(s);
+        }
+        const oldScroll = root.querySelector('.ws-gantt')?.scrollLeft || 0;
+        root.innerHTML = `<h3>График производства работ</h3><nav class="ws-tools" aria-label="Разделы графика">${tabs}</nav>${content}`;
+        const ganttEl = root.querySelector('.ws-gantt');
+        if (ganttEl) ganttEl.scrollLeft = oldScroll;
+      });
+    }
+
+    function summary() {
+      const root = $('#ws-summary');
+      const rows = objects.filter(o => cache.has(o.id)).map(o => ({o,m:indicators(cache.get(o.id))}));
+      const dated = rows.filter(({m}) => m.deadlines.length);
+      const shown = rows.filter(({o,m}) => (!summaryFilter.responsible || o.responsible === summaryFilter.responsible)
+        && (!summaryFilter.status || m.status === summaryFilter.status)
+        && (!summaryFilter.days || (m.deadlines[0] && day(m.deadlines[0].end) - day(nowDay()) <= +summaryFilter.days)));
+      const people = [...new Set(rows.map(({o}) => o.responsible).filter(Boolean))].sort((a,b) => a.localeCompare(b,'ru'));
+      const filters = [
+        field('Ответственный',select('responsible',[['','Все'],...people.map(x => [x,x])],summaryFilter.responsible)),
+        field('Состояние',select('status',[['','Все'],...states.map(x => [x,x])],summaryFilter.status)),
+        field('Срок',select('days',[['','Все'],['7','Ближайшие 7 дней'],['30','Ближайшие 30 дней']],summaryFilter.days))
+      ].join('');
+      root.innerHTML = `<h2>Контроль графиков по объектам</h2><div class="ws-tools">${filters}${button('refresh','Обновить')}</div>
+        ${loadError ? `<p role="status">${html(loadError)}</p>` : !loaded ? '<p>Загрузка графиков…</p>' :
+          `<div class="ws-kpis"><span><strong>${rows.length}</strong> объектов с графиками</span>
+          <span><strong>${rows.filter(({m}) => m.late.length || m.behind.length).length}</strong> с отставанием или просрочкой</span>
+          <span><strong>${rows.reduce((sum,{m}) => sum + m.late.length,0)}</strong> просроченных этапов</span>
+          <span><strong>${dated.flatMap(({m}) => m.deadlines.map(x => x.end)).filter(x => day(x)-day(nowDay()) <= 7).length}</strong> сроков на 7 дней</span></div>
+          ${shown.length ? table(['Объект','Ответственный',...comparisonHeaders,'Ближайший срок','Состояние'],
+            shown.map(({o,m}) => [button('open',o.name,o.id),html(o.responsible),...comparison(m).map(html),
+              html(m.deadlines[0]?.end || '—'),html(m.status)])) : '<p>По выбранным условиям графиков нет.</p>'}`}`;
+    }
+    function openFromSummary(id) {
+      const object = objects.find(o => o.id === id);
+      if (!object) return;
+      showArchived = Boolean(object.archived);
+      allExpanded = false;
+      expandedId = id;
+      if (!getFiltered().includes(object)) {
+        filterType = filterStatus = filterPriority = searchTerm = '';
+        $('#ojSearch').value = filterTypeEl.value = $('#ojFilterPriority').value = '';
+        renderLegend();
+      }
+      $('#ojExpandAllBtn').textContent = 'Развернуть все';
+      $('#ojExpandAllBtn').classList.remove('oj-btn-primary');
+      $('#ojExpandAllBtn').classList.add('oj-btn-ghost');
+      state(id).tab = 'График';
+      renderList();
+      [...listEl.querySelectorAll('[data-ws-object]')].find(el => el.dataset.wsObject === id)?.scrollIntoView({block:'start'});
+    }
+    function dialog(title, body, submit, submitLabel = 'Сохранить') {
+      editor?.close();
+      const el = document.createElement('dialog');
+      editor = el;
+      el.className = 'ws-dialog';
+      el.innerHTML = `<form><header><h3>${html(title)}</h3></header>${body}<p class="ws-error" role="alert"></p>
+        <footer><button type="button" class="oj-btn oj-btn-ghost" data-close>${submit ? 'Отмена' : 'Закрыть'}</button>
+        ${submit ? `<button type="submit" class="oj-btn oj-btn-primary">${html(submitLabel)}</button>` : ''}</footer></form>`;
+      el.querySelector('[data-close]').onclick = () => el.close();
+      el.addEventListener('close', () => { el.remove(); if (editor === el) editor = null; }, {once:true});
+      el.addEventListener('cancel', ev => { if (el.querySelector('form').dataset.busy) ev.preventDefault(); });
+      el.querySelector('form').addEventListener('submit', async ev => {
+        ev.preventDefault();
+        if (!submit) return;
+        const form = ev.currentTarget;
+        if (form.dataset.busy) return;
+        form.dataset.busy = '1';
+        form.querySelectorAll('footer button').forEach(b => b.disabled = true);
+        const errorText = form.querySelector('.ws-error');
+        errorText.textContent = '';
+        try {
+          await submit(new FormData(form), form);
+          el.close();
+        } catch (error) {
+          errorText.textContent = error.message || String(error);
+        } finally {
+          delete form.dataset.busy;
+          form.querySelectorAll('footer button').forEach(b => b.disabled = false);
+        }
+      });
+      document.body.append(el);
+      el.showModal();
+      return el;
+    }
+    function editStage(object, s, id) {
+      const old = s.stages.find(x => x.id === id);
+      const x = old || freshStage('');
+      const hasEntries = s.journal.some(j => j.stage === x.id);
+      const roots = active(s.stages).filter(r => !r.parent && r.id !== id && !s.journal.some(j => j.stage === r.id));
+      const hasChildren = s.stages.some(r => r.parent === x.id);
+      const actual = old ? indicators(s).metrics.get(x.id) : null;
+      const people = [...new Set([object.responsible,...employees.map(e => e.fullName)].filter(Boolean))];
+      const el = dialog(old ? 'Карточка этапа' : 'Добавить этап', `<div class="ws-fields">
+        ${field('Название',input('name',x.name,'text','required maxlength="200"'))}
+        ${field('Родительский этап',select('parent',[['','Основной этап'],...(hasChildren ? [] : roots.map(r => [r.id,r.name]))],x.parent))}
+        ${field('Начало',input('start',x.start,'date'))}${field('Окончание',input('end',x.end,'date'))}
+        ${field('Вес, %',input('weight',old?.weight ?? '','number','min="0" max="100" step="0.01"'))}
+        ${field('Позиция в группе',input('position',old ? position(s.stages,old) : '','number','min="1" step="1"'))}
+        ${field('Ответственный',input('responsible',x.responsible,'text','list="ws-people"') +
+          `<datalist id="ws-people">${people.map(p => option(p,p)).join('')}</datalist>`)}
+        ${field('Учёт факта',select('method',[['percent','Процент'],['volume','Физический объём']],x.method))}
+        ${field('Единица измерения',input('unit',x.unit))}
+        ${field('Плановый объём',input('volume',x.volume,'number','min="0" step="any"'))}
+        ${field('Примечание',input('note',x.note))}
+        ${old ? field('Причина изменения дат',input('reason','','text','maxlength="1000"')) : ''}
+        <label class="ws-check"><input name="paused" type="checkbox" ${x.paused ? 'checked' : ''}> Приостановлено</label>
+        </div><p>При изменении веса остальные веса в группе пересчитываются пропорционально. Пустое поле веса даёт новому этапу равную долю в группе.</p>
+        ${actual ? `<p>Факт ${html(percent(actual.fact))} · начало ${html(actual.start || '—')} · окончание ${html(actual.end || '—')}
+        ${actual.total != null && x.method === 'volume' ? ' · объём ' + html(number(actual.total) + ' ' + x.unit) : ''}</p>` : ''}
+        ${old ? '<button type="button" class="oj-btn oj-btn-danger" data-archive>Архивировать этап</button>' : ''}`,
+      async data => {
+        const value = name => String(data.get(name) || '').trim();
+        const next = copy(s);
+        const edited = {...x,name:value('name'),parent:value('parent'),start:value('start'),end:value('end'),
+          weight:Number(data.get('weight')),responsible:value('responsible'),method:value('method'),
+          unit:value('unit'),volume:value('volume') ? Number(value('volume')) : null,note:value('note'),paused:data.has('paused')};
+        if (hasEntries && (x.method !== edited.method || (x.method === 'volume' && x.unit !== edited.unit))) {
+          throw new Error('Для этапа с журналом способ учёта и единица измерения уже зафиксированы.');
+        }
+        if (old && ((x.start && x.start !== edited.start) || (x.end && x.end !== edited.end)) && !value('reason')) {
+          throw new Error('Укажите причину изменения сроков.');
+        }
+        const idx = next.stages.findIndex(r => r.id === edited.id);
+        if (idx >= 0) next.stages[idx] = edited;
+        else next.stages.push(edited);
+        const peers = siblings(next.stages,edited.parent).filter(r => r.id !== edited.id);
+        if (!value('weight')) edited.weight = old?.weight ?? Math.round(10000/(peers.length+1))/100;
+        if (peers.length === 0) edited.weight = 100;
+        else if (!old || old.weight !== edited.weight || old.parent !== edited.parent) distribute(peers,100-edited.weight);
+        if (old && old.parent !== edited.parent) distribute(siblings(next.stages,old.parent));
+        const requested = Number(value('position'));
+        if (requested && peers.length && requested !== position(next.stages,edited)) {
+          const target = peers[Math.min(requested-1,peers.length-1)];
+          next.stages.splice(next.stages.indexOf(edited),1);
+          next.stages.splice(next.stages.indexOf(target)+(requested > peers.length ? 1 : 0),0,edited);
+        }
+        await save(object,next,old ? 'Изменён этап «' + old.name + '»' : 'Добавлен этап «' + edited.name + '»',value('reason'));
+      });
+      const archive = el.querySelector('[data-archive]');
+      if (archive) archive.onclick = () => dialog('Архивировать этап', `<p>Этап «${html(x.name)}» и его подэтапы уйдут в архив. Журнал сохранится, веса оставшихся этапов пересчитаются.</p>`, async () => {
+        const next = copy(s);
+        for (const r of next.stages) if (r.id === x.id || r.parent === x.id) r.archived = true;
+        distribute(siblings(next.stages,x.parent));
+        await save(object,next,'Архивирован этап «' + x.name + '»');
+      },'Архивировать');
+    }
+    function editWeights(object,s) {
+      const stages = active(s.stages);
+      if (!stages.length) throw new Error('Добавьте этапы графика.');
+      const group = parent => siblings(stages,parent).map(x =>
+        field(x.name,input(x.id,x.weight,'number','required min="0" max="100" step="0.01"'))).join('');
+      dialog('Веса этапов', `<p>Укажите суммарно 100% в каждой группе.</p><h4>Основные этапы</h4>
+        <div class="ws-fields">${group('')}</div>${stages.filter(x => !x.parent && siblings(stages,x.id).length)
+          .map(x => `<h4>${html(x.name)}</h4><div class="ws-fields">${group(x.id)}</div>`).join('')}`,
+      async data => {
+        const next = copy(s);
+        for (const x of active(next.stages)) x.weight = Number(data.get(x.id));
+        checkWeights(next.stages);
+        await save(object,next,'Изменены веса этапов');
+      });
+    }
+    function checkWeights(stages) {
+      const groups = new Set(active(stages).map(x => x.parent));
+      for (const parent of groups) {
+        const total = siblings(stages,parent).reduce((sum,x) => sum + x.weight,0);
+        if (Math.abs(total-100) > 1e-6) throw new Error('Сумма весов в каждой группе должна составлять 100%.');
+      }
+    }
+    function editEntry(object,s,id,filter) {
+      const old = s.journal.find(j => j.id === id);
+      const stages = s.stages.filter(x => (!x.archived && !siblings(s.stages,x.id).length) || old?.stage === x.id);
+      if (!stages.length) throw new Error('Добавьте этап или подэтап без дочерних работ.');
+      const byId = stagesById(stages);
+      const j = old || {id:uid(),stage:byId.has(filter) ? filter : stages[0].id,date:nowDay(),mode:'period',
+        value:null,comment:'',attachment:'',createdAt:new Date().toISOString(),author:'Предпросмотр'};
+      const el = dialog(old ? 'Изменить запись' : 'Внести выполнение', `<div class="ws-fields">
+        ${field('Этап',select('stage',stages.map(x => [x.id,x.name + (x.archived ? ' (архив)' : '')]),j.stage))}
+        ${field('Дата выполнения',input('date',j.date,'date','required max="' + nowDay() + '"'))}
+        ${field('Режим',select('mode',[['period','За период'],['total','Накопленным итогом']],j.mode))}
+        ${field('Значение',input('value',j.value,'number','required min="0" step="any"'))}
+        ${field('Комментарий',`<textarea name="comment" rows="3">${html(j.comment)}</textarea>`)}
+        ${field('Ссылка HTTPS на вложение',input('attachment',j.attachment,'url'))}</div><p data-unit></p>`,
+      async data => {
+        const stage = byId.get(data.get('stage'));
+        const value = Number(data.get('value'));
+        const url = String(data.get('attachment')).trim();
+        if (!stage || !Number.isFinite(value) || value < 0 || (stage.method === 'percent' && value > 100)) {
+          throw new Error('Проверьте значение выполнения для выбранного этапа.');
+        }
+        if (url && !attachment(url)) throw new Error('Для вложения укажите ссылку HTTPS.');
+        const next = copy(s);
+        next.journal = next.journal.filter(row => row.id !== j.id);
+        next.journal.push({...j,stage:stage.id,date:data.get('date'),mode:data.get('mode'),
+          value,comment:String(data.get('comment')).trim(),attachment:attachment(url)});
+        await save(object,next,old ? 'Исправлена запись журнала' : 'Добавлена запись журнала');
+      });
+      const stageField = el.querySelector('[name="stage"]');
+      function updateUnit() {
+        const stage = byId.get(stageField.value);
+        const isPercent = stage.method === 'percent';
+        el.querySelector('[data-unit]').textContent = 'Единица ввода · ' + (isPercent ? '% готовности' : stage.unit);
+        const value = el.querySelector('[name="value"]');
+        if (isPercent) value.max = 100;
+        else value.removeAttribute('max');
+      }
+      stageField.addEventListener('change',updateUnit);
+      updateUnit();
+    }
+
+    async function history(object, onlyDates = false) {
+      const el = dialog(onlyDates ? 'Переносы сроков' : 'Версии и изменения', '<div data-versions>Загрузка…</div>');
+      const container = el.querySelector('[data-versions]');
+      let offset = 0;
+      async function page() {
+        let rows = (mockVersions.get(object.id) || []).slice(offset, offset + 26);
+        if (!PREVIEW_MODE) {
+          const {data,error} = await sbClient.from('geo_work_schedule_versions').select('*')
+            .eq('object_id',object.id).order('revision',{ascending:false}).range(offset,offset+25);
+          if (error) throw error;
+          rows = data;
+        }
+        const visible = rows.slice(0,25).map((row,i) => {
+          const prior = rows[i+1] || empty();
+          const before = stagesById(prior.stages);
+          const changes = row.stages.filter(x => {
+            const old = before.get(x.id);
+            return old && ((old.start && old.start !== x.start) || (old.end && old.end !== x.end));
+          })
+            .map(x => [x.name,[before.get(x.id).start,before.get(x.id).end].join(' — '),[x.start,x.end].join(' — ')].map(html));
+          if (onlyDates && !changes.length) return '';
+          const stageFields = [['name','Название'],['parent','Родительский этап'],['start','Начало'],['end','Окончание'],
+            ['weight','Вес'],['method','Способ учёта'],['volume','Плановый объём'],['unit','Единица'],
+            ['responsible','Ответственный'],['note','Примечание'],['paused','Приостановлен'],['archived','В архиве']];
+          const differences = row.stages.flatMap(after => {
+            const old = before.get(after.id);
+            if (!old) return [[after.name,'Добавлен','—','—'].map(html)];
+            const differences = stageFields.filter(([key]) => old[key] !== after[key]).map(([key,label]) => {
+              const value = v => key === 'parent' ? (before.get(v)?.name || row.stages.find(s => s.id === v)?.name || 'Основной этап') : v;
+              return [after.name,label,value(old[key]),value(after[key])].map(html);
+            });
+            const beforePos = position(prior.stages,old), afterPos = position(row.stages,after);
+            if (beforePos && afterPos && beforePos !== afterPos) differences.push([after.name,'Позиция',beforePos,afterPos].map(html));
+            return differences;
+          });
+          const priorJournal = new Map(prior.journal.map(j => [j.id,j]));
+          const changedEntries = row.journal.filter(j => {
+            const old = priorJournal.get(j.id);
+            return !old || ['stage','date','mode','value','comment','attachment'].some(key => j[key] !== old[key]);
+          }).flatMap(j => {
+            const old = priorJournal.get(j.id);
+            const currentStage = row.stages.find(x => x.id === j.stage);
+            return [...(old ? [['До',...journalCells(old,before.get(old.stage))].map(html)] : []),
+              [old ? 'После' : 'Добавлена',...journalCells(j,currentStage)].map(html)];
+          });
+          const detail = onlyDates ? (changes.length ? table(['Этап','Было','Стало'],changes) : '') :
+            (differences.length ? table(['Этап','Поле','Было','Стало'],differences) : '') +
+            (changedEntries.length ? table(['Изменение',...journalHeaders],changedEntries) : '');
+          return `<details><summary>Версия ${row.revision} · ${html(row.action)} · ${html(row.author_email || row.author_id || '')}
+            · ${html(new Date(row.created_at).toLocaleString('ru-RU',{timeZone:'Europe/Moscow'}))}</summary>
+            ${row.reason ? '<p>' + html(row.reason) + '</p>' : ''}${detail}</details>`;
+        }).join('');
+        if (!offset) container.innerHTML = '';
+        container.insertAdjacentHTML('beforeend',visible);
+        offset += 25;
+        if (rows.length > 25) {
+          const more = document.createElement('button');
+          more.type = 'button';
+          more.className = 'oj-btn oj-btn-ghost';
+          more.textContent = 'Более ранние версии';
+          container.append(more);
+          more.onclick = () => { more.remove(); page().catch(error => { el.querySelector('.ws-error').textContent = error.message; }); };
+        } else if (!container.children.length) {
+          container.textContent = onlyDates ? 'Переносов сроков пока нет.' : 'Версий пока нет.';
+        }
+      }
+      try { await page(); }
+      catch (error) { container.textContent = 'Не удалось загрузить версии. ' + error.message; }
+    }
+
+    const stageHeaders = ['Этап','Родительский этап','Первоначальное начало','Первоначальное окончание',
+      'Актуальное начало','Актуальное окончание','Фактическое начало','Фактическое окончание',
+      'Вес, %','Первоначальный вес, %','Плановый объём','Фактический объём','Единица','Ответственный',
+      'Первоначальный план на дату, %','Актуальный план на дату, %','Факт на дату, %','Состояние'];
+    function stageCells(s,m,rows) {
+      const stages = stagesById(s.stages);
+      return rows.map(({stage,planned,baseline,fact,status,added}) => [stage.name,
+        stages.get(stage.parent)?.name,baseline?.start,baseline?.end,planned?.archived ? '' : planned?.start,
+        planned?.archived ? '' : planned?.end,fact?.start,fact?.end,planned?.weight,baseline?.weight,
+        stage.method === 'volume' ? stage.volume : null,stage.method === 'volume' ? fact?.total : null,
+        stage.method === 'volume' ? stage.unit : '%',stage.responsible,
+        m.baseline.metrics.get(stage.id)?.plan,fact?.plan,fact?.fact,
+        status + (added ? ' · добавлен' : '') + (stage.paused ? ' · приостановлено' : '')]);
+    }
+    function report(s, start, end) {
+      const m = indicators(s,end), stages = stagesById(s.stages);
+      const from = day(start), to = day(end);
+      const all = chartRows(s,m,new Set(),true);
+      const selected = new Set();
+      for (const row of all) {
+        const spans = lanes(row,end).filter(([,a,b]) => a && b);
+        if (!spans.length || spans.some(([,a,b]) => a <= end && b >= start) ||
+          s.journal.some(j => j.stage === row.stage.id && j.date >= start && j.date <= end)) {
+          selected.add(row.stage.id);
+          if (row.stage.parent) selected.add(row.stage.parent);
+        }
+      }
+      const rows = all.filter(row => selected.has(row.stage.id));
+      const stageRows = stageCells(s,m,rows);
+      const journalRows = journalData(s,'',start,end).map(j => journalCells(j,stages.get(j.stage)));
+      return {m,from,to,rows,stageRows,journalRows,start,end};
+    }
+    function excelLibrary() {
+      if (window.ExcelJS) return Promise.resolve(window.ExcelJS);
+      return new Promise((resolve,reject) => {
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js';
+        script.onload = () => window.ExcelJS ? resolve(window.ExcelJS) : reject(new Error('Библиотека Excel недоступна.'));
+        script.onerror = () => { script.remove(); reject(new Error('Не удалось загрузить библиотеку Excel. Проверьте подключение.')); };
+        document.head.append(script);
+      });
+    }
+    async function exportExcel(object,r) {
+      const ExcelJS = await excelLibrary();
+      const workbook = new ExcelJS.Workbook();
+      function sheet(name, headers, rows, widths) {
+        const ws = workbook.addWorksheet(name,{views:[{state:'frozen',ySplit:1}]});
+        ws.columns = headers.map((header,i) => ({header,width:widths?.[i] ?? 22}));
+        ws.addRows(rows);
+        ws.getRow(1).font = {bold:true,color:{argb:'FFFFFFFF'}};
+        ws.getRow(1).fill = {type:'pattern',pattern:'solid',fgColor:{argb:'FF304B40'}};
+        ws.getRow(1).alignment = {wrapText:true,vertical:'middle'};
+        ws.getRow(1).height = 32;
+        return ws;
+      }
+      sheet('Этапы',stageHeaders,r.stageRows,[33,30]);
+      sheet('Журнал',journalHeaders,r.journalRows,[16,32,22,16,16,47,26,16,45]);
+      sheet('Отклонения',['Объект','С','По',...comparisonHeaders],
+        [[object.name,r.start,r.end,...comparison(r.m)]],[34,16,16]);
+      const stride = Math.max(1,Math.ceil((r.to-r.from+1)/150));
+      const ticks = [];
+      for (let i = r.from; i <= r.to; i+=stride) ticks.push(i);
+      const labels = {'baseline':'Первоначальный','current':'Актуальный','late':'Факт · отставание','done':'Факт · завершено','actual':'Факт'};
+      const colors = {'baseline':'FF7E8C9C','current':'FF558DBA','late':'FFB85C47','done':'FF4E765D','actual':'FFC39749'};
+      const ws = sheet('Гант',['Работа','Линия',...ticks.map(iso)],[],
+        [34,24,...ticks.map(() => 12)]);
+      ws.views = [{state:'frozen',xSplit:2,ySplit:1}];
+      for (const row of r.rows) {
+        for (const [kind,start,end] of lanes(row,r.end)) {
+          const line = ws.addRow([(row.stage.parent ? '    ' : '') + row.stage.name,labels[kind]]);
+          if (!start || !end) continue;
+          ticks.forEach((d,i) => {
+            if (day(end) >= d && day(start) <= Math.min(r.to,d+stride-1)) {
+              line.getCell(i+3).fill = {type:'pattern',pattern:'solid',fgColor:{argb:colors[kind]}};
+            }
+          });
+        }
+      }
+      const buffer = await workbook.xlsx.writeBuffer();
+      const url = URL.createObjectURL(new Blob([buffer],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'График — ' + object.name.replace(/[<>:"/\\|?*]/g,'_') + '.xlsx';
+      link.click();
+      setTimeout(() => URL.revokeObjectURL(url),30000);
+    }
+    function printReport(object,r) {
+      const pop = window.open('','_blank');
+      if (!pop) throw new Error('Разрешите открытие окна печати.');
+      const title = 'График — ' + object.name;
+      const pages = [];
+      // Split along the calendar and work list so both headers repeat in print.
+      const span = Math.max(28, Math.ceil((r.to-r.from+1)/24));
+      for (let d = r.from; d <= r.to; d += span) {
+        const end = Math.min(d+span-1,r.to);
+        for (let start = 0; start < Math.max(1,r.rows.length); start += 12) {
+          pages.push(`<section><h2>Диаграмма Ганта · ${iso(d)} — ${iso(end)}</h2>
+          <div class="ws-legend"><span class="ws-baseline">Первоначальный</span><span class="ws-current">Актуальный</span><span class="ws-actual">Факт</span>
+          <span class="ws-done">Завершено</span><span class="ws-late">Отставание</span></div>
+          ${gantt(r.rows.slice(start,start+12),d,end,1,Math.ceil((end-d+1)/8),null,r.end)}</section>`);
+        }
+      }
+      pop.document.write(`<!doctype html><html lang="ru"><meta charset="utf-8"><title>${html(title)}</title>
+        <style>${$('#ws-style').textContent}
+        @page{size:A4 landscape;margin:12mm}body{font:11px Arial,sans-serif;color:#222;margin:0}
+        h1{font-size:18px}h2{font-size:14px}section~section{break-before:page}
+        .ws-table,.ws-gantt{overflow:visible!important}.ws-gantt-inner{width:100%!important;min-width:0!important}
+        .ws-gantt-row{grid-template-columns:190px minmax(0,1fr)!important}
+        .ws-gantt-label{position:static!important}.ws-gantt-row,tr{break-inside:avoid}
+        .ws-table table{width:100%;font-size:9px}.ws-table td,.ws-table th{padding:4px;white-space:normal;overflow-wrap:anywhere}
+        thead{display:table-header-group}.ws-bar,.ws-legend span{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+        @media print{.ws-print-button{display:none}}
+        </style><body><button class="ws-print-button" onclick="window.print()">Печать / Сохранить как PDF</button>
+        <h1>${html(title)}</h1><p>${r.start} — ${r.end} · готовность на ${r.end}</p>
+        <h2>Сводка отклонений</h2>${table(comparisonHeaders,[comparison(r.m).map(html)])}
+        ${pages.join('')}<section><h2>Этапы и подэтапы</h2>${table(stageHeaders,r.stageRows.map(row => row.map(value =>
+          html(typeof value === 'number' ? number(value) : value ?? '—'))))}</section>
+        <section><h2>Журнал выполнения</h2>${table(journalHeaders,r.journalRows.map(row => row.map(html)))}</section></body></html>`);
+      pop.document.close();
+      pop.focus();
+    }
+    function exportDialog(object,s) {
+      const [start,end] = timeline(s,indicators(s).metrics);
+      const el = dialog('Экспорт графика',`<div class="ws-fields">
+        ${field('С',input('from',start,'date','required'))}${field('По',input('to',end,'date','required'))}</div>
+        <div class="ws-tools"><button type="button" class="oj-btn oj-btn-ghost" data-pdf>Печать / PDF</button></div>`,
+        async data => exportExcel(object,readReport(data)),'Скачать Excel');
+      function readReport(data) {
+        const from = data.get('from'), to = data.get('to');
+        if (!from || !to || from > to) throw new Error('Укажите корректный период.');
+        return report(s,from,to);
+      }
+      el.querySelector('[data-pdf]').onclick = () => {
+        try { printReport(object,readReport(new FormData(el.querySelector('form')))); }
+        catch (error) { el.querySelector('.ws-error').textContent = error.message; }
+      };
+    }
+
+    function saveTemplate(s) {
+      const present = active(s.stages);
+      const groups = present.filter(x => !x.parent)
+        .map(x => [x.name,...present.filter(c => c.parent === x.id).map(c => c.name)]);
+      if (!groups.length) throw new Error('Добавьте этапы перед сохранением шаблона.');
+      dialog('Сохранить шаблон',field('Название шаблона',input('name','','text','required maxlength="200"')),async data => {
+        const name = String(data.get('name')).trim();
+        if (!name) throw new Error('Введите название шаблона.');
+        if (PREVIEW_MODE) templates.push({id:uid(),name,stages:groups});
+        else {
+          const {data:record,error} = await sbClient.from('geo_work_schedule_templates')
+            .insert({name,stages:groups}).select('id,name,stages').single();
+          if (error) throw error;
+          templates.push(record);
+        }
+        mount();
+        showToast('Шаблон сохранён');
+      });
+    }
+    async function handle(buttonEl) {
+      const {ws:action,key} = buttonEl.dataset;
+      if (action === 'refresh') { await load(true); return; }
+      if (action === 'open') { openFromSummary(key); return; }
+      const root = buttonEl.closest('[data-ws-object]');
+      const object = objects.find(x => x.id === root?.dataset.wsObject);
+      if (!object) return;
+      const s = cache.get(object.id) || empty();
+      const view = state(object.id);
+      if (action === 'tab') { view.tab = key; mount(); return; }
+      if (!loaded || loadError) return;
+      if (['create','import','template'].includes(action)) {
+        if (s.revision) return;
+        const next = empty();
+        if (action === 'import') next.stages = legacy(object);
+        if (action === 'template') {
+          const id = root.querySelector('[name="template"]').value;
+          const groups = id.startsWith('builtin-') ? builtIns[Number(id.slice(8))]?.[1] : templates.find(t => t.id === id)?.stages;
+          if (!groups) throw new Error('Шаблон не найден.');
+          next.stages = fromTemplate(groups);
+        }
+        await save(object,next,action === 'import' ? 'Перенесены прежние этапы' : 'Создан график');
+        return;
+      }
+      if (!s.revision) return;
+      switch (action) {
+        case 'stage': editStage(object,s,key); break;
+        case 'weights': editWeights(object,s); break;
+        case 'entry': editEntry(object,s,key,view.filter); break;
+        case 'today': {
+          const frame = root.querySelector('.ws-gantt');
+          const marker = frame?.querySelector('.ws-today');
+          if (marker) frame.scrollLeft += marker.getBoundingClientRect().left -
+            frame.getBoundingClientRect().left - frame.clientWidth * .76;
+          break;
+        }
+        case 'collapse':
+          if (view.collapsed.has(key)) view.collapsed.delete(key);
+          else view.collapsed.add(key);
+          mount(); break;
+        case 'approve':
+          if (!active(s.stages).length) throw new Error('Добавьте этапы для утверждения.');
+          checkWeights(s.stages);
+          dialog('Утвердить первоначальный план','<p>Система зафиксирует текущую структуру, даты, объёмы и веса. Последующие изменения попадут в актуальный план.</p>',
+            () => save(object,copy(s),'Утверждён первоначальный план','',true),'Утвердить');
+          break;
+        case 'save-template': saveTemplate(s); break;
+        case 'history': await history(object); break;
+        case 'date-history': await history(object,true); break;
+        case 'export': exportDialog(object,s); break;
+      }
+    }
+    document.addEventListener('click', ev => {
+      const buttonEl = ev.target.closest('[data-ws]');
+      if (!buttonEl || buttonEl.disabled) return;
+      buttonEl.disabled = true;
+      handle(buttonEl).catch(error => showToast(error.message || String(error),true))
+        .finally(() => { buttonEl.disabled = false; });
+    });
+    document.addEventListener('change', ev => {
+      const fieldEl = ev.target;
+      if (fieldEl.closest('#ws-summary') && Object.hasOwn(summaryFilter,fieldEl.name)) {
+        summaryFilter[fieldEl.name] = fieldEl.value;
+        summary();
+      }
+      const root = fieldEl.closest('[data-ws-object]');
+      if (!root) return;
+      const view = state(root.dataset.wsObject);
+      if (fieldEl.name === 'zoom') view.zoom = fieldEl.value;
+      else if (fieldEl.name === 'archived') view.archived = fieldEl.checked;
+      else if (fieldEl.name === 'journal-filter') view.filter = fieldEl.value;
+      else return;
+      mount();
+    });
+    document.addEventListener('toggle', ev => {
+      if (ev.target.matches('.ws-stage-table')) {
+        state(ev.target.closest('[data-ws-object]').dataset.wsObject).table = ev.target.open;
+      }
+    },true);
+    return {card,mount,summary,load};
+  })();
+
   checkAuthAndStart();
 
   if('serviceWorker' in navigator){
