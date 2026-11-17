@@ -90,45 +90,6 @@
 .oj-btn-danger{background:transparent;color:var(--alert);border:1px solid var(--alert-soft);}
 .oj-btn-danger:hover{background:var(--alert-soft);}
 
-/* strata legend */
-.oj-legend{
-  display:flex;
-  gap:1px;
-  background:var(--line);
-  border:1px solid var(--line);
-  border-radius:var(--radius);
-  overflow:hidden;
-  margin-bottom:20px;
-}
-.oj-legend-item{
-  flex:1;
-  min-width:0;
-  background:var(--surface);
-  padding:10px 12px;
-  cursor:pointer;
-  border-bottom:3px solid transparent;
-  transition:background .15s ease;
-}
-.oj-legend-item:hover{background:var(--surface-2);}
-.oj-legend-item.active{background:var(--surface-2);}
-.oj-legend-count{
-  font-family:var(--font-mono);
-  font-size:18px;
-  font-weight:600;
-  line-height:1;
-}
-.oj-legend-label{
-  font-family:var(--font-cond);
-  font-size:10.5px;
-  font-weight:600;
-  letter-spacing:.03em;
-  color:var(--ink-soft);
-  margin-top:4px;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-
 /* toolbar */
 .oj-toolbar{
   display:flex;
@@ -198,20 +159,6 @@
   padding:12px 14px;
   cursor:pointer;
 }
-.oj-core{
-  display:flex;
-  flex-direction:column-reverse;
-  gap:2px;
-  flex:0 0 auto;
-  width:14px;
-}
-.oj-core-seg{
-  width:14px;
-  height:7px;
-  border-radius:1px;
-  background:var(--line);
-  border:1px solid var(--line);
-}
 .oj-row-main{flex:1;min-width:0;}
 .oj-row-name{
   font-weight:600;
@@ -233,15 +180,6 @@
   align-items:center;
   gap:10px;
   flex:0 0 auto;
-}
-.oj-badge{
-  font-family:var(--font-cond);
-  font-size:10.5px;
-  font-weight:600;
-  letter-spacing:.03em;
-  padding:4px 8px;
-  border-radius:20px;
-  white-space:nowrap;
 }
 .oj-deadline{
   font-family:var(--font-mono);
@@ -536,12 +474,6 @@
   padding-top:1px;
 }
 .oj-log-text{flex:1;white-space:pre-line;}
-.oj-log-status{
-  font-family:var(--font-cond);
-  font-size:10px;
-  font-weight:600;
-  color:var(--ink-soft);
-}
 .oj-log-entry.is-task .oj-log-text.done{
   text-decoration:line-through;
   color:var(--ink-faint);
@@ -964,8 +896,6 @@
   .oj-app{padding:18px 14px 50px;}
   .oj-title{font-size:21px;}
   .oj-detail-grid{grid-template-columns:1fr;}
-  .oj-legend{flex-wrap:wrap;}
-  .oj-legend-item{flex:1 1 33%;}
   .oj-row-head{flex-wrap:wrap;}
   .oj-row-meta{width:100%;justify-content:space-between;padding-left:28px;}
 }
@@ -1056,8 +986,6 @@
     <h1 class="oj-title">Журнал объектов</h1>
     <button class="oj-btn oj-btn-primary" id="ojAddBtn">+ Объект</button>
   </div>
-
-  <div class="oj-legend" id="ojLegend"></div>
 
   <div class="oj-toolbar">
     <input class="oj-input" id="ojSearch" type="text" placeholder="Поиск по названию, заказчику, адресу, ответственному…">
@@ -1240,10 +1168,6 @@
     <div class="oj-field">
       <label>Плановый срок сдачи</label>
       <input type="date" id="fDeadline">
-    </div>
-    <div class="oj-field">
-      <label>Статус</label>
-      <select id="fStatus"></select>
     </div>
     <div class="oj-field">
       <label>Примечание</label>
@@ -1565,11 +1489,6 @@
     }
   });
 
-  const STAGES = [
-    {key:'contract',  label:'Договор',               color:'#9CA39A'},
-    {key:'field',     label:'Полевые работы',        color:'#B98A46'},
-    {key:'office',    label:'Камеральная обработка', color:'#BFA047'},
-  ];
   const WORK_TYPES = ['Топосъёмка','Разбивочные работы','Исполнительная съёмка','Геодезическая сеть','Мониторинг деформаций','Межевание / кадастр','Технический надзор','Геодезическое сопровождение','Сезонное определение','ПТО','Разное'];
   const STORAGE_KEY = 'objects-journal';
 
@@ -1752,7 +1671,6 @@
   let collapsedLogIds = new Set();
   let docNotesVisible = new Set();
   let filterType = '';
-  let filterStatus = '';
   let filterPriority = '';
   let showArchived = false;
   let searchTerm = '';
@@ -1961,12 +1879,10 @@
     }
   });
   const listEl = $('#ojList');
-  const legendEl = $('#ojLegend');
   const loadingEl = $('#ojLoading');
   const emptyEl = $('#ojEmpty');
   const filterTypeEl = $('#ojFilterType');
 
-  function stageIndex(key){ return STAGES.findIndex(s => s.key === key); }
   function fmtDate(iso){
     if(!iso) return '—';
     const d = new Date(iso + 'T00:00:00');
@@ -2083,9 +1999,6 @@
     }
   }
 
-  function buildStatusOptions(select){
-    select.innerHTML = STAGES.map(s => `<option value="${s.key}">${s.label}</option>`).join('');
-  }
   function buildWorkTypeChecks(){
     const wrap = $('#fWorkTypes');
     wrap.innerHTML = WORK_TYPES.map(t => `
@@ -2117,33 +2030,6 @@
     if(formSel) formSel.innerHTML = opts;
   }
 
-  function renderLegend(){
-    const pool = objects.filter(o => showArchived ? o.archived : !o.archived);
-    const counts = STAGES.map(s => pool.filter(o => o.status === s.key).length);
-    legendEl.innerHTML = STAGES.map((s,i) => `
-      <div class="oj-legend-item ${filterStatus===s.key?'active':''}" data-status="${s.key}" style="border-bottom-color:${s.color}">
-        <div class="oj-legend-count">${counts[i]}</div>
-        <div class="oj-legend-label">${s.label}</div>
-      </div>
-    `).join('');
-    legendEl.querySelectorAll('.oj-legend-item').forEach(el => {
-      on(el, 'click', () => {
-        const st = el.dataset.status;
-        filterStatus = (filterStatus === st) ? '' : st;
-        renderAll();
-      });
-    });
-  }
-
-  function coreHtml(currentKey){
-    const idx = stageIndex(currentKey);
-    return '<div class="oj-core">' + STAGES.map((s,i) => {
-      const filled = i <= idx;
-      return `<div class="oj-core-seg" style="${filled ? `background:${s.color};border-color:${s.color}` : ''}"></div>`;
-    }).join('') + '</div>';
-  }
-
-
   function sortValue(o, field){
     if(field === 'deadline') return o.deadline || '';
     if(field === 'name') return o.name || '';
@@ -2170,7 +2056,6 @@
       if(showArchived){ if(!o.archived) return false; }
       else{ if(o.archived) return false; }
       if(filterType && !(o.workTypes||[]).includes(filterType)) return false;
-      if(filterStatus && o.status !== filterStatus) return false;
       if(filterPriority === 'none'){ if(o.priority) return false; }
       else if(filterPriority && o.priority !== filterPriority) return false;
       if(searchTerm){
@@ -2315,14 +2200,13 @@
         const date = wrap.querySelector('.logEditDate').value || todayISO();
         const type = wrap.querySelector('.logEditType') ? wrap.querySelector('.logEditType').value : 'note';
         const text = wrap.querySelector('.logEditText').value.trim();
-        const status = wrap.querySelector('.logEditStatus').value;
         const dueDate = wrap.querySelector('.logEditDue') ? wrap.querySelector('.logEditDue').value : '';
         const done = wrap.querySelector('.logEditDone') ? wrap.querySelector('.logEditDone').checked : false;
         if(!text){
           showToast('Текст записи не может быть пустым.', true);
           return;
         }
-        const entry = {date, text, status: status || undefined, type: type === 'task' ? 'task' : 'note'};
+        const entry = {date, text, status: o.log[idx].status, type: type === 'task' ? 'task' : 'note'};
         if(type === 'task'){
           entry.dueDate = dueDate || undefined;
           entry.done = done;
@@ -2511,7 +2395,6 @@
   }
 
   function rowHtml(o){
-    const stage = STAGES[stageIndex(o.status)] || STAGES[0];
     const isOpen = allExpanded || expandedId === o.id;
     const late = o.deadline && o.deadline < todayISO() && o.status !== 'office';
     const priorityClass = o.priority ? ' oj-row-' + o.priority : '';
@@ -2520,13 +2403,11 @@
     <div class="oj-row${isOpen?' open':''}${priorityClass}${o.archived?' archived':''}${misc?' misc':''}" data-id="${o.id}">
       <div class="oj-row-head">
         <button type="button" class="oj-priority-dot ${o.priority ? 'oj-priority-'+o.priority : 'oj-priority-none'}" data-priority-toggle="${o.id}" title="${priorityLabel(o.priority)}"></button>
-        ${coreHtml(o.status)}
         <div class="oj-row-main">
           <div class="oj-row-name">${esc(o.name)}${misc ? ' <span class="oj-priority-tag" style="background:#EFE4F3;color:#7A3D8A;">разное</span>' : ''}${o.archived ? ' <span class="oj-priority-tag" style="background:var(--surface-2);color:var(--ink-faint);">в архиве</span>' : ''}${o.priority === 'active' ? ' <span class="oj-priority-tag oj-priority-tag-active">активный</span>' : ''}${o.priority === 'passive' ? ' <span class="oj-priority-tag oj-priority-tag-passive">пассивный</span>' : ''}</div>
           <div class="oj-row-sub">${esc(o.customer||'—')}${o.responsible?' · Отв.: '+esc(o.responsible):''}${o.contract?' · № '+esc(o.contract):''}${o.address?' · '+esc(o.address):''}</div>
         </div>
         <div class="oj-row-meta">
-          <span class="oj-badge" style="background:${stage.color}22;color:${stage.color}">${stage.label}</span>
           <span class="oj-deadline ${late?'late':''}">${o.deadline ? fmtDate(o.deadline) + (late?' · просрочен':'') : 'без срока'}</span>
         </div>
         <span class="oj-chevron">▶</span>
@@ -2616,18 +2497,11 @@
         ` : ``}
         ${(!isSupervision && !isPTO) ? `
         ${docRowHtml('advance', 'Аванс', docs, dates, notes, showNotes)}
-        ${!isSeasonal ? docRowHtml('actOfWork', 'Акт выполненных работ', docs, dates, notes, showNotes) : ``}
         ${docRowHtml('balance', 'Остаток', docs, dates, notes, showNotes)}
         ` : ``}
 
         ${(!isSupervision && !isSeasonal && !isPTO) ? `
-        <div class="oj-doc-group-title">ТЗ</div>
-        ${docRowHtml('tz', 'ТЗ получено', docs, dates, notes, showNotes)}
-        ` : ``}
-
-        ${(!isSupervision && !isSeasonal && !isPTO) ? `
         <div class="oj-doc-group-title">Программа работ</div>
-        ${docRowHtml('programSent', 'Отправлена', docs, dates, notes, showNotes)}
         ${docRowHtml('programApproved', 'Согласована', docs, dates, notes, showNotes)}
         ` : ``}
 
@@ -2653,9 +2527,7 @@
 
         ${(!isSupervision && !isPTO) ? `
         <div class="oj-doc-group-title">Отчёт и сдача</div>
-        ${docRowHtml('reportSent', 'Отчёт направлен', docs, dates, notes, showNotes)}
         ${docRowHtml('reportApproved', 'Отчёт согласован', docs, dates, notes, showNotes)}
-        ${docRowHtml('act', 'Акт подписан', docs, dates, notes, showNotes)}
         ` : ``}
       </div>
       ` : ``}
@@ -2708,10 +2580,6 @@
                   </label>
                 </div>
                 <input type="text" class="logEditText" value="${esc(e.text)}">
-                <select class="logEditStatus">
-                  <option value="">Без смены статуса</option>
-                  ${STAGES.map(s=>`<option value="${s.key}" ${s.key===e.status?'selected':''}>→ ${s.label}</option>`).join('')}
-                </select>
                 <div class="oj-log-edit-actions">
                   <button type="button" class="oj-btn oj-btn-ghost logEditCancel">Отмена</button>
                   <button type="button" class="oj-btn oj-btn-primary logEditSave" data-log-idx="${idx}">Сохранить</button>
@@ -2722,7 +2590,7 @@
               <div class="oj-log-entry${e.type === 'task' ? ' is-task' : ''}">
                 <div class="oj-log-date">${fmtDate(e.date)}</div>
                 ${e.type === 'task' ? `<input type="checkbox" class="oj-log-task-check" data-log-idx="${idx}" ${e.done ? 'checked' : ''} title="Отметить выполненной">` : ``}
-                <div class="oj-log-text${e.type === 'task' && e.done ? ' done' : ''}">${esc(e.text)}${e.status ? ` <span class="oj-log-status">→ ${STAGES[stageIndex(e.status)]?.label||''}</span>`:''}</div>
+                <div class="oj-log-text${e.type === 'task' && e.done ? ' done' : ''}">${esc(e.text)}</div>
                 ${e.type === 'task' && e.dueDate ? `<div class="oj-log-due${!e.done && e.dueDate < todayISO() ? ' late' : ''}${!e.done && e.dueDate === todayISO() ? ' today' : ''}">до ${fmtDate(e.dueDate)}</div>` : ``}
                 <button type="button" class="oj-log-edit-btn" data-log-idx="${idx}" title="Изменить запись">✎</button>
                 <button type="button" class="oj-log-del-btn" data-log-idx="${idx}" title="Удалить запись">✕</button>
@@ -2740,10 +2608,6 @@
         </select>
         <input type="text" class="entryText" placeholder="Новая запись…">
         <input type="date" class="entryDue" title="Срок (для задачи)" placeholder="Срок">
-        <select class="entryStatus">
-          <option value="">Без смены статуса</option>
-          ${STAGES.map(s=>`<option value="${s.key}" ${s.key===o.status?'selected':''}>→ ${s.label}</option>`).join('')}
-        </select>
         <label class="oj-entrydone-label" title="Отметить задачу сразу выполненной">
           <input type="checkbox" class="entryDone"> выполнено
         </label>
@@ -2771,20 +2635,6 @@
     o.docDates = o.docDates || {};
     if(checked && !o.docDates[docKey]){
       o.docDates[docKey] = todayISO();
-    }
-    if(docKey === 'programApproved' && checked){
-      o.docs.programSent = true;
-      if(!o.docDates.programSent) o.docDates.programSent = todayISO();
-    }
-    if(docKey === 'programSent' && !checked){
-      o.docs.programApproved = false;
-    }
-    if(docKey === 'reportApproved' && checked){
-      o.docs.reportSent = true;
-      if(!o.docDates.reportSent) o.docDates.reportSent = todayISO();
-    }
-    if(docKey === 'reportSent' && !checked){
-      o.docs.reportApproved = false;
     }
     o.updatedAt = todayISO();
     await saveObjects();
@@ -2826,20 +2676,18 @@
       const type = formEl.querySelector('.entryType') ? formEl.querySelector('.entryType').value : 'note';
       const text = formEl.querySelector('.entryText').value.trim();
       const dueDate = formEl.querySelector('.entryDue') ? formEl.querySelector('.entryDue').value : '';
-      const status = formEl.querySelector('.entryStatus').value;
       const doneChecked = formEl.querySelector('.entryDone') ? formEl.querySelector('.entryDone').checked : false;
       if(!text){
         showToast('Введите текст записи.', true);
         return;
       }
       o.log = o.log || [];
-      const entry = {date, text, status: status || undefined, type: type === 'task' ? 'task' : 'note'};
+      const entry = {date, text, type: type === 'task' ? 'task' : 'note'};
       if(type === 'task'){
         entry.dueDate = dueDate || undefined;
         entry.done = doneChecked;
       }
       o.log.push(entry);
-      if(status) o.status = status;
       o.updatedAt = todayISO();
       await saveObjects();
       renderAll();
@@ -3015,7 +2863,6 @@
   on($('#ojSummaryExportBtn'), 'click', exportSummaryCsv);
 
   function renderAll(){
-    renderLegend();
     workSchedule.summary();
     renderList();
     if(!$('#ojSummary').hidden) renderSummary();
@@ -3658,8 +3505,6 @@
     $('#fCustomerResponsible').value = o ? (o.customerResponsible||'') : '';
     $('#fDeadline').value = o ? (o.deadline||'') : '';
     $('#fNote').value = '';
-    buildStatusOptions($('#fStatus'));
-    $('#fStatus').value = o ? o.status : 'contract';
     document.querySelectorAll('.wtCheck').forEach(cb => {
       cb.checked = o ? (o.workTypes||[]).includes(cb.value) : false;
     });
@@ -3679,7 +3524,6 @@
   on($('#ojSaveBtn'), 'click', async () => {
     const name = $('#fName').value.trim() || 'Без названия';
     const workTypes = Array.from(document.querySelectorAll('.wtCheck:checked')).map(c => c.value);
-    const status = $('#fStatus').value;
     const note = $('#fNote').value.trim();
 
     if(editingId){
@@ -3698,7 +3542,6 @@
       o.customerResponsible = $('#fCustomerResponsible').value.trim();
       o.deadline = $('#fDeadline').value;
       o.workTypes = workTypes;
-      o.status = status;
       o.updatedAt = todayISO();
       if(note){
         o.log = o.log || [];
@@ -3707,7 +3550,7 @@
     }else{
       const o = {
         id: uid(),
-        name, workTypes, status,
+        name, workTypes, status: 'contract',
         address: $('#fAddress').value.trim(),
         customer: $('#fCustomer').value.trim(),
         contract: $('#fContract').value.trim(),
@@ -3717,7 +3560,7 @@
         docs: {},
         createdAt: todayISO(),
         updatedAt: todayISO(),
-        log: [{date: todayISO(), text: note || 'Объект добавлен в журнал', status}],
+        log: [{date: todayISO(), text: note || 'Объект добавлен в журнал', status: 'contract'}],
       };
       objects.push(o);
       expandedId = o.id;
@@ -4315,9 +4158,8 @@
       allExpanded = false;
       expandedId = id;
       if (!getFiltered().includes(object)) {
-        filterType = filterStatus = filterPriority = searchTerm = '';
+        filterType = filterPriority = searchTerm = '';
         $('#ojSearch').value = filterTypeEl.value = $('#ojFilterPriority').value = '';
-        renderLegend();
       }
       $('#ojExpandAllBtn').textContent = 'Развернуть все';
       $('#ojExpandAllBtn').classList.remove('oj-btn-primary');
